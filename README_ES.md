@@ -28,6 +28,8 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Gestión de tareas
 
+- [Gestión del proyecto y flujo de revisión (English / Español)](docs/PROJECT_MANAGEMENT.md).
+
 - [Tablero del proyecto](https://github.com/users/Kevin07k/projects/4): **Backlog → In Progress → Done**.
 - [Issues](https://github.com/Kevin07k/lca-simulador-arquitectura/issues): 22 tareas, con 11 asignadas a cada integrante.
 - Cada issue incluye secciones desplegables **English** y **Español**.
