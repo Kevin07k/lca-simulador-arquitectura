@@ -1,31 +1,42 @@
-# LCA — Simulador de Arquitectura de Computadoras
+# LCA — Computer Architecture Simulator
 
-Proyecto del segundo parcial de Arquitectura de Computadoras, desarrollado por Kevin y Javier.
+**Language:** English | [Español](README_ES.md)
 
-## Objetivo
+Computer Architecture second midterm project, developed by Kevin and Javier.
 
-Construir un simulador en Microsoft Excel con macros VBA que permita observar el CPU, los buses triestado, la jerarquía de caché, la memoria virtual paginada y los periféricos de teclado y pantalla LCD 8×1.
+## Objective
 
-## Estado actual
+Build a Microsoft Excel simulator with VBA macros to visualize the CPU, tri-state buses, cache hierarchy, paged virtual memory, and keyboard and 8x1 LCD peripherals.
 
-Preparación inicial. La plataforma elegida es Microsoft Excel con VBA y un libro habilitado para macros (`.xlsm`). Todavía no hay una versión ejecutable.
+## Current status
 
-## Equipo
+Initial project setup. The selected platform is **Microsoft Excel with VBA**, using a macro-enabled workbook (`.xlsm`). No runnable version is available yet.
 
-- Kevin.
-- Javier.
-- Equipo: LCA.
+## Team
 
-## Desarrollo
+- Kevin — [@Kevin07k](https://github.com/Kevin07k).
+- Javier — [@Javiertorricos](https://github.com/Javiertorricos).
+- Team: **LCA**.
 
-Este repositorio contiene únicamente el proyecto: código fuente, archivos de ejecución y documentación. El material académico y la planeación local quedan fuera.
+## Development
 
-Se utilizarán `main` para versiones estables, `develop` para integración y una rama `feature/nombre/id-tarea-descripcion` por tarea, con revisión del compañero mediante Pull Request.
+This repository contains the project source, execution files, and documentation. Academic reference material and local planning stay outside the repository.
 
-## Próximos pasos
+Use `main` for stable versions, `develop` for integration, and one `feature/name/issue-id-description` branch per task. The teammate reviews each Pull Request before integration. Assignees identifies only the person implementing the task.
 
-- Preparar el libro `.xlsm` y la exportación de módulos VBA para versionarlos.
-- Definir la arquitectura y comenzar la implementación.
-- Completar las instrucciones de uso y la documentación técnica en español e inglés.
+Export VBA modules as text files for Git reviews and keep the workbook synchronized with the source.
 
-Este README se actualizará conforme avance el desarrollo.
+## Task management
+
+- [Project board](https://github.com/users/Kevin07k/projects/4): **Backlog → In Progress → Done**.
+- [Issues](https://github.com/Kevin07k/lca-simulador-arquitectura/issues): 22 tasks, with 11 assigned to each teammate.
+- Each issue provides expandable **English** and **Español** sections.
+- Check linked prerequisites and **Blocked by** relationships before starting or completing integration.
+
+## Next steps
+
+- Prepare the `.xlsm` workbook and the VBA module export/import workflow.
+- Agree on the architecture and start implementation.
+- Complete the technical documentation, operating instructions, and demo traces in both languages.
+
+This README will be updated as development progresses.
