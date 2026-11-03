@@ -28,6 +28,8 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Task management
 
+- [Project management and review workflow (English / Español)](docs/PROJECT_MANAGEMENT.md).
+
 - [Project board](https://github.com/users/Kevin07k/projects/4): **Backlog → In Progress → Done**.
 - [Issues](https://github.com/Kevin07k/lca-simulador-arquitectura/issues): 22 tasks, with 11 assigned to each teammate.
 - Each issue provides expandable **English** and **Español** sections.
