@@ -32,6 +32,8 @@ La VPN 15 está reservada, no posee entrada presente asignable ni participa en r
 
 ## 2. ISA y estado visible
 
+P04 concreta la distribución de FLAGS: bit 0 = ZF, bit 1 = CF, bit 2 = SF; bits 3–7 en cero. Ver [API y verificación CPU/ALU](P04_CPU_ALU.md).
+
 **Instrucción fija de cuatro bytes**, en orden de direcciones crecientes: `[opcode, R, X, H]`. `R` es un código de registro 0–3 o cero cuando no se utiliza; `X` es inmediato de 8 bits, código de segundo registro o byte bajo de dirección; `H` es cero excepto como byte alto de una dirección virtual, donde solo se permite 00h o 01h. Dirección operando = `256*H + X`. Todos los campos no utilizados valen cero; un campo no canónico produce `INVALID_ENCODING`. El ensamblador acepta hexadecimales de dos o tres dígitos con sufijo `h` y etiquetas resueltas a dirección absoluta de 9 bits. La imagen de código se llena con `HLT` (`01 00 00 00`) después de la última instrucción validada; el código no puede superar 256 bytes. El punto de entrada predeterminado es 000h.
 
 | Opcode | Mnemónico | R | X / H | Efecto al completar |

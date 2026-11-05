@@ -32,6 +32,8 @@ VPN 15 is reserved, has no allocatable present PTE, and is excluded from replace
 
 ## 2. ISA and visible state
 
+P04 concretizes the FLAGS layout: bit 0 = ZF, bit 1 = CF, bit 2 = SF; bits 3–7 remain zero. See the [CPU/ALU API and verification](P04_CPU_ALU.md).
+
 **Fixed four-byte instruction**, in increasing address order: `[opcode, R, X, H]`. `R` is register code 0–3 or zero if unused; `X` is an eight-bit immediate, a second register code, or the low address byte; `H` is zero except as the high byte of a virtual address, where only 00h or 01h is valid. Operand address = `256*H + X`. All unused fields must be zero; noncanonical fields cause `INVALID_ENCODING`. The assembler accepts two- or three-digit hexadecimal with an `h` suffix and labels resolved to absolute nine-bit addresses. After the last validated instruction, the code image is filled with `HLT` (`01 00 00 00`); code may not exceed 256 bytes. Default entry point is 000h.
 
 | Opcode | Mnemonic | R | X / H | Effect on completion |
