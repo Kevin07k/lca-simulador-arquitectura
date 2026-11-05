@@ -2,6 +2,8 @@
 
 **Idioma:** [English](README.md) | Español
 
+<img src="assets/lca-chip.png" alt="Logo LCA de chip azul" width="160">
+
 Proyecto del segundo parcial de Arquitectura de Computadoras, desarrollado por Kevin y Javier.
 
 ## Objetivo
@@ -10,7 +12,7 @@ Construir un simulador en Microsoft Excel con macros VBA para visualizar el CPU,
 
 ## Estado actual
 
-Preparación inicial del proyecto. La plataforma elegida es **Microsoft Excel con VBA**, con un libro habilitado para macros (`.xlsm`). Todavía no hay una versión ejecutable.
+Base de P03 preparada en **Microsoft Excel con VBA**. El [libro inicial](workbook/LCA.xlsm) contiene una portada y una macro de verificación de instalación. El simulador de CPU, memoria y E/S se implementará en tareas posteriores. Kevin eligió el logo del chip azul; sigue pendiente la revisión de Javier.
 
 ## Equipo
 
@@ -26,6 +28,10 @@ Se usa `main` para versiones estables, `develop` para integración y una rama `f
 
 Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el libro se mantiene sincronizado con el código fuente.
 
+- [Abrir el libro y sincronizar VBA](docs/VBA_WORKFLOW.md).
+- [Fuente VBA](src/vba/README.md), [programas](programs/README.md), [pruebas](tests/README.md) e [identidad](docs/IDENTITY.md).
+- [Verificación realizada de P03](docs/P03_VERIFICATION.md).
+
 ## Gestión de tareas
 
 - [Gestión del proyecto y flujo de revisión (English / Español)](docs/PROJECT_MANAGEMENT.md).
@@ -37,8 +43,8 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- Preparar el libro `.xlsm` y el procedimiento para exportar/importar módulos VBA.
-- Acordar la arquitectura y comenzar la implementación.
+- Completar la revisión de identidad y de P03 por Javier.
+- Continuar con CPU y buses según los contratos de P02 integrados en `develop`.
 - Completar la documentación técnica, las instrucciones de uso y las trazas de demostración en ambos idiomas.
 
 Este README se actualizará conforme avance el desarrollo.
