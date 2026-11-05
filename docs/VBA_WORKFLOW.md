@@ -41,6 +41,14 @@ Javier debe repetir la importación en una copia, compilar, ejecutar la macro y 
 
 ## English
 
+### Panel de P04 / P04 dashboard
+
+Importar también `LcaDiagrama.bas` junto a `LcaPanel.bas`; ejecutar `ConstruirDiagramaCpu` después del constructor del panel para recuperar la segunda vista. Also import `LcaDiagrama.bas` with `LcaPanel.bas`; run `ConstruirDiagramaCpu` after the dashboard constructor to rebuild the second view. [Guía / Guide](P04_DIAGRAM.md).
+
+Importar también `LcaCpu.bas`, `LcaAlu.bas`, `LcaCpuTests.bas` y `LcaPanel.bas`. `MostrarPanelCpu` abre/actualiza el panel; `ConstruirPanelCpu` lo reconstruye y reinicia CPU, entradas e historial. Para uso normal, abrir la hoja CPU y usar sus botones. [Instrucciones bilingües](P04_INTERFACE.md).
+
+Also import `LcaCpu.bas`, `LcaAlu.bas`, `LcaCpuTests.bas` and `LcaPanel.bas`. `MostrarPanelCpu` opens/refreshes the dashboard; `ConstruirPanelCpu` rebuilds it and resets CPU, inputs and history. For normal use, open CPU and use its buttons. See the bilingual instructions above.
+
 **P03 workbook integrator: Kevin (@Kevin07k). Reviewer: Javier (@Javiertorricos).** Only one integrator edits the binary at a time; record handovers in the PR.
 
 Open `workbook/LCA.xlsm` in desktop Excel. In the VBA editor (`Alt+F11`), select its project and compile. Run `VerificarInstalacion` via `Alt+F8`: `Inicio!B13` must become `VBA OK - P03`. This only verifies bootstrap installation.

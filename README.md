@@ -12,7 +12,7 @@ Build a Microsoft Excel simulator with VBA macros to visualize the CPU, tri-stat
 
 ## Current status
 
-P03 setup is prepared in **Microsoft Excel with VBA**. The [initial workbook](workbook/LCA.xlsm) contains a cover and an installation-check macro. CPU, memory and I/O simulation belong to later tasks. Kevin selected the blue chip logo; Javier's review is pending.
+P04 CPU state and arithmetic are implemented in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) includes the source modules and a reproducible CPU/ALU test macro. Run `VerificarCpuAlu` with Alt+F8: the `P04 Tests` sheet reports PASS for 197120 arithmetic cases and 1379895 assertions. Full instruction execution, memory, buses and I/O remain for later tasks. P04 awaits Javier's review and PR integration.
 
 ## Team
 
@@ -31,6 +31,9 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 - [Open the workbook and synchronize VBA](docs/VBA_WORKFLOW.md).
 - [VBA source](src/vba/README.md), [programs](programs/README.md), [tests](tests/README.md) and [identity](docs/IDENTITY.md).
 - [P03 verification](docs/P03_VERIFICATION.md).
+- [P04 CPU/ALU API and verification (English / Español)](docs/P04_CPU_ALU.md).
+- [Interactive CPU dashboard: controls and visual verification (English / Español)](docs/P04_INTERFACE.md). Open the **CPU** sheet to load registers and operate the ALU with buttons.
+- [CPU architectural diagram (English / Español)](docs/P04_DIAGRAM.md): open **CPU Diagrama** for live registers, operands, ALU, flags and write-back visualization.
 
 ## Task management
 
