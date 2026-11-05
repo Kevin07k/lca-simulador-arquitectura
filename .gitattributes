@@ -1,0 +1,8 @@
+*.bas text eol=crlf
+*.cls text eol=crlf
+*.frm text eol=crlf
+*.frx binary
+*.xlsm binary
+*.md text
+*.svg text
+
