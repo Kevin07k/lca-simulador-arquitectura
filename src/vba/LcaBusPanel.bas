@@ -2,7 +2,6 @@ Attribute VB_Name = "LcaBusPanel"
 Option Explicit
 
 Private Const SHEET_NAME As String = "P05 Buses"
-Private mDemoMemory(0 To 255) As Byte     ' Only the isolated panel fixture; P06 owns real RAM.
 Private mDemoStep As Long
 Private mDemoStarted As Boolean
 Private mDemoStatus As String
@@ -24,7 +23,7 @@ Public Sub ConstruirPanelBuses()
     ws.Range("A1:S34").Font.Color = RGB(226, 232, 240)
     ws.Range("B2:R3").Merge
     With ws.Range("B2")
-        .Value = "P05  /  BUSES + CONTROL"
+        .Value = "P05 + P06  /  BUSES + RAM"
         .Font.Name = "Segoe UI"
         .Font.Bold = True
         .Font.Size = 22
@@ -93,50 +92,47 @@ Public Sub BusPanelActualizar()
 End Sub
 
 Public Sub BusDemoReset()
-    Dim i As Long
     CpuReset
-    ControlReset
-    For i = 0 To 255
-        mDemoMemory(i) = 0
-    Next i
-    mDemoMemory(&H40) = &H10
-    mDemoMemory(&H41) = &H0
-    mDemoMemory(&H42) = &H2A
-    mDemoMemory(&H43) = &H0
+    RamReset
+    MemoryPathReset
+    RamWriteUser &H40, &H10
+    RamWriteUser &H41, &H0
+    RamWriteUser &H42, &H2A
+    RamWriteUser &H43, &H0
     CpuWriteControl LcaPC, &H20
     CpuWriteRegister LcaAX, &H2A
     mDemoStep = 0
     mDemoStarted = True
-    mDemoStatus = "Fixture: PC=020h, 040-043h=10 00 2A 00; AX=2Ah. NEXT recorre fetch y ST 14Dh -> 6Dh."
+    mDemoStatus = "RAM: PC=020h, 040-043h=10 00 2A 00; AX=2Ah. NEXT recorre fetch y ST 14Dh -> 6Dh."
+    PanelActualizar
     BusPanelActualizar
 End Sub
 
-' Exactly one engine clock edge per click. The fixture commits its RAM write only after arbitration.
+' Exactly one engine clock edge per click. The real RAM changes only after bus arbitration.
 Public Sub BusDemoNext()
-    Dim i As Long
     On Error GoTo failed
     If Not mDemoStarted Then BusDemoReset
-    If mDemoStep = 0 Then ControlStartFetch &H20, &H40
+    If mDemoStep = 0 Then MemoryFetchStart &H20, &H40
     If mDemoStep < 8 Then
-        i = mDemoStep \ 2
         If (mDemoStep Mod 2) = 0 Then
-            ControlReadFetchByte mDemoMemory(&H40 + i)
+            MemoryFetchReadNext
         Else
-            ControlLatchFetchByte
+            MemoryFetchLatchNext
         End If
     ElseIf mDemoStep = 8 Then
-        ControlPrepareStore &H14D, &H6D, LcaAX
+        MemoryStorePrepare &H14D, &H6D, LcaAX
     ElseIf mDemoStep = 9 Then
-        mDemoMemory(&H6D) = ControlCommitStore()
+        MemoryStoreCommit
     Else
-        mDemoStatus = "Fin / Done. 6Dh=" & Right$("00" & Hex$(mDemoMemory(&H6D)), 2) & "h. RESET para repetir."
+        mDemoStatus = "Fin / Done. RAM[6Dh]=" & Right$("00" & Hex$(RamReadUser(&H6D)), 2) & "h. RESET para repetir."
         BusPanelActualizar
         Exit Sub
     End If
     mDemoStep = mDemoStep + 1
     mDemoStatus = "Paso / step " & CStr(mDemoStep) & "/10 | IR=" & Right$("00" & Hex$(CpuSnapshotIR()), 2) & _
-                  "h | 6Dh=" & Right$("00" & Hex$(mDemoMemory(&H6D)), 2) & _
+                  "h | RAM[6Dh]=" & Right$("00" & Hex$(RamReadUser(&H6D)), 2) & _
                   "h | PC=020h (P12 decide avance / commits PC)"
+    PanelActualizar
     BusPanelActualizar
     Exit Sub
 failed:
@@ -146,7 +142,7 @@ End Sub
 
 Public Sub BusDemoContention()
     Dim failure As String
-    ControlReset
+    MemoryPathReset
     mDemoStep = 10
     mDemoStarted = True
     BusBegin LCA_BUS_EXTERNAL, "ST CONTENTION", &H14D, &H6D, False, True, False
@@ -158,8 +154,8 @@ Public Sub BusDemoContention()
     failure = Err.Description
     Err.Clear
     On Error GoTo 0
-    mDemoStatus = "BUS_CONTENTION: " & failure & "; 6Dh=" & _
-                  Right$("00" & Hex$(mDemoMemory(&H6D)), 2) & "h (sin escritura / no write). RESET para repetir."
+    mDemoStatus = "BUS_CONTENTION: " & failure & "; RAM[6Dh]=" & _
+                  Right$("00" & Hex$(RamReadUser(&H6D)), 2) & "h (sin escritura / no write). RESET para repetir."
     BusPanelActualizar
 End Sub
 
