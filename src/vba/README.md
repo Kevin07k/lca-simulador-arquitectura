@@ -18,3 +18,7 @@ English: `LcaInicio.bas` is the P03 bootstrap module. `VerificarInstalacion` wri
 
 English: P04 adds `LcaCpu.bas` (private state, reset, validated access), `LcaAlu.bas` (ADD/SUB/CMP/INC/DEC) and `LcaCpuTests.bas` (`VerificarCpuAlu`). Engine modules do not access worksheets; tests write to `P04 Tests`. See the bilingual API above. Buses, memory, MMU, caches, loader, full instruction execution and I/O belong to later tasks.
 
+P05 añade `LcaBus.bas`, `LcaControl.bas`, `LcaBusPanel.bas` y `LcaBusTests.bas`. Importar los cuatro, compilar, ejecutar `ConstruirPanelBuses` y `VerificarBusesP05`. El panel muestra ciclos de bus y micropalabras generados por el motor; la demostración inyecta bytes de una memoria de prueba. [Contrato y recorrido bilingüe](../../docs/P05_BUS_CONTROL.md). La RAM real corresponde a P06 y la ejecución de instrucciones a P12.
+
+English: P05 adds bus arbitration, fetch/store transfer steps, a live bus worksheet and a verification macro. Import all four modules and follow the [P05 integration and test guide](../../docs/P05_BUS_CONTROL.md). The demo fixture is not the future RAM/cache implementation.
+
