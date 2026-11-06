@@ -4,7 +4,7 @@
 
 P05 adds four exported VBA modules: `LcaBus.bas` (internal and external bus arbitration), `LcaControl.bas` (fetch and ST transfer steps), `LcaBusPanel.bas` (live Excel worksheet), and `LcaBusTests.bas` (reproducible assertions). The existing P04 CPU/ALU modules stay intact. `ControlLastWord` exposes `R/W/C/IO/EN/LD` for each completed microstep. A driver is High-Z when its bus is floating; a completed idle cycle may have zero drivers. Two active drivers cause `BUS_CONTENTION` on `BusClock`, before the caller can commit a RAM write.
 
-P05 incorpora cuatro módulos VBA exportados. El motor de bus arbitra emisores antes de permitir la escritura. La hoja `P05 Buses` presenta los ciclos reales registrados por el motor, no animaciones. El libro que está actualmente en `develop` todavía no contiene estos módulos: hay que importarlos y guardar una nueva versión `.xlsm` desde Excel de escritorio.
+P05 incorpora cuatro módulos VBA exportados. El motor de bus arbitra emisores antes de permitir la escritura. La hoja `P05 Buses` presenta los ciclos reales registrados por el motor, no animaciones. Desde P06, el panel usa la RAM de `LcaRam` mediante `LcaMemoryPath`; ver [recorrido P06](P06_RAM.md). Al importar la versión nueva del panel, importar también los módulos P06.
 
 ## Engine contract / Contrato del motor
 
@@ -23,10 +23,10 @@ The low-level bus API is `BusBegin(busId, microstep, VA, PA, Read, Write, IO, [E
 ## Reproduction / Reproducción en Excel de escritorio
 
 1. Work on a copy of `workbook/LCA.xlsm`, open that copy in Microsoft Excel and import the four `.bas` files via VBA editor `Alt+F11` → **File / Archivo → Import File / Importar archivo**. Do not import duplicates with the same `Attribute VB_Name`. Run **Debug / Depurar → Compile VBAProject / Compilar VBAProject**.
-2. `Alt+F8` → `ConstruirPanelBuses`. This creates only the `P05 Buses` sheet and resets the CPU/bus demo fixture; it preserves the P04 sheets. The fixture has `PC=020h`, `AX=2Ah`, bytes `10 00 2A 00` at physical `040–043h`, and byte `00h` at `06Dh`. It is a demo source, **not** the P06 RAM module.
+2. `Alt+F8` → `ConstruirPanelBuses`. This creates only the `P05 Buses` sheet and resets CPU, buses and the P06 RAM for the demo; it preserves the P04 sheets. The sample starts with `PC=020h`, `AX=2Ah`, bytes `10 00 2A 00` at physical `040–043h`, and byte `00h` at `06Dh`.
 3. Press **SIGUIENTE / NEXT** eight times: external READ and internal LATCH alternate for four bytes. The first latch sets `IR=10h`; the four transferred bytes are `10 00 2A 00`. Every external READ has one RAM driver. During an internal LATCH the external bus reads `High-Z`. `PC` stays `020h` pending P12 decode/commit.
-4. Press NEXT twice more: internal `AX -> MDR` then external `CPU/CACHE -> RAM` with `W=1, IO=0`. The fixture at `06Dh` becomes `2Ah` only after the latter edge. `VA=14Dh` maps to `PA=6Dh` in this *configured fixture*, matching P02's sample PTE.
-5. Press **CONTENCION / CONTENTION**. The trace records `CPU + OTHER_OUTPUT`, `drivers=2`, `BUS_CONTENTION`; the fixture is unchanged. Press RESET to start again.
+4. Press NEXT twice more: internal `AX -> MDR` then external `CPU/CACHE -> RAM` with `W=1, IO=0`. Real RAM at `06Dh` becomes `2Ah` only after the latter edge. The supplied sample `VA=14Dh → PA=6Dh` matches P02's sample PTE; P07 will implement translation.
+5. Press **CONTENCION / CONTENTION**. The trace records `CPU + OTHER_OUTPUT`, `drivers=2`, `BUS_CONTENTION`; physical RAM is unchanged. Press RESET to start again.
 6. `Alt+F8` → `VerificarBusesP05` checks all four fetch bytes and CPU control registers, High-Z, bus words, write ordering, trace and contention. The macro resets CPU/bus state and reports a PASS count or the first failure; it does **not** execute P06 RAM/cache, P12 instruction decode, or Excel UI clicks. Restore the panel demo with `BusDemoReset` after running it. Also rerun `VerificarCpuAlu` to check P04 regression.
 7. Save the copy as `.xlsm`. Export the four modules back out of that same workbook, compare each with `src/vba` (including `Attribute VB_Name`), reconcile any differences, and commit synchronized source and workbook. A screenshot of the worksheet after step 4 and after contention can accompany the PR.
 
