@@ -26,3 +26,7 @@ P06 añade `LcaRam.bas`, `LcaMemoryPath.bas` y `LcaRamTests.bas`; también actua
 
 English: P06 adds 256 bytes in eight 32-byte frames and wires P05 fetch/store cycles to real RAM. Import the three new modules and replace `LcaBusPanel.bas`. See the [P06 test and integration guide](../../docs/P06_RAM.md). P07/P09/P12 still own translation, caches and full instruction execution.
 
+P07 añade `LcaMmu.bas`, `LcaMmuPath.bas`, `LcaMmuPanel.bas` y `LcaMmuTests.bas`: 16 PTE, traducción VA→PA, página 15 reservada, distinción PFN0/ausencia, fallos de página y panel con 16 filas. Importar los cuatro y ejecutar `VerificarMmuP07` y `ConstruirPanelPaginas`. [Contrato y guía bilingüe](../../docs/P07_MMU.md).
+
+English: P07 adds a page table, translation, a bus/RAM adapter, a 16-row worksheet and verification. Import the four modules; run `VerificarMmuP07` and `ConstruirPanelPaginas`. See the [P07 guide](../../docs/P07_MMU.md). Page replacement belongs to P08.
+
