@@ -43,7 +43,7 @@ Public Sub ConstruirPanelSwap()
     ws.Range(RA("J12")).Value = "PAGE_FAULT / CLOCK / ULTIMOS EVENTOS"
     ws.Range(RA("J12:S12")).Interior.Color = RGB(30, 64, 105)
     For i = 13 To 28
-        ws.Range("J" & CStr(i) & ":S" & CStr(i)).Merge
+        ws.Range(RA("J" & CStr(i) & ":S" & CStr(i))).Merge
     Next i
     ws.Range(RA("B30:S30")).Merge
     ws.Range(RA("B30")).Value = "El paso 8 reemplaza una pagina limpia; el paso 9 preserva la pagina dirty; el paso 10 recupera A5h."
@@ -156,16 +156,16 @@ Public Sub PagerPanelRefresh()
         CStr(PagerFaultCount()) & "; evicciones=" & CStr(PagerEvictionCount()) & _
         "; writebacks=" & CStr(PagerWritebackCount()) & "; cursor CLOCK=" & CStr(PagerHand())
     For i = 13 To 28
-        ws.Range("J" & CStr(i)).Value = vbNullString
-        ws.Range("J" & CStr(i) & ":S" & CStr(i)).Interior.Color = RGB(30, 41, 59)
+        ws.Range(RA("J" & CStr(i))).Value = vbNullString
+        ws.Range(RA("J" & CStr(i) & ":S" & CStr(i))).Interior.Color = RGB(30, 41, 59)
     Next i
     first = PagerTraceCount() - 16
     If first < 0 Then first = 0
     For index = first To PagerTraceCount() - 1
         row = 13 + index - first
-        ws.Range("J" & CStr(row)).Value = PagerTraceLine(index)
+        ws.Range(RA("J" & CStr(row))).Value = PagerTraceLine(index)
         If InStr(1, PagerTraceLine(index), "PAGE_FAULT", vbTextCompare) > 0 Then _
-            ws.Range("J" & CStr(row) & ":S" & CStr(row)).Interior.Color = RGB(153, 78, 24)
+            ws.Range(RA("J" & CStr(row) & ":S" & CStr(row))).Interior.Color = RGB(153, 78, 24)
     Next index
 End Sub
 
