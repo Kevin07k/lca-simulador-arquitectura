@@ -4,6 +4,7 @@ Option Explicit
 ' P13 band of the LCA sheet: text input, the eight queue slots E0..E7h with head/tail, En_KBD bus
 ' cycle and the keyboard trace. Every button calls the real LcaKeyboard engine.
 Private Const ROW_BASE As Long = LCA_BASE_KEYBOARD
+Private Const COL_BASE As Long = LCA_COL_KEYBOARD
 Private Const BAND_ROWS As Long = 36
 Private mStatus As String
 
@@ -11,8 +12,8 @@ Public Sub ConstruirPanelTeclado()
     Dim ws As Worksheet
     Dim i As Long
     Set ws = KeyboardSheet(True)
-    LcaPrepareBand ws, ROW_BASE, BAND_ROWS, "P13_"
-    ws.Rows(RA("1:36")).RowHeight = 23
+    LcaPrepareBand ws, ROW_BASE, BAND_ROWS, "P13_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:36")), 23
     ws.Range(RA("A1:AZ36")).Interior.Color = RGB(15, 23, 42)
     ws.Range(RA("A1:AZ36")).Font.Name = "Consolas"
     ws.Range(RA("A1:AZ36")).Font.Color = RGB(226, 232, 240)
@@ -47,7 +48,7 @@ Public Sub ConstruirPanelTeclado()
     ws.Range(RA("B14")).Value = "CHAR"
     ws.Range(RA("B15")).Value = "H / T"
     For i = 0 To LCA_KBD_SIZE - 1
-        ws.Cells(ROW_BASE + 12, 3 + i).Value = Right$("00" & Hex$(LCA_KBD_BASE_PA + i), 2) & "h"
+        CL(ws, ROW_BASE + 12, 3 + i).Value = Right$("00" & Hex$(LCA_KBD_BASE_PA + i), 2) & "h"
     Next i
     ws.Range(RA("B12:J12")).Font.Bold = True
     ws.Range(RA("B12:J15")).HorizontalAlignment = xlCenter
@@ -62,14 +63,14 @@ Public Sub ConstruirPanelTeclado()
     ws.Range(RA("B25:R25")).Merge
     ws.Range(RA("B25")).Value = "TRAZA DEL TECLADO / KEYBOARD TRACE (ultimos 8 / last 8)"
     For i = 26 To 33
-        ws.Range(ws.Cells(ROW_BASE + i, 2), ws.Cells(ROW_BASE + i, 18)).Merge
+        ws.Range(CL(ws, ROW_BASE + i, 2), CL(ws, ROW_BASE + i, 18)).Merge
     Next i
     ws.Range(RA("B26:R33")).Interior.Color = RGB(30, 41, 59)
     ws.Range(RA("B35:R36")).Merge
     ws.Range(RA("B35:R36")).WrapText = True
     ws.Range(RA("B35")).Font.Color = RGB(125, 211, 252)
     TecladoReset
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelTeclado()
@@ -78,7 +79,7 @@ Public Sub MostrarPanelTeclado()
     If ws Is Nothing Then
         ConstruirPanelTeclado
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
         TecladoPanelActualizar
     End If
 End Sub
@@ -158,20 +159,20 @@ Public Sub TecladoPanelActualizar()
     If Not KeyboardReady() Then KeyboardReset
     For i = 0 To LCA_KBD_SIZE - 1
         value = KeyboardSlot(i)
-        ws.Cells(ROW_BASE + 13, 3 + i).Value = Right$("00" & Hex$(value), 2) & "h"
+        CL(ws, ROW_BASE + 13, 3 + i).Value = Right$("00" & Hex$(value), 2) & "h"
         If value >= 32 And value <= 126 Then
-            ws.Cells(ROW_BASE + 14, 3 + i).Value = "'" & Chr$(value)
+            CL(ws, ROW_BASE + 14, 3 + i).Value = "'" & Chr$(value)
         Else
-            ws.Cells(ROW_BASE + 14, 3 + i).Value = "-"
+            CL(ws, ROW_BASE + 14, 3 + i).Value = "-"
         End If
         marker = vbNullString
         If i = KeyboardHead() Then marker = "H"
         If i = KeyboardTail() Then marker = marker & IIf(Len(marker) > 0, " ", vbNullString) & "T"
-        ws.Cells(ROW_BASE + 15, 3 + i).Value = marker
+        CL(ws, ROW_BASE + 15, 3 + i).Value = marker
         If KeyboardSlotQueued(i) Then
-            ws.Range(ws.Cells(ROW_BASE + 13, 3 + i), ws.Cells(ROW_BASE + 15, 3 + i)).Interior.Color = RGB(22, 101, 52)
+            ws.Range(CL(ws, ROW_BASE + 13, 3 + i), CL(ws, ROW_BASE + 15, 3 + i)).Interior.Color = RGB(22, 101, 52)
         Else
-            ws.Range(ws.Cells(ROW_BASE + 13, 3 + i), ws.Cells(ROW_BASE + 15, 3 + i)).Interior.Color = RGB(30, 41, 59)
+            ws.Range(CL(ws, ROW_BASE + 13, 3 + i), CL(ws, ROW_BASE + 15, 3 + i)).Interior.Color = RGB(30, 41, 59)
         End If
     Next i
     ws.Range(RA("B17")).Value = "count=" & CStr(KeyboardCount()) & "/8   head=" & CStr(KeyboardHead()) & _
@@ -183,8 +184,8 @@ Public Sub TecladoPanelActualizar()
     ws.Range(RA("B22")).Value = BusFormat(externalCycle)
     n = KeyboardTraceCount()
     For i = 0 To 7
-        ws.Cells(ROW_BASE + 26 + i, 2).Value = vbNullString
-        If n > i Then ws.Cells(ROW_BASE + 26 + i, 2).Value = KeyboardTraceLine(i)
+        CL(ws, ROW_BASE + 26 + i, 2).Value = vbNullString
+        If n > i Then CL(ws, ROW_BASE + 26 + i, 2).Value = KeyboardTraceLine(i)
     Next i
     ws.Range(RA("B35")).Value = mStatus
 End Sub
@@ -205,7 +206,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddKeyboardButton(ByVal ws As Worksheet, ByVal address As String, _
@@ -225,3 +226,8 @@ Private Sub AddKeyboardButton(ByVal ws As Worksheet, ByVal address As String, _
     button.TextFrame2.VerticalAnchor = msoAnchorMiddle
     button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
 End Sub
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function

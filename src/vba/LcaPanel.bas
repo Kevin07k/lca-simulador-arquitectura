@@ -2,6 +2,7 @@ Attribute VB_Name = "LcaPanel"
 Option Explicit
 
 Private Const ROW_BASE As Long = LCA_BASE_CPU
+Private Const COL_BASE As Long = LCA_COL_CPU
 Private Const NAVY As Long = &H25150B
 Private Const CARD As Long = &H3A291B
 Private Const INK As Long = &HF8F1E7
@@ -19,13 +20,13 @@ Public Sub ConstruirPanelCpu()
     Dim labels As Variant
     Dim macroNames As Variant
     Set ws = FindPanel(True)
-    LcaPrepareBand ws, ROW_BASE, 44, "P04_"
+    LcaPrepareBand ws, ROW_BASE, 44, "P04_", COL_BASE
     ws.Activate
     ActiveWindow.DisplayGridlines = False
-    ws.Rows(RA("1:40")).RowHeight = 17
-    ws.Rows(ROW_BASE + 1).RowHeight = 12
-    ws.Rows(ROW_BASE + 2).RowHeight = 25
-    ws.Rows(ROW_BASE + 3).RowHeight = 23
+    LcaRowHeight ws.Rows(RA("1:40")), 17
+    LcaRowHeight ws.Rows(ROW_BASE + 1), 12
+    LcaRowHeight ws.Rows(ROW_BASE + 2), 25
+    LcaRowHeight ws.Rows(ROW_BASE + 3), 23
     With ws.Range(RA("A1:S40"))
         .Interior.color = NAVY
         .Font.name = "Segoe UI"
@@ -51,20 +52,20 @@ Public Sub ConstruirPanelCpu()
     names = Array("AX", "BX", "CX", "DX")
     For index = 0 To 3
         startCol = 2 + 4 * index
-        With ws.Range(ws.Cells(ROW_BASE + 8, startCol), ws.Cells(ROW_BASE + 11, startCol + 3))
+        With ws.Range(CL(ws, ROW_BASE + 8, startCol), CL(ws, ROW_BASE + 11, startCol + 3))
             .Interior.color = CARD
             .Borders(xlEdgeRight).color = NAVY
             .Borders(xlEdgeRight).Weight = xlThick
         End With
-        TextLine ws, ws.Range(ws.Cells(ROW_BASE + 8, startCol), ws.Cells(ROW_BASE + 8, startCol + 3)).address, _
+        TextLine ws, ws.Range(CL(ws, ROW_BASE + 8, startCol), CL(ws, ROW_BASE + 8, startCol + 3)).address, _
                  CStr(names(index)), 12, CYAN, True
-        With ws.Range(ws.Cells(ROW_BASE + 9, startCol), ws.Cells(ROW_BASE + 10, startCol + 3))
+        With ws.Range(CL(ws, ROW_BASE + 9, startCol), CL(ws, ROW_BASE + 10, startCol + 3))
             .Merge
             .Font.size = 29
             .Font.bold = True
             .HorizontalAlignment = xlCenter
         End With
-        With ws.Range(ws.Cells(ROW_BASE + 11, startCol), ws.Cells(ROW_BASE + 11, startCol + 3))
+        With ws.Range(CL(ws, ROW_BASE + 11, startCol), CL(ws, ROW_BASE + 11, startCol + 3))
             .Merge
             .Font.name = "Consolas"
             .Font.size = 12
@@ -81,9 +82,9 @@ Public Sub ConstruirPanelCpu()
     names = Array("PC", "MAR_V", "MAR_P", "MDR", "IR")
     For index = 0 To 4
         startCol = 8 + index * 2
-        TextLine ws, ws.Range(ws.Cells(ROW_BASE + 14, startCol), ws.Cells(ROW_BASE + 14, startCol + 1)).address, _
+        TextLine ws, ws.Range(CL(ws, ROW_BASE + 14, startCol), CL(ws, ROW_BASE + 14, startCol + 1)).address, _
                  CStr(names(index)), 10, MUTED, True
-        TextLine ws, ws.Range(ws.Cells(ROW_BASE + 15, startCol), ws.Cells(ROW_BASE + 16, startCol + 1)).address, _
+        TextLine ws, ws.Range(CL(ws, ROW_BASE + 15, startCol), CL(ws, ROW_BASE + 16, startCol + 1)).address, _
                  "000h", 15, INK, True
     Next index
     TextLine ws, "B18:R18", "03   OPERAR / OPERATE", 11, CYAN, True
@@ -113,7 +114,7 @@ Public Sub ConstruirPanelCpu()
     macroNames = Array("PanelSumar", "PanelRestar", "PanelComparar", "PanelIncrementar", "PanelDecrementar")
     For index = 0 To 4
         startCol = 2 + index * 3
-        AddButton ws, ws.Range(ws.Cells(ROW_BASE + 24, startCol), ws.Cells(ROW_BASE + 25, startCol + 2)).address, _
+        AddButton ws, ws.Range(CL(ws, ROW_BASE + 24, startCol), CL(ws, ROW_BASE + 25, startCol + 2)).address, _
                   CStr(labels(index)), CStr(macroNames(index)), BLUE
     Next index
     AddButton ws, "Q24:R25", "RESET", "PanelReset", RGB(78, 96, 120)
@@ -122,10 +123,10 @@ Public Sub ConstruirPanelCpu()
     names = Array("ACCION / ACTION", "DESTINO / DEST", "ANTES / BEFORE", "RESULTADO / RESULT", "FLAGS  Z / C / S")
     For index = 0 To 4
         startCol = 2 + 3 * index
-        TextLine ws, ws.Range(ws.Cells(ROW_BASE + 30, startCol), ws.Cells(ROW_BASE + 30, IIf(index = 4, 18, startCol + 2))).address, _
+        TextLine ws, ws.Range(CL(ws, ROW_BASE + 30, startCol), CL(ws, ROW_BASE + 30, IIf(index = 4, 18, startCol + 2))).address, _
                  CStr(names(index)), 9, MUTED, True
         For row = 31 To 35
-            TextLine ws, ws.Range(ws.Cells(ROW_BASE + row, startCol), ws.Cells(ROW_BASE + row, IIf(index = 4, 18, startCol + 2))).address, _
+            TextLine ws, ws.Range(CL(ws, ROW_BASE + row, startCol), CL(ws, ROW_BASE + row, IIf(index = 4, 18, startCol + 2))).address, _
                      "", 10, INK
         Next row
     Next index
@@ -152,7 +153,7 @@ Public Sub MostrarPanelCpu()
 End Sub
 
 Private Sub FitPanel(ByVal ws As Worksheet)
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
     ws.Range(RA("B20")).Select
 End Sub
 
@@ -167,15 +168,15 @@ Public Sub PanelActualizar()
     state = CpuSnapshot()
     For index = 0 To 3
         value = CpuReadRegister(index)
-        ws.Cells(ROW_BASE + 9, 2 + index * 4).value = value
-        ws.Cells(ROW_BASE + 11, 2 + index * 4).value = Right$("00" & Hex$(value), 2) & "h   " & BinaryByte(value)
+        CL(ws, ROW_BASE + 9, 2 + index * 4).value = value
+        CL(ws, ROW_BASE + 11, 2 + index * 4).value = Right$("00" & Hex$(value), 2) & "h   " & BinaryByte(value)
     Next index
     PaintFlag ws.Range(RA("B14:C16")), "ZF", CpuFlagIsSet(LCA_FLAG_ZF)
     PaintFlag ws.Range(RA("D14:E16")), "CF", CpuFlagIsSet(LCA_FLAG_CF)
     PaintFlag ws.Range(RA("F14:G16")), "SF", CpuFlagIsSet(LCA_FLAG_SF)
     values = Array(state.PC, state.MAR_V, state.MAR_P, state.MDR, state.IR)
     For index = 0 To 4
-        ws.Cells(ROW_BASE + 15, 8 + index * 2).value = Right$("000" & Hex$(values(index)), IIf(index < 2, 3, 2)) & "h"
+        CL(ws, ROW_BASE + 15, 8 + index * 2).value = Right$("000" & Hex$(values(index)), IIf(index < 2, 3, 2)) & "h"
     Next index
     DiagramaActualizar
 End Sub
@@ -285,7 +286,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub TextLine(ByVal ws As Worksheet, ByVal address As String, ByVal text As String, _
@@ -376,7 +377,7 @@ Private Sub AddTrace(ByVal action As String, ByVal destination As String, ByVal 
     Set ws = FindPanel(False)
     For row = 35 To 32 Step -1
         For Each col In Array(2, 5, 8, 11, 14)
-            ws.Cells(ROW_BASE + row, CLng(col)).value = ws.Cells(ROW_BASE + row - 1, CLng(col)).value
+            CL(ws, ROW_BASE + row, CLng(col)).value = CL(ws, ROW_BASE + row - 1, CLng(col)).value
         Next col
     Next row
     ws.Range(RA("B31")).value = action
@@ -390,3 +391,8 @@ End Sub
 
 
 
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function

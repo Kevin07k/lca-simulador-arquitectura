@@ -2,6 +2,7 @@ Attribute VB_Name = "LcaCachePanel"
 Option Explicit
 
 Private Const ROW_BASE As Long = LCA_BASE_CACHE
+Private Const COL_BASE As Long = LCA_COL_CACHE
 Private Const DEMO_STEPS As Long = 11
 Private mDemoStep As Long
 Private mDemoStarted As Boolean
@@ -11,8 +12,8 @@ Public Sub ConstruirPanelCaches()
     Dim ws As Worksheet
     Dim i As Long
     Set ws = CacheSheet(True)
-    LcaPrepareBand ws, ROW_BASE, 43, "P09_"
-    ws.Rows(RA("1:42")).RowHeight = 23
+    LcaPrepareBand ws, ROW_BASE, 43, "P09_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:42")), 23
     ws.Range(RA("A1:AZ43")).Interior.Color = RGB(15, 23, 42)
     ws.Range(RA("A1:AZ43")).Font.Name = "Consolas"
     ws.Range(RA("A1:AZ43")).Font.Color = RGB(226, 232, 240)
@@ -54,14 +55,14 @@ Public Sub ConstruirPanelCaches()
     ws.Range(RA("B30:R30")).Merge
     ws.Range(RA("B30")).Value = "TRAZA REAL DEL MOTOR / LIVE ENGINE TRACE (ultimos 8 / last 8)"
     For i = 31 To 38
-        ws.Range(ws.Cells(ROW_BASE + i, 2), ws.Cells(ROW_BASE + i, 18)).Merge
+        ws.Range(CL(ws, ROW_BASE + i, 2), CL(ws, ROW_BASE + i, 18)).Merge
     Next i
     ws.Range(RA("B31:R38")).Interior.Color = RGB(30, 41, 59)
     ws.Range(RA("B40:R41")).Merge
     ws.Range(RA("B40:R41")).WrapText = True
     ws.Range(RA("B40")).Font.Color = RGB(125, 211, 252)
     CacheDemoReset
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelCaches()
@@ -70,7 +71,7 @@ Public Sub MostrarPanelCaches()
     If ws Is Nothing Then
         ConstruirPanelCaches
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
         CachePanelActualizar
     End If
 End Sub
@@ -85,41 +86,41 @@ Public Sub CachePanelActualizar()
     For level = 0 To 2
         row = 11 + level
         total = CacheHits(level) + CacheMisses(level)
-        ws.Cells(ROW_BASE + row, 2).Value = CacheLevelName(level)
-        ws.Cells(ROW_BASE + row, 4).Value = CacheHits(level)
-        ws.Cells(ROW_BASE + row, 5).Value = CacheMisses(level)
-        ws.Cells(ROW_BASE + row, 6).Value = total
+        CL(ws, ROW_BASE + row, 2).Value = CacheLevelName(level)
+        CL(ws, ROW_BASE + row, 4).Value = CacheHits(level)
+        CL(ws, ROW_BASE + row, 5).Value = CacheMisses(level)
+        CL(ws, ROW_BASE + row, 6).Value = total
         If total = 0 Then
-            ws.Cells(ROW_BASE + row, 7).Value = "-"
+            CL(ws, ROW_BASE + row, 7).Value = "-"
         Else
-            ws.Cells(ROW_BASE + row, 7).Value = Format$(100 * CacheHits(level) / total, "0.0") & "%"
+            CL(ws, ROW_BASE + row, 7).Value = Format$(100 * CacheHits(level) / total, "0.0") & "%"
         End If
     Next level
     row = 17
     For level = 0 To 2
         n = CacheLineCount(level)
         For idx = 0 To n - 1
-            ws.Cells(ROW_BASE + row, 2).Value = CacheLevelName(level)
-            ws.Cells(ROW_BASE + row, 3).Value = idx
+            CL(ws, ROW_BASE + row, 2).Value = CacheLevelName(level)
+            CL(ws, ROW_BASE + row, 3).Value = idx
             If CacheLineValid(level, idx) Then
-                ws.Cells(ROW_BASE + row, 4).Value = 1
-                ws.Cells(ROW_BASE + row, 5).Value = CacheLineTag(level, idx)
+                CL(ws, ROW_BASE + row, 4).Value = 1
+                CL(ws, ROW_BASE + row, 5).Value = CacheLineTag(level, idx)
                 For i = 0 To 3
-                    ws.Cells(ROW_BASE + row, 6 + i).Value = Right$("00" & Hex$(CacheLineByte(level, idx, i)), 2) & "h"
+                    CL(ws, ROW_BASE + row, 6 + i).Value = Right$("00" & Hex$(CacheLineByte(level, idx, i)), 2) & "h"
                 Next i
-                ws.Cells(ROW_BASE + row, 10).Value = Right$("00" & Hex$((CacheLineTag(level, idx) * n + idx) * LCA_CACHE_LINE_BYTES), 2) & "h.." & _
+                CL(ws, ROW_BASE + row, 10).Value = Right$("00" & Hex$((CacheLineTag(level, idx) * n + idx) * LCA_CACHE_LINE_BYTES), 2) & "h.." & _
                     Right$("00" & Hex$((CacheLineTag(level, idx) * n + idx) * LCA_CACHE_LINE_BYTES + 3), 2) & "h"
             Else
-                ws.Cells(ROW_BASE + row, 4).Value = 0
-                ws.Range(ws.Cells(ROW_BASE + row, 5), ws.Cells(ROW_BASE + row, 10)).Value = "-"
+                CL(ws, ROW_BASE + row, 4).Value = 0
+                ws.Range(CL(ws, ROW_BASE + row, 5), CL(ws, ROW_BASE + row, 10)).Value = "-"
             End If
             row = row + 1
         Next idx
     Next level
     n = CacheTraceCount()
     For i = 0 To 7
-        ws.Cells(ROW_BASE + 31 + i, 2).Value = vbNullString
-        If n > i Then ws.Cells(ROW_BASE + 31 + i, 2).Value = CacheTraceLine(n - 1 - i)
+        CL(ws, ROW_BASE + 31 + i, 2).Value = vbNullString
+        If n > i Then CL(ws, ROW_BASE + 31 + i, 2).Value = CacheTraceLine(n - 1 - i)
     Next i
     ws.Range(RA("B40")).Value = mDemoStatus
 End Sub
@@ -178,7 +179,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddCacheButton(ByVal ws As Worksheet, ByVal address As String, _
@@ -198,3 +199,8 @@ Private Sub AddCacheButton(ByVal ws As Worksheet, ByVal address As String, _
     button.TextFrame2.VerticalAnchor = msoAnchorMiddle
     button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
 End Sub
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function

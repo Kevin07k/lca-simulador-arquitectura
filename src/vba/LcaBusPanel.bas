@@ -2,6 +2,7 @@ Attribute VB_Name = "LcaBusPanel"
 Option Explicit
 
 Private Const ROW_BASE As Long = LCA_BASE_BUS
+Private Const COL_BASE As Long = LCA_COL_BUS
 Private mDemoStep As Long
 Private mDemoStarted As Boolean
 Private mDemoStatus As String
@@ -10,8 +11,8 @@ Public Sub ConstruirPanelBuses()
     Dim ws As Worksheet
     Dim i As Long
     Set ws = BusSheet(True)
-    LcaPrepareBand ws, ROW_BASE, 34, "P05_"
-    ws.Rows(RA("1:32")).RowHeight = 23
+    LcaPrepareBand ws, ROW_BASE, 34, "P05_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:32")), 23
     ws.Range(RA("A1:AZ34")).Interior.Color = RGB(15, 23, 42)
     ws.Range(RA("A1:AZ34")).Font.Name = "Consolas"
     ws.Range(RA("A1:AZ34")).Font.Color = RGB(226, 232, 240)
@@ -40,15 +41,15 @@ Public Sub ConstruirPanelBuses()
     ws.Range(RA("B19:R19")).Merge
     ws.Range(RA("B19")).Value = "TRAZA REAL DEL MOTOR / LIVE ENGINE TRACE (ultimos 10 / last 10)"
     For i = 20 To 29
-        ws.Range(ws.Cells(ROW_BASE + i, 2), ws.Cells(ROW_BASE + i, 18)).Merge
-        ws.Rows(ROW_BASE + i).RowHeight = 22
+        ws.Range(CL(ws, ROW_BASE + i, 2), CL(ws, ROW_BASE + i, 18)).Merge
+        LcaRowHeight ws.Rows(ROW_BASE + i), 22
     Next i
     ws.Range(RA("B20:R29")).Interior.Color = RGB(30, 41, 59)
     ws.Range(RA("B31:R32")).Merge
     ws.Range(RA("B31:R32")).WrapText = True
     ws.Range(RA("B31")).Font.Color = RGB(125, 211, 252)
     BusDemoReset
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelBuses()
@@ -57,7 +58,7 @@ Public Sub MostrarPanelBuses()
     If ws Is Nothing Then
         ConstruirPanelBuses
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
         BusPanelActualizar
     End If
 End Sub
@@ -77,8 +78,8 @@ Public Sub BusPanelActualizar()
     ws.Range(RA("B16")).Value = BusFormat(externalCycle)
     n = BusTraceCount()
     For i = 0 To 9
-        ws.Cells(ROW_BASE + 20 + i, 2).Value = vbNullString
-        If n > i Then ws.Cells(ROW_BASE + 20 + i, 2).Value = BusTraceLine(n - 1 - i)
+        CL(ws, ROW_BASE + 20 + i, 2).Value = vbNullString
+        If n > i Then CL(ws, ROW_BASE + 20 + i, 2).Value = BusTraceLine(n - 1 - i)
     Next i
     ws.Range(RA("B31")).Value = mDemoStatus
 End Sub
@@ -163,7 +164,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddBusButton(ByVal ws As Worksheet, ByVal address As String, _
@@ -183,3 +184,8 @@ Private Sub AddBusButton(ByVal ws As Worksheet, ByVal address As String, _
     button.TextFrame2.VerticalAnchor = msoAnchorMiddle
     button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
 End Sub
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function

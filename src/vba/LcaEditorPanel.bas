@@ -3,6 +3,7 @@ Option Explicit
 
 ' P11 band of the LCA sheet: assembly editor in cells, listing, located errors and load summary.
 Private Const ROW_BASE As Long = LCA_BASE_EDITOR
+Private Const COL_BASE As Long = LCA_COL_EDITOR
 Private Const BAND_ROWS As Long = 98
 Private Const EDIT_FIRST As Long = 13        ' band row of editor line 1
 Private Const EDIT_LINES As Long = 64
@@ -25,8 +26,8 @@ Private mStatusOk As Boolean
 Public Sub ConstruirPanelEditor()
     Dim ws As Worksheet, i As Long, r As Long
     Set ws = EditorSheet(True)
-    LcaPrepareBand ws, ROW_BASE, BAND_ROWS, "P11_"
-    ws.Rows(RA("1:" & CStr(BAND_ROWS))).RowHeight = 19
+    LcaPrepareBand ws, ROW_BASE, BAND_ROWS, "P11_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:" & CStr(BAND_ROWS))), 19
     With ws.Range(RA("A1:AZ" & CStr(BAND_ROWS)))
         .Interior.Color = BG
         .Font.Name = "Consolas"
@@ -35,7 +36,7 @@ Public Sub ConstruirPanelEditor()
         .VerticalAlignment = xlCenter
     End With
 
-    ws.Rows(ROW_BASE + 2).RowHeight = 30
+    LcaRowHeight ws.Rows(ROW_BASE + 2), 30
     ws.Range(RA("B2:M2")).Merge
     With ws.Range(RA("B2"))
         .Value = "P11  /  EDITOR + ENSAMBLADOR + CARGADOR"
@@ -82,29 +83,29 @@ Public Sub ConstruirPanelEditor()
     End With
     For i = 0 To EDIT_LINES - 1
         r = ROW_BASE + EDIT_FIRST + i
-        ws.Cells(r, 2).Value = i + 1
-        ws.Cells(r, 2).Font.Color = MUTED
-        ws.Cells(r, 2).HorizontalAlignment = xlCenter
-        With ws.Range(ws.Cells(r, 3), ws.Cells(r, 9))
+        CL(ws, r, 2).Value = i + 1
+        CL(ws, r, 2).Font.Color = MUTED
+        CL(ws, r, 2).HorizontalAlignment = xlCenter
+        With ws.Range(CL(ws, r, 3), CL(ws, r, 9))
             .Merge
             .NumberFormat = "@"
             .Interior.Color = EDITOR_BG
             .Locked = False
             .HorizontalAlignment = xlLeft
         End With
-        ws.Range(ws.Cells(r, 12), ws.Cells(r, 13)).Merge
-        ws.Range(ws.Cells(r, 14), ws.Cells(r, 17)).Merge
-        ws.Range(ws.Cells(r, 11), ws.Cells(r, 19)).Interior.Color = CARD
+        ws.Range(CL(ws, r, 12), CL(ws, r, 13)).Merge
+        ws.Range(CL(ws, r, 14), CL(ws, r, 17)).Merge
+        ws.Range(CL(ws, r, 11), CL(ws, r, 19)).Interior.Color = CARD
     Next i
-    ws.Range(ws.Cells(ROW_BASE + 12, 11), ws.Cells(ROW_BASE + EDIT_FIRST + EDIT_LINES - 1, 13)).HorizontalAlignment = xlCenter
-    ws.Range(ws.Cells(ROW_BASE + 12, 18), ws.Cells(ROW_BASE + EDIT_FIRST + EDIT_LINES - 1, 19)).HorizontalAlignment = xlCenter
+    ws.Range(CL(ws, ROW_BASE + 12, 11), CL(ws, ROW_BASE + EDIT_FIRST + EDIT_LINES - 1, 13)).HorizontalAlignment = xlCenter
+    ws.Range(CL(ws, ROW_BASE + 12, 18), CL(ws, ROW_BASE + EDIT_FIRST + EDIT_LINES - 1, 19)).HorizontalAlignment = xlCenter
 
     ' 03 errors
     SectionTitle ws, "B" & CStr(ERR_FIRST - 2) & ":S" & CStr(ERR_FIRST - 2), "03   ERRORES / ERRORS  (linea, columna, mensaje)"
     For i = 0 To ERR_ROWS - 1
         r = ROW_BASE + ERR_FIRST - 1 + i
-        ws.Range(ws.Cells(r, 4), ws.Cells(r, 19)).Merge
-        ws.Range(ws.Cells(r, 2), ws.Cells(r, 19)).Interior.Color = CARD
+        ws.Range(CL(ws, r, 4), CL(ws, r, 19)).Merge
+        ws.Range(CL(ws, r, 2), CL(ws, r, 19)).Interior.Color = CARD
     Next i
 
     ' 04 load summary and syntax reference
@@ -129,7 +130,7 @@ Public Sub ConstruirPanelEditor()
     mStatus = "Ejemplo cargado en el editor. Pulsa ENSAMBLAR o CARGAR."
     mStatusOk = True
     EditorRefresh
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelEditor()
@@ -138,7 +139,7 @@ Public Sub MostrarPanelEditor()
     If ws Is Nothing Then
         ConstruirPanelEditor
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
     End If
 End Sub
 
@@ -223,7 +224,7 @@ Public Function EditorRead() As Variant
     ReDim lines(1 To EDIT_LINES)
     If Not ws Is Nothing Then
         For i = 1 To EDIT_LINES
-            lines(i) = CStr(ws.Cells(ROW_BASE + EDIT_FIRST + i - 1, 3).Value)
+            lines(i) = CStr(CL(ws, ROW_BASE + EDIT_FIRST + i - 1, 3).Value)
         Next i
     End If
     EditorRead = lines
@@ -239,9 +240,9 @@ Public Sub EditorWrite(ByVal source As Variant)
     End If
     For i = 0 To EDIT_LINES - 1
         If i < n Then
-            ws.Cells(ROW_BASE + EDIT_FIRST + i, 3).Value = CStr(source(LBound(source) + i))
+            CL(ws, ROW_BASE + EDIT_FIRST + i, 3).Value = CStr(source(LBound(source) + i))
         Else
-            ws.Cells(ROW_BASE + EDIT_FIRST + i, 3).Value = vbNullString
+            CL(ws, ROW_BASE + EDIT_FIRST + i, 3).Value = vbNullString
         End If
     Next i
 End Sub
@@ -256,54 +257,54 @@ Public Sub EditorRefresh()
 
     For i = 0 To EDIT_LINES - 1
         r = ROW_BASE + EDIT_FIRST + i
-        ws.Range(ws.Cells(r, 3), ws.Cells(r, 9)).Interior.Color = EDITOR_BG
-        ws.Range(ws.Cells(r, 11), ws.Cells(r, 19)).Value = vbNullString
-        ws.Cells(r, 14).Font.Color = INK
-        ws.Range(ws.Cells(r, 11), ws.Cells(r, 19)).Interior.Color = CARD
+        ws.Range(CL(ws, r, 3), CL(ws, r, 9)).Interior.Color = EDITOR_BG
+        ws.Range(CL(ws, r, 11), CL(ws, r, 19)).Value = vbNullString
+        CL(ws, r, 14).Font.Color = INK
+        ws.Range(CL(ws, r, 11), CL(ws, r, 19)).Interior.Color = CARD
         If i < AsmInstructionCount() Then
             addr = i * 4
-            ws.Cells(r, 11).Value = AsmHex3(addr)
+            CL(ws, r, 11).Value = AsmHex3(addr)
             If AsmInstructionValid(i) Then
                 bytesText = vbNullString
                 For k = 0 To 3
                     bytesText = bytesText & Right$("00" & Hex$(AsmByte(addr + k)), 2) & " "
                 Next k
-                ws.Cells(r, 12).Value = RTrim$(bytesText)
-                ws.Cells(r, 14).Value = AsmDisassemble(AsmByte(addr), AsmByte(addr + 1), AsmByte(addr + 2), AsmByte(addr + 3))
+                CL(ws, r, 12).Value = RTrim$(bytesText)
+                CL(ws, r, 14).Value = AsmDisassemble(AsmByte(addr), AsmByte(addr + 1), AsmByte(addr + 2), AsmByte(addr + 3))
             Else
-                ws.Cells(r, 12).Value = "-- -- -- --"
-                ws.Cells(r, 14).Value = "ERROR (ver seccion 03 / see section 03)"
-                ws.Range(ws.Cells(r, 11), ws.Cells(r, 19)).Interior.Color = BAD
+                CL(ws, r, 12).Value = "-- -- -- --"
+                CL(ws, r, 14).Value = "ERROR (ver seccion 03 / see section 03)"
+                ws.Range(CL(ws, r, 11), CL(ws, r, 19)).Interior.Color = BAD
             End If
-            ws.Cells(r, 18).Value = AsmInstructionLine(i)
-            ws.Cells(r, 19).Value = addr \ 32
+            CL(ws, r, 18).Value = AsmInstructionLine(i)
+            CL(ws, r, 19).Value = addr \ 32
         End If
     Next i
     If AsmInstructionCount() < EDIT_LINES And AsmSucceeded() Then
         r = ROW_BASE + EDIT_FIRST + AsmInstructionCount()
-        ws.Cells(r, 11).Value = AsmHex3(AsmInstructionCount() * 4)
-        ws.Cells(r, 12).Value = "01 00 00 00"
-        ws.Cells(r, 14).Value = "HLT ... (relleno hasta 0FCh / fill)"
-        ws.Cells(r, 14).Font.Color = MUTED
+        CL(ws, r, 11).Value = AsmHex3(AsmInstructionCount() * 4)
+        CL(ws, r, 12).Value = "01 00 00 00"
+        CL(ws, r, 14).Value = "HLT ... (relleno hasta 0FCh / fill)"
+        CL(ws, r, 14).Font.Color = MUTED
     End If
 
     For i = 0 To ERR_ROWS - 1
         r = ROW_BASE + ERR_FIRST - 1 + i
-        ws.Range(ws.Cells(r, 2), ws.Cells(r, 4)).Value = vbNullString
-        ws.Range(ws.Cells(r, 2), ws.Cells(r, 19)).Interior.Color = CARD
+        ws.Range(CL(ws, r, 2), CL(ws, r, 4)).Value = vbNullString
+        ws.Range(CL(ws, r, 2), CL(ws, r, 19)).Interior.Color = CARD
         If i < AsmErrorCount() Then
-            ws.Cells(r, 2).Value = "L" & CStr(AsmErrorLine(i))
-            ws.Cells(r, 3).Value = "C" & CStr(AsmErrorColumn(i))
-            ws.Cells(r, 4).Value = AsmErrorText(i)
-            ws.Range(ws.Cells(r, 2), ws.Cells(r, 19)).Interior.Color = BAD
+            CL(ws, r, 2).Value = "L" & CStr(AsmErrorLine(i))
+            CL(ws, r, 3).Value = "C" & CStr(AsmErrorColumn(i))
+            CL(ws, r, 4).Value = AsmErrorText(i)
+            ws.Range(CL(ws, r, 2), CL(ws, r, 19)).Interior.Color = BAD
         End If
     Next i
     If AsmErrorCount() > ERR_ROWS Then _
-        ws.Cells(ROW_BASE + ERR_FIRST - 1 + ERR_ROWS - 1, 4).Value = "... y " & CStr(AsmErrorCount() - ERR_ROWS + 1) & " mas / more"
+        CL(ws, ROW_BASE + ERR_FIRST - 1 + ERR_ROWS - 1, 4).Value = "... y " & CStr(AsmErrorCount() - ERR_ROWS + 1) & " mas / more"
     For i = 0 To AsmErrorCount() - 1
         If AsmErrorLine(i) >= 1 And AsmErrorLine(i) <= EDIT_LINES Then _
-            ws.Range(ws.Cells(ROW_BASE + EDIT_FIRST + AsmErrorLine(i) - 1, 3), _
-                     ws.Cells(ROW_BASE + EDIT_FIRST + AsmErrorLine(i) - 1, 9)).Interior.Color = BAD
+            ws.Range(CL(ws, ROW_BASE + EDIT_FIRST + AsmErrorLine(i) - 1, 3), _
+                     CL(ws, ROW_BASE + EDIT_FIRST + AsmErrorLine(i) - 1, 9)).Interior.Color = BAD
     Next i
 
     If LoaderLoaded() Then
@@ -350,7 +351,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddButton(ByVal ws As Worksheet, ByVal address As String, ByVal caption As String, _
@@ -371,3 +372,8 @@ Private Sub AddButton(ByVal ws As Worksheet, ByVal address As String, ByVal capt
     button.TextFrame2.VerticalAnchor = msoAnchorMiddle
     button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
 End Sub
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function

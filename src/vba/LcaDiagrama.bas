@@ -2,6 +2,7 @@ Attribute VB_Name = "LcaDiagrama"
 Option Explicit
 
 Private Const ROW_BASE As Long = LCA_BASE_DIAGRAM
+Private Const COL_BASE As Long = LCA_COL_DIAGRAM
 Private mHasOperation As Boolean
 Private mOperation As String
 Private mDestination As Long
@@ -22,10 +23,10 @@ Public Sub ConstruirDiagramaCpu()
     Dim form As FreeformBuilder
     Dim names As Variant
     Set ws = DiagramSheet(True)
-    LcaPrepareBand ws, ROW_BASE, 42, "D_"
+    LcaPrepareBand ws, ROW_BASE, 42, "D_", COL_BASE
     ws.Activate
     ActiveWindow.DisplayGridlines = False
-    ws.Rows(RA("1:38")).RowHeight = 18
+    LcaRowHeight ws.Rows(RA("1:38")), 18
     ws.Range(RA("A1:AZ42")).Interior.color = RGB(242, 246, 251)
     ws.Range(RA("A1:T5")).Interior.color = RGB(15, 23, 42)
     ws.Range(RA("B2:N3")).Merge
@@ -111,8 +112,8 @@ Public Sub ConstruirDiagramaCpu()
                "P04  /  CPU STATE", RGB(255, 255, 255), RGB(255, 255, 255), 12
     names = Array("ADD", "SUB", "CMP", "INC", "DEC", "RESET")
     For index = 0 To 5
-        Set box = DiagramBox(ws, "D_Button" & index, ws.Cells(ROW_BASE + 32, 2 + index * 3).Left, ws.Rows(ROW_BASE + 32).Top, _
-                             ws.Range(ws.Cells(ROW_BASE + 32, 2 + index * 3), ws.Cells(ROW_BASE + 33, 4 + index * 3)).Width - 8, _
+        Set box = DiagramBox(ws, "D_Button" & index, CL(ws, ROW_BASE + 32, 2 + index * 3).Left, ws.Rows(ROW_BASE + 32).Top, _
+                             ws.Range(CL(ws, ROW_BASE + 32, 2 + index * 3), CL(ws, ROW_BASE + 33, 4 + index * 3)).Width - 8, _
                              ws.Range(RA("B32:B33")).Height, CStr(names(index)), RGB(37, 99, 235), RGB(37, 99, 235), 16, True)
         box.OnAction = "'" & ThisWorkbook.name & "'!" & CStr(ArrayMacro(index))
     Next index
@@ -215,11 +216,11 @@ End Function
 
 ' Row shift of this diagram inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub FitDiagram(ByVal ws As Worksheet)
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Private Function DiagramBox(ByVal ws As Worksheet, ByVal name As String, ByVal x As Single, ByVal y As Single, _
@@ -259,3 +260,8 @@ Private Sub DiagramLine(ByVal ws As Worksheet, ByVal name As String, ByVal x1 As
     wire.Line.Weight = 2.5
     If arrow Then wire.Line.EndArrowheadStyle = msoArrowheadTriangle
 End Sub
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function
