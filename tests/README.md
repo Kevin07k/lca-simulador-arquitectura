@@ -6,7 +6,7 @@ The tests are workbook macros (`src/vba/Lca*Tests.bas`). Each one resets the sta
 
 ## Ejecutar todo / Run everything
 
-- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P11, P13).
+- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P11, P13, P14).
 - Sin abrir Excel en pantalla / headless (Windows + Excel de escritorio):
 
 ```powershell
@@ -29,6 +29,7 @@ powershell -ExecutionPolicy Bypass -File scripts\Test-Workbook.ps1
 | `VerificarCachePaginacionP10` | P10 | PASS — 58 |
 | `VerificarEnsambladorP11` | P11 | PASS — 280 |
 | `VerificarTecladoP13` | P13 | PASS — 94 |
+| `VerificarLcdP14` | P14 | PASS — 52 |
 
 Cada macro reinicia CPU, memoria o cachés; no ejecutarlas durante una simulación que se quiera conservar. Evidencia inicial de P03: [P03_VERIFICATION.md](../docs/P03_VERIFICATION.md).
 
