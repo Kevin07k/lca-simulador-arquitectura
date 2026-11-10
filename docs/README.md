@@ -24,8 +24,9 @@ Index of task guides. Each guide is bilingual unless noted.
 | P08 page fault + swap | [P08_PAGE_FAULT_SWAP.md](P08_PAGE_FAULT_SWAP.md) | `VerificarPagerP08` | filas 158–192 |
 | P09 cachés L1I/L1D/L2 | [P09_CACHE.md](P09_CACHE.md) | `VerificarCachesP09` | filas 194–236 |
 | P10 caché + paginación | [P10_CACHE_PAGING.md](P10_CACHE_PAGING.md) | `VerificarCachePaginacionP10` | filas 238–284 |
+| P11 editor + ensamblador + cargador | [P11_ASSEMBLER_LOADER.md](P11_ASSEMBLER_LOADER.md) | `VerificarEnsambladorP11` | filas 286–383 |
 
-`VerificarTodo` (Alt+F8) ejecuta P04–P10 y muestra un resumen; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
-`VerificarTodo` runs P04–P10 and shows one summary; `scripts/Test-Workbook.ps1` does the same headless.
+`VerificarTodo` (Alt+F8) ejecuta P04–P11 y muestra un resumen; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
+`VerificarTodo` runs P04–P11 and shows one summary; `scripts/Test-Workbook.ps1` does the same headless.
 
 Capturas / screenshots: [`img/`](img/).

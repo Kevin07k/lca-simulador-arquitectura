@@ -20,8 +20,9 @@
 | 158–192 | P08 page fault, CLOCK y swap | [P08](../docs/P08_PAGE_FAULT_SWAP.md) |
 | 194–236 | P09 cachés L1I, L1D, L2 | [P09](../docs/P09_CACHE.md) |
 | 238–284 | P10 caché + paginación | [P10](../docs/P10_CACHE_PAGING.md) |
+| 286–383 | P11 editor ASM, ensamblador y cargador | [P11](../docs/P11_ASSEMBLER_LOADER.md) |
 
-`ConstruirLca` (Alt+F8) reconstruye la hoja completa. Las bandas tienen botones de navegación (`VER P08`, `VER P09`, `DIAGRAMA`...).
+`ConstruirLca` (Alt+F8) reconstruye la hoja completa. Las bandas tienen botones de navegación (`VER P08`, `VER P09`, `VER P10`, `VER P11`, `DIAGRAMA`...).
 
 ## Mantener libro y fuente alineados / Keep workbook and source aligned
 

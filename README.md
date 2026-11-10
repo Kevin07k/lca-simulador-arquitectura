@@ -21,8 +21,9 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P05–P06 | Tri-state buses, control word, RAM | Integrated |
 | P07–P08 | Page table, page faults, CLOCK, swap | Integrated |
 | P09 | L1I, L1D and L2 caches | Integrated |
-| P10 | Caches integrated with paging | In review |
-| P11–P22 | Loader, full CPU cycle, I/O, programs, delivery | Pending |
+| P10 | Caches integrated with paging | Integrated |
+| P11 | Assembly editor, assembler and loader | In review |
+| P12–P22 | Full CPU cycle, I/O, programs, delivery | Pending |
 
 ## Team
 
@@ -53,7 +54,7 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- P11 loader and P12 full CPU cycle on top of the P10 cached memory path.
+- P12 full CPU cycle: execute the programs loaded by P11 through the P10 cached memory path.
 - P13/P14 keyboard and LCD I/O, outside paging and caches.
 - Demo programs, final documentation and delivery in both languages.
 
