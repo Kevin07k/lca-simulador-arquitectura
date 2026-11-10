@@ -27,20 +27,27 @@ Public Sub LcaReport(ByVal text As String, ByVal passed As Boolean)
     End If
 End Sub
 
-' Runs every engine regression (P04..P11, P13, P14) without dialogs and returns one line per suite.
+' Result of the last suite that reported (used by panel buttons).
+Public Function LcaLastPassed() As Boolean
+    LcaLastPassed = mLastPassed
+End Function
+
+Public Function LcaLastReport() As String
+    LcaLastReport = mLastReport
+End Function
+
+' Runs every engine regression (P04..P14) without dialogs and returns one line per suite.
 ' First line is "ALL PASS" or "SOME FAIL". Used by VerificarTodo and scripts/Test-Workbook.ps1.
 Public Function LcaVerificarTodoTexto() As String
     Dim suites As Variant, i As Long, out As String, allOk As Boolean
     suites = Array("VerificarCpuAlu", "VerificarBusesP05", "VerificarRamP06", "VerificarMmuP07", _
                    "VerificarPagerP08", "VerificarCachesP09", "VerificarCachePaginacionP10", _
-                   "VerificarEnsambladorP11", "VerificarTecladoP13", "VerificarLcdP14")
+                   "VerificarEnsambladorP11", "VerificarCicloP12", "VerificarTecladoP13", "VerificarLcdP14")
     allOk = True
     mSilent = True
     For i = LBound(suites) To UBound(suites)
-        ' VerificarCpuAlu writes its own sheet and raises on failure instead of reporting.
-        mLastPassed = (suites(i) = "VerificarCpuAlu")
-        mLastReport = "P04 PASS (hoja / sheet P04 Tests)"
-        If Not mLastPassed Then mLastReport = CStr(suites(i)) & ": sin reporte / no report"
+        mLastPassed = False
+        mLastReport = CStr(suites(i)) & ": sin reporte / no report"
         On Error Resume Next
         Application.Run "'" & Replace(ThisWorkbook.name, "'", "''") & "'!" & CStr(suites(i))
         If Err.Number <> 0 Then

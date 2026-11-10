@@ -268,7 +268,11 @@ Public Sub PanelVerificar()
     VerificarCpuAlu
     DiagramaReiniciar
     MostrarPanelCpu
-    StatusLine "PASS  |  197120 casos / cases  -  1379895 comprobaciones / assertions", False
+    If LcaLastPassed() Then
+        StatusLine "PASS  |  197120 casos / cases  -  1379895 comprobaciones / assertions", False
+    Else
+        StatusLine LcaLastReport(), True
+    End If
     Exit Sub
 failed:
     MostrarPanelCpu
