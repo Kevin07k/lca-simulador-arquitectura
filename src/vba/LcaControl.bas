@@ -185,6 +185,21 @@ Public Function ControlKeyboardRead(ByVal pa As Long, ByVal targetRegister As Lo
     mLastBus = LCA_BUS_EXTERNAL
 End Function
 
+' P14 OUT transport: register -> LCD on the external bus with IO=1, Write=1, Ld_LCD=1.
+' Returns the transferred byte; the caller writes the video RAM and advances the cursor only after this.
+Public Function ControlLcdWrite(ByVal pa As Long, ByVal sourceRegister As Long) As Byte
+    Dim value As Long
+    If mFetchStage <> 0 Or mStoreStage <> 0 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "SEQUENCE_BUSY"
+    If pa < &HE8 Or pa > &HEF Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "INVALID_LCD_PA"
+    value = CpuReadRegister(sourceRegister)    ' INVALID_REGISTER before any bus cycle
+    BusFloat LCA_BUS_INTERNAL
+    BusBegin LCA_BUS_EXTERNAL, "OUT WRITE", &H1E8 + (pa - &HE8), pa, False, True, True, False, True
+    BusDrive LCA_BUS_EXTERNAL, RegisterLabel(sourceRegister), value
+    BusReceive LCA_BUS_EXTERNAL, "LCD"
+    ControlLcdWrite = CByte(BusClock(LCA_BUS_EXTERNAL))
+    mLastBus = LCA_BUS_EXTERNAL
+End Function
+
 Public Function ControlLastWord() As String
     Dim cycle As LcaBusCycle
     cycle = BusSnapshot(mLastBus)
