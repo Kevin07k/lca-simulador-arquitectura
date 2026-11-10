@@ -15,6 +15,7 @@ Standard modules exported from `workbook/LCA.xlsm` (ASCII, CRLF). **Engine** mod
 | P09 | `LcaCache` | `LcaCachePanel` | `LcaCacheTests` → `VerificarCachesP09` | [P09](../../docs/P09_CACHE.md) |
 | P10 | `LcaCachePath` | `LcaCachePathPanel` | `LcaCachePathTests` → `VerificarCachePaginacionP10` | [P10](../../docs/P10_CACHE_PAGING.md) |
 | P11 | `LcaAssembler`, `LcaLoader` | `LcaEditorPanel` | `LcaAssemblerTests` → `VerificarEnsambladorP11` | [P11](../../docs/P11_ASSEMBLER_LOADER.md) |
+| P13 | `LcaKeyboard` | `LcaKeyboardPanel` | `LcaKeyboardTests` → `VerificarTecladoP13` | [P13](../../docs/P13_KEYBOARD.md) |
 | Hoja / sheet | `LcaLayout` (`ConstruirLca`, `LcaRows`, navegación `LcaIr*`) | | | |
 
 ## Recorrido de memoria / Memory path
@@ -31,12 +32,12 @@ CPU ── LcaCachePath (P10) ── LcaPager (P08) ── LcaMmu (P07)      res
 
 ## Hoja LCA / LCA sheet
 
-`ConstruirLca` borra la hoja y construye las bandas en orden: CPU (1–44), diagrama (46–87), buses/RAM (89–122), P07 (124–156), P08 (158–192), P09 (194–236), P10 (238–284), P11 (286–383). Cada `Construir...` reconstruye solo su banda; las direcciones se desplazan con `LcaRows` según `ROW_BASE`.
+`ConstruirLca` borra la hoja y construye las bandas en orden: CPU (1–44), diagrama (46–87), buses/RAM (89–122), P07 (124–156), P08 (158–192), P09 (194–236), P10 (238–284), P11 (286–383), P13 (385–420). Cada `Construir...` reconstruye solo su banda; las direcciones se desplazan con `LcaRows` según `ROW_BASE`.
 
 `ConstruirLca` clears the sheet and builds every band in that order; each `Construir...` macro rebuilds only its own band.
 
 ## Convenciones / Conventions
 
-- Errores `vbObjectError + n`, un bloque por tarea: CPU 2001–2005 (prueba 2100), bus 2051–2054, RAM 2061–2064, MMU 2071–2076, swap/pager 2081–2083, caché 2091–2092, P10 2101–2102, P11 2111–2113.
+- Errores `vbObjectError + n`, un bloque por tarea: CPU 2001–2005 (prueba 2100), bus 2051–2054, RAM 2061–2064, MMU 2071–2076, swap/pager 2081–2083, caché 2091–2092, P10 2101–2102, P11 2111–2113, teclado P13 2131–2132.
 - Estado privado en el módulo y acceso por funciones; las pruebas reinician el estado que usan.
 - Solo ASCII en `.bas` (Excel importa en ANSI). No fusionar el `.xlsm` como texto.

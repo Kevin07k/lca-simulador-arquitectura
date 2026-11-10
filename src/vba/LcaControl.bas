@@ -169,6 +169,22 @@ Public Function ControlCommitStore() As Byte
     mLastBus = LCA_BUS_EXTERNAL
 End Function
 
+' P13 IN transport: keyboard -> register on the external bus with IO=1, Read=1, En_KBD=1.
+' Returns the transferred byte; the caller writes the register and advances the queue only after this.
+Public Function ControlKeyboardRead(ByVal pa As Long, ByVal targetRegister As Long, _
+                                    ByVal keyByte As Long) As Byte
+    If mFetchStage <> 0 Or mStoreStage <> 0 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "SEQUENCE_BUSY"
+    If pa < &HE0 Or pa > &HE7 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "INVALID_KBD_PA"
+    Call CpuReadRegister(targetRegister)    ' INVALID_REGISTER before any bus cycle
+    CpuRequireByte keyByte
+    BusFloat LCA_BUS_INTERNAL
+    BusBegin LCA_BUS_EXTERNAL, "IN READ", &H1E0 + (pa - &HE0), pa, True, False, True, True, False
+    BusDrive LCA_BUS_EXTERNAL, "KBD", keyByte
+    BusReceive LCA_BUS_EXTERNAL, RegisterLabel(targetRegister)
+    ControlKeyboardRead = CByte(BusClock(LCA_BUS_EXTERNAL))
+    mLastBus = LCA_BUS_EXTERNAL
+End Function
+
 Public Function ControlLastWord() As String
     Dim cycle As LcaBusCycle
     cycle = BusSnapshot(mLastBus)

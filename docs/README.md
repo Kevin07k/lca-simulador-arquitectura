@@ -25,8 +25,9 @@ Index of task guides. Each guide is bilingual unless noted.
 | P09 cachés L1I/L1D/L2 | [P09_CACHE.md](P09_CACHE.md) | `VerificarCachesP09` | filas 194–236 |
 | P10 caché + paginación | [P10_CACHE_PAGING.md](P10_CACHE_PAGING.md) | `VerificarCachePaginacionP10` | filas 238–284 |
 | P11 editor + ensamblador + cargador | [P11_ASSEMBLER_LOADER.md](P11_ASSEMBLER_LOADER.md) | `VerificarEnsambladorP11` | filas 286–383 |
+| P13 teclado + cola FIFO | [P13_KEYBOARD.md](P13_KEYBOARD.md) | `VerificarTecladoP13` | filas 385–420 |
 
-`VerificarTodo` (Alt+F8) ejecuta P04–P11 y muestra un resumen; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
-`VerificarTodo` runs P04–P11 and shows one summary; `scripts/Test-Workbook.ps1` does the same headless.
+`VerificarTodo` (Alt+F8) ejecuta P04–P11 y P13 y muestra un resumen; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
+`VerificarTodo` runs P04–P11 and P13 and shows one summary; `scripts/Test-Workbook.ps1` does the same headless.
 
 Capturas / screenshots: [`img/`](img/).

@@ -12,6 +12,7 @@ Public Const LCA_BASE_PAGER As Long = 157       ' rows 158..192 page faults and 
 Public Const LCA_BASE_CACHE As Long = 193       ' rows 194..236 caches (P09)
 Public Const LCA_BASE_CACHE_PATH As Long = 237  ' rows 238..284 caches + paging (P10)
 Public Const LCA_BASE_EDITOR As Long = 285      ' rows 286..383 editor, assembler and loader (P11)
+Public Const LCA_BASE_KEYBOARD As Long = 384    ' rows 385..420 keyboard and FIFO queue (P13)
 
 ' Builds the whole workbook view: removes the old one-sheet-per-panel layout and anything left
 ' on the LCA sheet by an older band order, then builds every band top to bottom.
@@ -46,6 +47,7 @@ Public Sub ConstruirLca()
     ConstruirPanelCaches
     ConstruirPanelCachePaginacion
     ConstruirPanelEditor
+    ConstruirPanelTeclado
     LcaGoto ws, LCA_BASE_CPU
 End Sub
 
@@ -170,4 +172,8 @@ End Sub
 
 Public Sub LcaIrEditor()
     LcaGoto LcaSheet(True), LCA_BASE_EDITOR
+End Sub
+
+Public Sub LcaIrTeclado()
+    LcaGoto LcaSheet(True), LCA_BASE_KEYBOARD
 End Sub
