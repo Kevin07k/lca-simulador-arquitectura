@@ -14,9 +14,11 @@ Public Const LCA_BASE_CACHE_PATH As Long = 237  ' rows 238..284 caches + paging 
 Public Const LCA_BASE_EDITOR As Long = 285      ' rows 286..383 editor, assembler and loader (P11)
 Public Const LCA_BASE_KEYBOARD As Long = 384    ' rows 385..420 keyboard and FIFO queue (P13)
 Public Const LCA_BASE_LCD As Long = 420         ' rows 421..456 LCD 8x1 and video buffer (P14)
+Public Const LCA_BASE_MACHINE As Long = 457     ' rows 458..523 whole machine running (P12, defense view)
 
-' Builds the whole workbook view: removes the old one-sheet-per-panel layout and anything left
-' on the LCA sheet by an older band order, then builds every band top to bottom.
+' Builds the whole workbook view: removes the old one-sheet-per-panel layout, test report sheets and
+' anything left on the LCA sheet by an older band order, then builds every band top to bottom.
+' The workbook opens on the P12 machine band.
 Public Sub ConstruirLca()
     Dim ws As Worksheet
     Dim item As Variant
@@ -24,7 +26,7 @@ Public Sub ConstruirLca()
     Dim i As Long
     previous = Application.DisplayAlerts
     Application.DisplayAlerts = False
-    For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches", "P07 Paginas", "P08 Swap")
+    For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches", "P07 Paginas", "P08 Swap", "P04 Tests")
         For Each ws In ThisWorkbook.Worksheets
             If ws.Name = CStr(item) Then
                 ws.Delete
@@ -50,7 +52,63 @@ Public Sub ConstruirLca()
     ConstruirPanelEditor
     ConstruirPanelTeclado
     ConstruirPanelLcd
-    LcaGoto ws, LCA_BASE_CPU
+    ConstruirPanelMaquina
+    LcaPulirBandas ws
+    LcaGoto ws, LCA_BASE_MACHINE
+End Sub
+
+' Visual polish shared by the older text-only bands (P05/P06, P07, P08, P09): centred tables,
+' section titles in the common style and a "MAQUINA" button on every band header.
+Public Sub LcaPulirBandas(ByVal ws As Worksheet)
+    Dim bases As Variant, i As Long, area As Range, s As Shape, item As Variant
+    ' Tables: centred values with thin grid lines.
+    For Each item In Array(Array(LCA_BASE_MMU, "B12:H28"), Array(LCA_BASE_PAGER, "B12:H28"), _
+                           Array(LCA_BASE_CACHE, "B10:G13"), Array(LCA_BASE_CACHE, "B16:J28"))
+        With ws.Range(LcaRows(CStr(item(1)), CLng(item(0))))
+            .HorizontalAlignment = xlCenter
+            .Borders.Color = RGB(51, 65, 85)
+            .Borders.Weight = xlThin
+        End With
+    Next item
+    ' Section titles.
+    For Each item In Array(Array(LCA_BASE_BUS, "B9"), Array(LCA_BASE_BUS, "B13"), Array(LCA_BASE_BUS, "B19"), _
+                           Array(LCA_BASE_MMU, "J12"), Array(LCA_BASE_MMU, "J18"), Array(LCA_BASE_PAGER, "J12"), _
+                           Array(LCA_BASE_CACHE, "B9"), Array(LCA_BASE_CACHE, "B15"), Array(LCA_BASE_CACHE, "B30"))
+        With ws.Range(LcaRows(CStr(item(1)), CLng(item(0))))
+            .Font.Name = "Segoe UI"
+            .Font.Bold = True
+            .Font.Size = 11
+            .Font.Color = RGB(125, 211, 252)
+        End With
+    Next item
+    ' Bus band: larger, readable signal lines.
+    With ws.Range(LcaRows("B10:R29", LCA_BASE_BUS))
+        .Font.Name = "Consolas"
+        .Font.Size = 11
+        .IndentLevel = 1
+    End With
+    ' "Back to the machine" button on every band except the machine itself.
+    bases = Array(LCA_BASE_CPU, LCA_BASE_DIAGRAM, LCA_BASE_BUS, LCA_BASE_MMU, LCA_BASE_PAGER, LCA_BASE_CACHE, _
+                  LCA_BASE_CACHE_PATH, LCA_BASE_EDITOR, LCA_BASE_KEYBOARD, LCA_BASE_LCD)
+    For i = 0 To UBound(bases)
+        Set area = ws.Cells(CLng(bases(i)) + 1, 19)
+        Set s = ws.Shapes.AddShape(msoShapeRoundedRectangle, area.Left + 2, area.Top + 1, area.Width - 4, 16)
+        s.Name = "NAVM_" & CStr(i)
+        s.Fill.ForeColor.RGB = RGB(250, 204, 37)
+        s.Line.Visible = msoFalse
+        With s.TextFrame2
+            .TextRange.Text = "MAQUINA P12"
+            .TextRange.Font.Name = "Segoe UI"
+            .TextRange.Font.Size = 8
+            .MarginTop = 0
+            .MarginBottom = 0
+            .TextRange.Font.Bold = msoTrue
+            .TextRange.Font.Fill.ForeColor.RGB = RGB(15, 23, 42)
+            .TextRange.ParagraphFormat.Alignment = msoAlignCenter
+            .VerticalAnchor = msoAnchorMiddle
+        End With
+        s.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!LcaIrMaquina"
+    Next i
 End Sub
 
 Public Function LcaSheet(ByVal create As Boolean) As Worksheet
@@ -178,6 +236,11 @@ End Sub
 
 Public Sub LcaIrTeclado()
     LcaGoto LcaSheet(True), LCA_BASE_KEYBOARD
+End Sub
+
+Public Sub LcaIrMaquina()
+    LcaGoto LcaSheet(True), LCA_BASE_MACHINE
+    MaquinaRefrescar
 End Sub
 
 Public Sub LcaIrLcd()
