@@ -10,10 +10,10 @@ Issue [#12](https://github.com/Kevin07k/lca-simulador-arquitectura/issues/12). D
 | File | Purpose |
 | --- | --- |
 | `LcaExecutor.bas` | `ExecStep`, `ExecRun(maxSteps)`, `ExecReset`, state (`ExecStatus`, `ExecErrorText`, `ExecSteps`, `ExecLastKind`, `ExecLastText`) and the execution trace (`ExecTraceLine`). No worksheet access. |
-| `LcaMachinePanel.bas` | **Machine band** of the LCA sheet (rows 458–523), the defense view: the whole computer drawn with shapes and updated after every instruction. |
+| `LcaMachinePanel.bas` | **Machine block** of the LCA dashboard (top-left, rows 1–68), the defense view: the whole computer drawn with shapes, animated and clickable. |
 | `LcaExecutorTests.bas` | `VerificarCicloP12`. |
 | `LcaLoader.bas` | The validated-load reset now also empties the keyboard queue (`KeyboardReset`), clears the LCD (`LcdReset`) and resets the executor. |
-| `LcaLayout.bas` | Adds the machine band, opens the workbook on it, removes the old `P04 Tests` report sheet and polishes the text-only bands (P05/P06, P07, P08, P09) with centred tables, styled titles and a **MAQUINA P12** button on every band. |
+| `LcaLayout.bas` | Lays the LCA sheet out as a **2-D dashboard** of 20-column blocks (4 columns side by side, see `workbook/README.md`), opens on the machine, removes the old `P04 Tests` sheet and polishes the text-only blocks with centred tables, styled titles and a **< MAQUINA** button. Every panel uses block-relative addresses (`LcaShift`, `CL`). |
 | `LcaCpuTests.bas` | `VerificarCpuAlu` reports through `LcaReport` like the other suites; no report sheet is created. |
 
 ## Instruction cycle
@@ -25,9 +25,26 @@ Issue [#12](https://github.com/Kevin07k/lca-simulador-arquitectura/issues/12). D
 
 `IN` on an empty queue is **not** an error: the state becomes `WAIT_IN`, `PC` and registers do not change and `EJECUTAR` stops; after a key is typed, running again repeats the same `IN`. A fatal error sets `ERROR`, keeps `PC` on the offending instruction and commits nothing; only `RESET` (or a new load) restarts the machine. `ExecRun` stops at `HLT`, an error, an `IN` wait or after `maxSteps` (`LIMIT`, run again to continue).
 
-## Machine band (defense view)
+## Machine block (defense view)
 
-Navigation bar to every band; buttons **CARGAR EDITOR** (program of the P11 editor), **EJEMPLO SUMA**, **DEMO ECO**, **PASO**, **EJECUTAR**, **RESET**, plus a key input and **TECLEAR**. The drawing shows, live:
+Navigation bar to every block plus **VISTA GENERAL** (zoomed-out view of the whole 2-D dashboard); buttons **CARGAR EDITOR** (program of the P11 editor), **EJEMPLO SUMA**, **DEMO ECO**, **PASO**, **EJECUTAR**, **RESET**, **VELOCIDAD** (normal → slow → no animation → fast), a key input with **TECLEAR** and 16 clickable on-screen keys.
+
+**Animation.** Every **PASO** replays the instruction on the drawing:
+
+- The four control-unit stages FETCH → DECODE → EXECUTE → STORE light up in order.
+- A pink data packet travels along the real path:
+  - VA → MMU → L1I, then L2 → RAM on a line fill;
+  - swap → RAM on a page fault;
+  - CPU → MMU → L1D → L2 → RAM for `LD`/`ST`;
+  - keyboard → bus → CPU for `IN`, and CPU → bus → LCD for `OUT`.
+- The ALU flashes on arithmetic, PC flashes on a jump, and the written register flashes in STORE.
+- The LCD cell just written glows and the cursor bar blinks.
+
+**EJECUTAR** animates every instruction until `HLT` or an `IN` wait. Pressing an on-screen key animates the key and its queue slot.
+
+**Interaction.** Clicking a component opens its detail block: CPU → P04, ALU → diagram, MMU → P07, caches → P09/P10, RAM and swap → P08, bus → P05/P06, keyboard → P13, LCD → P14.
+
+The drawing shows, live:
 
 - **CPU**: AX–DX (the register written by the last instruction is highlighted), PC, IR, MAR_V, MAR_P, MDR, Z/C/S flag lamps, ALU (lit with the last operation) and the control unit stage.
 - **MMU**: 16 page cards (code violet, data teal, I/O red, in swap grey); the page used by the last instruction is outlined, orange on a page fault; VA → PA of the last access.
@@ -70,7 +87,7 @@ The workbook now has only two sheets: `Inicio` and `LCA`.
 
 - `LcaExecutor.bas`: ciclo **FETCH → DECODE → EXECUTE → STORE** de la ISA de P02, con `ExecStep` (un paso), `ExecRun` (hasta HLT, error, espera de IN o límite) y `ExecReset`.
 - Se usan el recorrido con caché de P10, la ALU, el teclado (P13) y el LCD (P14).
-- **Banda de la máquina** (`LcaMachinePanel.bas`, hoja **LCA**, filas 458–523), la vista para la defensa: CPU, MMU con las 16 páginas, cachés L1I/L1D/L2, los 8 marcos de RAM, el disco de swap, el teclado, el LCD y el bus externo con sus señales, todo dibujado con figuras que cambian en cada instrucción.
+- **Bloque de la máquina** (`LcaMachinePanel.bas`, hoja **LCA**, arriba a la izquierda), la vista para la defensa: CPU, MMU con las 16 páginas, cachés L1I/L1D/L2, los 8 marcos de RAM, el disco de swap, el teclado, el LCD y el bus externo con sus señales, todo dibujado con figuras que cambian en cada instrucción.
 - Las flechas amarillas marcan el camino de la última instrucción. Debajo están el listado con la fila del **PC** resaltada y la traza.
 - El reset de carga ahora también vacía la cola del teclado y limpia el LCD.
 - Se eliminó la hoja `P04 Tests`: `VerificarCpuAlu` informa como las demás pruebas.
@@ -78,8 +95,8 @@ The workbook now has only two sheets: `Inicio` and `LCA`.
 
 ## Uso en la defensa
 
-1. Abrir `workbook/LCA.xlsm`: se abre en la banda de la máquina.
-2. **EJEMPLO SUMA** → **PASO** varias veces: se ve el fallo de página de VPN0, el llenado de L1I/L2, el bucle `JNZ` y la escritura en `[100h]`.
+1. Abrir `workbook/LCA.xlsm`: se abre en el bloque de la máquina (arriba a la izquierda del tablero 2D). VISTA GENERAL muestra todo el tablero; cada componente dibujado es clicable y lleva a su detalle.
+2. **EJEMPLO SUMA** → **PASO** varias veces (con animación: las etapas FETCH-DECODE-EXECUTE-STORE se encienden y el punto rosa recorre el camino del dato): se ve el fallo de página de VPN0, el llenado de L1I/L2, el bucle `JNZ` y la escritura en `[100h]`.
 3. **DEMO ECO** → escribir texto en TECLAS → **TECLEAR** → **EJECUTAR**: cada tecla pasa teclado → AX → LCD; con la cola vacía la máquina queda en ESPERANDO TECLA.
 4. **CARGAR EDITOR** ejecuta el programa escrito en la banda EDITOR (P11).
 

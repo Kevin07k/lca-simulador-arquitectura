@@ -34,9 +34,9 @@ CPU (P12 LcaExecutor) ── LcaCachePath (P10) ── LcaPager (P08) ── Lca
 
 ## Hoja LCA / LCA sheet
 
-`ConstruirLca` borra la hoja y construye las bandas en orden: CPU (1–44), diagrama (46–87), buses/RAM (89–122), P07 (124–156), P08 (158–192), P09 (194–236), P10 (238–284), P11 (286–383), P13 (385–420), P14 (421–456) y la máquina P12 (458–523), donde se abre el libro. Cada `Construir...` reconstruye solo su banda; las direcciones se desplazan con `LcaRows` según `ROW_BASE`.
+`ConstruirLca` arma la hoja como un tablero 2D de bloques de 20 columnas (ver el mapa en [workbook/README.md](../../workbook/README.md)); el libro se abre en la máquina P12. Cada panel usa direcciones relativas a su bloque: `LcaShift` desplaza filas y columnas, `CL()` da la celda del bloque y `LcaRowHeight` comparte la altura de filas entre bloques vecinos.
 
-`ConstruirLca` clears the sheet and builds every band in that order; each `Construir...` macro rebuilds only its own band.
+`ConstruirLca` builds a 2-D dashboard of 20-column blocks (two passes so blocks side by side share row heights); each `Construir...` macro rebuilds only its own block.
 
 ## Convenciones / Conventions
 

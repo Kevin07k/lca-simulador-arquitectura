@@ -9,23 +9,21 @@
 | Hoja / Sheet | Contenido / Content |
 | --- | --- |
 | `Inicio` | Portada. `VerificarInstalacion` escribe `VBA OK - P03` en `B13`. |
-| `LCA` | Todas las bandas en una sola hoja, de arriba abajo / every band on one sheet, top to bottom. |
+| `LCA` | Tablero 2D: todos los bloques lado a lado y uno debajo de otro / 2-D dashboard with every block. |
 
-| Filas / Rows | Banda / Band | Guía / Guide |
-| --- | --- | --- |
-| 1–44 | P04 CPU / ALU: registros, ALU, flags, historial | [P04_INTERFACE](../docs/P04_INTERFACE.md) |
-| 46–87 | P04 diagrama de bloques del CPU | [P04_DIAGRAM](../docs/P04_DIAGRAM.md) |
-| 89–122 | P05/P06 buses, micropalabra y RAM | [P05](../docs/P05_BUS_CONTROL.md), [P06](../docs/P06_RAM.md) |
-| 124–156 | P07 tabla de páginas y traducción | [P07](../docs/P07_MMU.md) |
-| 158–192 | P08 page fault, CLOCK y swap | [P08](../docs/P08_PAGE_FAULT_SWAP.md) |
-| 194–236 | P09 cachés L1I, L1D, L2 | [P09](../docs/P09_CACHE.md) |
-| 238–284 | P10 caché + paginación | [P10](../docs/P10_CACHE_PAGING.md) |
-| 286–383 | P11 editor ASM, ensamblador y cargador | [P11](../docs/P11_ASSEMBLER_LOADER.md) |
-| 385–420 | P13 teclado y cola FIFO E0–E7h | [P13](../docs/P13_KEYBOARD.md) |
-| 421–456 | P14 LCD 8x1 y video E8–EFh | [P14](../docs/P14_LCD.md) |
-| **458–523** | **P12 maquina completa: vista de defensa** (el libro se abre aqui) | [P12](../docs/P12_CPU_CYCLE.md) |
+## Mapa de la hoja LCA / LCA sheet map
 
-`ConstruirLca` (Alt+F8) reconstruye la hoja completa. Las bandas tienen botones de navegación (`VER P08`, `VER P09`, `VER P10`, `VER P11`, `DIAGRAMA`...).
+El libro se abre en la **máquina P12** (arriba a la izquierda). Cada bloque tiene botones de navegación y un botón **< MAQUINA** para volver; **VISTA GENERAL** aleja el zoom para ver todo el tablero.
+
+| Columna 1 (A–T) | Columna 2 (U–AN) | Columna 3 (AO–BH) | Columna 4 (BI–CB) |
+| --- | --- | --- | --- |
+| **P12 máquina completa** (filas 1–68) | P11 editor ASM (1–98) | P13 teclado (1–36) | P07 tabla de páginas (1–33) |
+| P04 CPU / ALU (70–113) | P10 caché + paginación (100–146) | P14 LCD 8x1 (38–73) | P08 page fault + swap (35–69) |
+| P04 diagrama del CPU (115–156) | | P05/P06 buses y RAM (75–108) | P09 cachés L1I/L1D/L2 (71–113) |
+
+Guías: [P04](../docs/P04_INTERFACE.md), [P05](../docs/P05_BUS_CONTROL.md), [P06](../docs/P06_RAM.md), [P07](../docs/P07_MMU.md), [P08](../docs/P08_PAGE_FAULT_SWAP.md), [P09](../docs/P09_CACHE.md), [P10](../docs/P10_CACHE_PAGING.md), [P11](../docs/P11_ASSEMBLER_LOADER.md), [P12](../docs/P12_CPU_CYCLE.md), [P13](../docs/P13_KEYBOARD.md), [P14](../docs/P14_LCD.md).
+
+`ConstruirLca` (Alt+F8) reconstruye todo el tablero.
 
 ## Mantener libro y fuente alineados / Keep workbook and source aligned
 
