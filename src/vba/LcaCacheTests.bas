@@ -156,11 +156,11 @@ Public Sub VerificarCachesP09()
     Check CacheLineCount(LCA_CACHE_L2) * LCA_CACHE_LINE_BYTES = 32, "L: L2 is 32 bytes"
 
     CachePanelActualizar
-    MsgBox "P09 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
-           "Caches L1I/L1D/L2 verificadas con direcciones fisicas; P07/P10 aun no forman parte.", vbInformation
+    LcaReport "P09 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
+           "Caches L1I/L1D/L2 verificadas con direcciones fisicas; P07/P10 aun no forman parte.", True
     Exit Sub
 failed:
-    MsgBox "P09 FAIL after " & mChecks & " checks: " & Err.Description, vbCritical
+    LcaReport "P09 FAIL after " & mChecks & " checks: " & Err.Description, False
 End Sub
 
 ' Hits/misses in the order L1I, L1D, L2 (hit, miss).

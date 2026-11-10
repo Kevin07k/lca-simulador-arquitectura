@@ -104,11 +104,11 @@ Public Sub VerificarRamP06()
     Check InStr(1, BusTraceLine(BusTraceCount() - 1), "BUS_CONTENTION", vbBinaryCompare) > 0, "failed cycle traced"
 
     BusPanelActualizar
-    MsgBox "P06 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
-           "RAM real y bus P05 comprobados. P07/P09/P12 aun no forman parte de esta prueba.", vbInformation
+    LcaReport "P06 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
+           "RAM real y bus P05 comprobados. P07/P09/P12 aun no forman parte de esta prueba.", True
     Exit Sub
 failed:
-    MsgBox "P06 FAIL after " & mChecks & " checks: " & Err.Description, vbCritical
+    LcaReport "P06 FAIL after " & mChecks & " checks: " & Err.Description, False
 End Sub
 
 Private Sub Check(ByVal condition As Boolean, ByVal message As String)

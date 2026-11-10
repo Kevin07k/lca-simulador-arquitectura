@@ -84,11 +84,11 @@ Public Sub VerificarBusesP05()
     Check InStr(1, BusTraceLine(BusTraceCount() - 1), "BUS_CONTENTION", vbBinaryCompare) > 0, "contention traced"
 
     BusPanelActualizar
-    MsgBox "P05 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
-           "La prueba usa bytes inyectados; no prueba RAM/cache P06 ni ejecución P12.", vbInformation
+    LcaReport "P05 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
+           "La prueba usa bytes inyectados; no prueba RAM/cache P06 ni ejecucion P12.", True
     Exit Sub
 failed:
-    MsgBox "P05 FAIL after " & mChecks & " checks: " & Err.Description, vbCritical
+    LcaReport "P05 FAIL after " & mChecks & " checks: " & Err.Description, False
 End Sub
 
 Private Sub Check(ByVal condition As Boolean, ByVal message As String)
