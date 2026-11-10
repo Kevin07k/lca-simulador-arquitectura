@@ -74,6 +74,40 @@ Public Sub ControlReadCacheByte(ByVal cachedByte As Long)
     mFetchStage = 2
 End Sub
 
+' P10: an L2 miss fills a whole four-byte line. One external READ cycle per byte, RAM -> L2.
+' The CPU's MDR is not touched, so this may run between the steps of a fetch or a store.
+Public Sub ControlLineFill(ByVal va As Long, ByVal basePA As Long)
+    Dim i As Long, value As Long
+    If basePA < 0 Or basePA > 220 Or (basePA Mod 4) <> 0 Then _
+        Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "INVALID_FILL_PA"
+    If mFetchStage = 2 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "FILL_DURING_LATCH"
+    For i = 0 To 3
+        value = RamReadUser(basePA + i)
+        BusFloat LCA_BUS_INTERNAL
+        BusBegin LCA_BUS_EXTERNAL, "FILL[" & CStr(i) & "] READ", va, basePA + i, True, False, False
+        BusDrive LCA_BUS_EXTERNAL, "RAM", value
+        BusReceive LCA_BUS_EXTERNAL, "L2"
+        BusClock LCA_BUS_EXTERNAL
+    Next i
+    mLastBus = LCA_BUS_EXTERNAL
+End Sub
+
+' P10 data read (LD path): L1D -> MDR on the internal bus. The external bus stays High-Z.
+Public Sub ControlReadDataByte(ByVal va As Long, ByVal pa As Long, ByVal cachedByte As Long)
+    If mFetchStage <> 0 Or mStoreStage <> 0 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "SEQUENCE_BUSY"
+    If va < 256 Or va > 479 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "INVALID_LOAD_VA"
+    If pa < 0 Or pa > 223 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "INVALID_LOAD_PA"
+    CpuRequireByte cachedByte
+    BusFloat LCA_BUS_EXTERNAL
+    BusBegin LCA_BUS_INTERNAL, "LD CACHE", va, pa, False, False, False
+    BusDrive LCA_BUS_INTERNAL, "L1D", cachedByte
+    BusReceive LCA_BUS_INTERNAL, "MDR"
+    CpuWriteControl LcaMDR, BusClock(LCA_BUS_INTERNAL)
+    CpuWriteControl LcaMAR_V, va
+    CpuWriteControl LcaMAR_P, pa
+    mLastBus = LCA_BUS_INTERNAL
+End Sub
+
 Public Sub ControlLatchFetchByte()
     If mFetchStage <> 2 Then Err.Raise LCA_ERR_SEQUENCE, "LcaControl", "FETCH_LATCH_ORDER"
     BusFloat LCA_BUS_EXTERNAL
