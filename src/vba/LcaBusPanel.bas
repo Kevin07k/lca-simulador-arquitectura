@@ -1,7 +1,7 @@
 Attribute VB_Name = "LcaBusPanel"
 Option Explicit
 
-Private Const SHEET_NAME As String = "P05 Buses"
+Private Const ROW_BASE As Long = LCA_BASE_BUS
 Private mDemoStep As Long
 Private mDemoStarted As Boolean
 Private mDemoStatus As String
@@ -10,53 +10,45 @@ Public Sub ConstruirPanelBuses()
     Dim ws As Worksheet
     Dim i As Long
     Set ws = BusSheet(True)
-    ws.Cells.UnMerge
-    ws.Cells.Clear
-    For i = ws.Shapes.Count To 1 Step -1
-        ws.Shapes(i).Delete
-    Next i
-    ws.Columns("A").ColumnWidth = 3
-    ws.Columns("B:R").ColumnWidth = 12
-    ws.Rows("1:32").RowHeight = 23
-    ws.Range("A1:S34").Interior.Color = RGB(15, 23, 42)
-    ws.Range("A1:S34").Font.Name = "Consolas"
-    ws.Range("A1:S34").Font.Color = RGB(226, 232, 240)
-    ws.Range("B2:R3").Merge
-    With ws.Range("B2")
+    LcaPrepareBand ws, ROW_BASE, 34, "P05_"
+    ws.Rows(RA("1:32")).RowHeight = 23
+    ws.Range(RA("A1:AZ34")).Interior.Color = RGB(15, 23, 42)
+    ws.Range(RA("A1:AZ34")).Font.Name = "Consolas"
+    ws.Range(RA("A1:AZ34")).Font.Color = RGB(226, 232, 240)
+    ws.Range(RA("B2:R3")).Merge
+    With ws.Range(RA("B2"))
         .Value = "P05 + P06  /  BUSES + RAM"
         .Font.Name = "Segoe UI"
         .Font.Bold = True
         .Font.Size = 22
         .Font.Color = RGB(125, 211, 252)
     End With
-    ws.Range("B4:R4").Merge
-    ws.Range("B4").Value = "Ciclos del motor / Engine cycles  |  R W C IO EN LD"
+    ws.Range(RA("B4:R4")).Merge
+    ws.Range(RA("B4")).Value = "Ciclos del motor / Engine cycles  |  R W C IO EN LD"
     AddBusButton ws, "B6:F7", "REINICIAR / RESET", "BusDemoReset"
     AddBusButton ws, "G6:L7", "SIGUIENTE / NEXT", "BusDemoNext"
     AddBusButton ws, "M6:R7", "CONTENCION / CONTENTION", "BusDemoContention"
-    ws.Range("B9:R9").Merge
-    ws.Range("B9").Value = "MICROPALABRA / CONTROL WORD"
-    ws.Range("B10:R11").Merge
-    ws.Range("B10:R11").Interior.Color = RGB(30, 41, 59)
-    ws.Range("B13:R13").Merge
-    ws.Range("B13").Value = "BUSES EN ESTE MICRO-PASO / BUSES IN THIS MICROSTEP"
-    ws.Range("B14:R15").Merge
-    ws.Range("B16:R17").Merge
-    ws.Range("B14:R17").Interior.Color = RGB(30, 41, 59)
-    ws.Range("B19:R19").Merge
-    ws.Range("B19").Value = "TRAZA REAL DEL MOTOR / LIVE ENGINE TRACE (ultimos 10 / last 10)"
+    ws.Range(RA("B9:R9")).Merge
+    ws.Range(RA("B9")).Value = "MICROPALABRA / CONTROL WORD"
+    ws.Range(RA("B10:R11")).Merge
+    ws.Range(RA("B10:R11")).Interior.Color = RGB(30, 41, 59)
+    ws.Range(RA("B13:R13")).Merge
+    ws.Range(RA("B13")).Value = "BUSES EN ESTE MICRO-PASO / BUSES IN THIS MICROSTEP"
+    ws.Range(RA("B14:R15")).Merge
+    ws.Range(RA("B16:R17")).Merge
+    ws.Range(RA("B14:R17")).Interior.Color = RGB(30, 41, 59)
+    ws.Range(RA("B19:R19")).Merge
+    ws.Range(RA("B19")).Value = "TRAZA REAL DEL MOTOR / LIVE ENGINE TRACE (ultimos 10 / last 10)"
     For i = 20 To 29
-        ws.Range(ws.Cells(i, 2), ws.Cells(i, 18)).Merge
-        ws.Rows(i).RowHeight = 22
+        ws.Range(ws.Cells(ROW_BASE + i, 2), ws.Cells(ROW_BASE + i, 18)).Merge
+        ws.Rows(ROW_BASE + i).RowHeight = 22
     Next i
-    ws.Range("B20:R29").Interior.Color = RGB(30, 41, 59)
-    ws.Range("B31:R32").Merge
-    ws.Range("B31:R32").WrapText = True
-    ws.Range("B31").Font.Color = RGB(125, 211, 252)
+    ws.Range(RA("B20:R29")).Interior.Color = RGB(30, 41, 59)
+    ws.Range(RA("B31:R32")).Merge
+    ws.Range(RA("B31:R32")).WrapText = True
+    ws.Range(RA("B31")).Font.Color = RGB(125, 211, 252)
     BusDemoReset
-    ws.Activate
-    ActiveWindow.DisplayGridlines = False
-    ActiveWindow.Zoom = 85
+    LcaGoto ws, ROW_BASE
 End Sub
 
 Public Sub MostrarPanelBuses()
@@ -65,7 +57,7 @@ Public Sub MostrarPanelBuses()
     If ws Is Nothing Then
         ConstruirPanelBuses
     Else
-        ws.Activate
+        LcaGoto ws, ROW_BASE
         BusPanelActualizar
     End If
 End Sub
@@ -80,15 +72,15 @@ Public Sub BusPanelActualizar()
     If ws Is Nothing Then Exit Sub
     internalCycle = BusSnapshot(LCA_BUS_INTERNAL)
     externalCycle = BusSnapshot(LCA_BUS_EXTERNAL)
-    ws.Range("B10").Value = ControlLastWord()
-    ws.Range("B14").Value = BusFormat(internalCycle)
-    ws.Range("B16").Value = BusFormat(externalCycle)
+    ws.Range(RA("B10")).Value = ControlLastWord()
+    ws.Range(RA("B14")).Value = BusFormat(internalCycle)
+    ws.Range(RA("B16")).Value = BusFormat(externalCycle)
     n = BusTraceCount()
     For i = 0 To 9
-        ws.Cells(20 + i, 2).Value = vbNullString
-        If n > i Then ws.Cells(20 + i, 2).Value = BusTraceLine(n - 1 - i)
+        ws.Cells(ROW_BASE + 20 + i, 2).Value = vbNullString
+        If n > i Then ws.Cells(ROW_BASE + 20 + i, 2).Value = BusTraceLine(n - 1 - i)
     Next i
-    ws.Range("B31").Value = mDemoStatus
+    ws.Range(RA("B31")).Value = mDemoStatus
 End Sub
 
 Public Sub BusDemoReset()
@@ -166,25 +158,19 @@ Private Function CpuSnapshotIR() As Long
 End Function
 
 Private Function BusSheet(ByVal create As Boolean) As Worksheet
-    Dim ws As Worksheet
-    For Each ws In ThisWorkbook.Worksheets
-        If ws.Name = SHEET_NAME Then
-            Set BusSheet = ws
-            Exit Function
-        End If
-    Next ws
-    If create Then
-        Set ws = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
-        ws.Name = SHEET_NAME
-        Set BusSheet = ws
-    End If
+    Set BusSheet = LcaBand("P05_BusDemoReset", create)
+End Function
+
+' Row shift of this panel inside the shared LCA sheet.
+Private Function RA(ByVal address As String) As String
+    RA = LcaRows(address, ROW_BASE)
 End Function
 
 Private Sub AddBusButton(ByVal ws As Worksheet, ByVal address As String, _
                          ByVal caption As String, ByVal macroName As String)
     Dim area As Range
     Dim button As Shape
-    Set area = ws.Range(address)
+    Set area = ws.Range(RA(address))
     Set button = ws.Shapes.AddShape(msoShapeRoundedRectangle, area.Left, area.Top, area.Width - 4, area.Height - 2)
     button.Name = "P05_" & macroName
     button.Fill.ForeColor.RGB = RGB(37, 99, 235)

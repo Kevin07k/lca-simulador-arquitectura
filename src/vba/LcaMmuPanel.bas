@@ -1,85 +1,73 @@
 Attribute VB_Name = "LcaMmuPanel"
 Option Explicit
 
-Private Const SHEET_NAME As String = "P07 Paginas"
+Private Const ROW_BASE As Long = LCA_BASE_MMU
 Private mStatus As String
 
 Public Sub ConstruirPanelPaginas()
     Dim ws As Worksheet, i As Long
     Set ws = MmuSheet(True)
-    ws.Cells.UnMerge
-    ws.Cells.Clear
-    For i = ws.Shapes.Count To 1 Step -1
-        ws.Shapes(i).Delete
-    Next i
-    ws.Columns("A").ColumnWidth = 3
-    ws.Columns("B").ColumnWidth = 8
-    ws.Columns("C").ColumnWidth = 17
-    ws.Columns("D:G").ColumnWidth = 10
-    ws.Columns("H").ColumnWidth = 13
-    ws.Columns("I:S").ColumnWidth = 10
-    ws.Rows("1:33").RowHeight = 24
-    ws.Range("A1:S33").Interior.Color = RGB(15, 23, 42)
-    With ws.Range("A1:S33").Font
+    LcaPrepareBand ws, ROW_BASE, 33, "P07_"
+    ws.Rows(RA("1:33")).RowHeight = 24
+    ws.Range(RA("A1:S33")).Interior.Color = RGB(15, 23, 42)
+    With ws.Range(RA("A1:S33")).Font
         .Name = "Consolas"
         .Color = RGB(226, 232, 240)
         .Size = 11
     End With
-    ws.Range("B2:S3").Merge
-    With ws.Range("B2")
+    ws.Range(RA("B2:S3")).Merge
+    With ws.Range(RA("B2"))
         .Value = "P07  /  TABLA DE PAGINAS + MMU"
         .Font.Name = "Segoe UI"
         .Font.Size = 22
         .Font.Bold = True
         .Font.Color = RGB(125, 211, 252)
     End With
-    ws.Range("B4:S4").Merge
-    ws.Range("B4").Value = "512 bytes virtuales / 16 paginas de 32 bytes / 7 marcos asignables + 1 reservado E/S"
-    ws.Range("B6:D6").Merge
-    ws.Range("B6").Value = "VA DECIMAL (0-511)"
-    ws.Range("F6:G6").Merge
-    ws.Range("F6").Value = "FETCH / READ / WRITE"
-    ws.Range("B7:D8").Merge
-    ws.Range("F7:G8").Merge
-    ws.Range("B7:D8").Interior.Color = RGB(230, 240, 250)
-    ws.Range("F7:G8").Interior.Color = RGB(230, 240, 250)
-    ws.Range("B7:D8").Font.Color = RGB(15, 23, 42)
-    ws.Range("F7:G8").Font.Color = RGB(15, 23, 42)
-    ws.Range("B7").Value = 300
-    ws.Range("F7").Value = "READ"
+    ws.Range(RA("B4:S4")).Merge
+    ws.Range(RA("B4")).Value = "512 bytes virtuales / 16 paginas de 32 bytes / 7 marcos asignables + 1 reservado E/S"
+    ws.Range(RA("B6:D6")).Merge
+    ws.Range(RA("B6")).Value = "VA DECIMAL (0-511)"
+    ws.Range(RA("F6:G6")).Merge
+    ws.Range(RA("F6")).Value = "FETCH / READ / WRITE"
+    ws.Range(RA("B7:D8")).Merge
+    ws.Range(RA("F7:G8")).Merge
+    ws.Range(RA("B7:D8")).Interior.Color = RGB(230, 240, 250)
+    ws.Range(RA("F7:G8")).Interior.Color = RGB(230, 240, 250)
+    ws.Range(RA("B7:D8")).Font.Color = RGB(15, 23, 42)
+    ws.Range(RA("F7:G8")).Font.Color = RGB(15, 23, 42)
+    ws.Range(RA("B7")).Value = 300
+    ws.Range(RA("F7")).Value = "READ"
     AddMmuButton ws, "H6:K7", "RESET PTE", "MmuPanelReset"
     AddMmuButton ws, "L6:O7", "EJEMPLO", "MmuDemoSetup"
     AddMmuButton ws, "H9:K10", "TRADUCIR", "MmuPanelTranslate"
     AddMmuButton ws, "L9:O10", "FETCH REAL", "MmuPanelFetch"
     AddMmuButton ws, "P9:S10", "ST REAL", "MmuPanelStore"
-    ws.Range("B10:G10").Merge
-    ws.Range("B10:G10").WrapText = True
-    ws.Range("B12").Value = "VPN"
-    ws.Range("C12").Value = "VA RANGE"
-    ws.Range("D12").Value = "P"
-    ws.Range("E12").Value = "PFN"
-    ws.Range("F12").Value = "DIRTY"
-    ws.Range("G12").Value = "REF"
-    ws.Range("H12").Value = "RESERVED"
-    ws.Range("B12:H12").Interior.Color = RGB(30, 64, 105)
-    ws.Range("B12:H28").Borders.Color = RGB(51, 65, 85)
-    ws.Range("J12:S12").Merge
-    ws.Range("J12").Value = "ULTIMA TRAZA / LAST BUS CYCLE"
-    ws.Range("J13:S16").Merge
-    ws.Range("J13:S16").WrapText = True
-    ws.Range("J13:S16").Interior.Color = RGB(30, 41, 59)
-    ws.Range("J18:S18").Merge
-    ws.Range("J18").Value = "FALLO RECUPERABLE / PAGE FAULT"
-    ws.Range("J19:S20").Merge
-    ws.Range("J19:S20").Interior.Color = RGB(30, 41, 59)
-    ws.Range("J22:S26").Merge
-    ws.Range("J22:S26").WrapText = True
-    ws.Range("J22").Value = "VPN 15 es E/S reservada. PAGE_FAULT no asigna un marco: P08 cargara la pagina y reintentara. " & _
+    ws.Range(RA("B10:G10")).Merge
+    ws.Range(RA("B10:G10")).WrapText = True
+    ws.Range(RA("B12")).Value = "VPN"
+    ws.Range(RA("C12")).Value = "VA RANGE"
+    ws.Range(RA("D12")).Value = "P"
+    ws.Range(RA("E12")).Value = "PFN"
+    ws.Range(RA("F12")).Value = "DIRTY"
+    ws.Range(RA("G12")).Value = "REF"
+    ws.Range(RA("H12")).Value = "RESERVED"
+    ws.Range(RA("B12:H12")).Interior.Color = RGB(30, 64, 105)
+    ws.Range(RA("B12:H28")).Borders.Color = RGB(51, 65, 85)
+    ws.Range(RA("J12:S12")).Merge
+    ws.Range(RA("J12")).Value = "ULTIMA TRAZA / LAST BUS CYCLE"
+    ws.Range(RA("J13:S16")).Merge
+    ws.Range(RA("J13:S16")).WrapText = True
+    ws.Range(RA("J13:S16")).Interior.Color = RGB(30, 41, 59)
+    ws.Range(RA("J18:S18")).Merge
+    ws.Range(RA("J18")).Value = "FALLO RECUPERABLE / PAGE FAULT"
+    ws.Range(RA("J19:S20")).Merge
+    ws.Range(RA("J19:S20")).Interior.Color = RGB(30, 41, 59)
+    ws.Range(RA("J22:S26")).Merge
+    ws.Range(RA("J22:S26")).WrapText = True
+    ws.Range(RA("J22")).Value = "VPN 15 es E/S reservada. PAGE_FAULT no asigna un marco: P08 cargara la pagina y reintentara. " & _
                            "FETCH y ST usan la RAM P06 y los buses P05; P12 ejecutara el opcode."
     MmuDemoSetup
-    ws.Activate
-    ActiveWindow.DisplayGridlines = False
-    ActiveWindow.Zoom = 85
+    LcaGoto ws, ROW_BASE
 End Sub
 
 Public Sub MostrarPanelPaginas()
@@ -88,7 +76,7 @@ Public Sub MostrarPanelPaginas()
     If ws Is Nothing Then
         ConstruirPanelPaginas
     Else
-        ws.Activate
+        LcaGoto ws, ROW_BASE
         MmuPanelRefresh
     End If
 End Sub
@@ -126,13 +114,13 @@ Public Sub MmuPanelTranslate()
     On Error GoTo failed
     Set ws = MmuSheet(False)
     If ws Is Nothing Then Err.Raise 5, "LcaMmuPanel", "ConstruirPanelPaginas primero"
-    If IsError(ws.Range("B7").Value) Then Err.Raise 5, "LcaMmuPanel", "VA debe ser un entero"
-    If Not IsNumeric(ws.Range("B7").Value) Then Err.Raise 5, "LcaMmuPanel", "VA debe ser un entero"
-    number = CDbl(ws.Range("B7").Value)
+    If IsError(ws.Range(RA("B7")).Value) Then Err.Raise 5, "LcaMmuPanel", "VA debe ser un entero"
+    If Not IsNumeric(ws.Range(RA("B7")).Value) Then Err.Raise 5, "LcaMmuPanel", "VA debe ser un entero"
+    number = CDbl(ws.Range(RA("B7")).Value)
     If number <> Fix(number) Or number < -1000000# Or number > 1000000# Then _
         Err.Raise 5, "LcaMmuPanel", "VA debe ser un entero cercano a 0-511"
     va = CLng(number)
-    choice = UCase$(Trim$(CStr(ws.Range("F7").Value)))
+    choice = UCase$(Trim$(CStr(ws.Range(RA("F7")).Value)))
     Select Case choice
         Case "FETCH": kind = MMU_FETCH
         Case "READ": kind = MMU_READ
@@ -185,27 +173,27 @@ Public Sub MmuPanelRefresh()
     For vpn = 0 To 15
         entry = MmuPage(vpn)
         row = 13 + vpn
-        ws.Cells(row, 2).Value = vpn
-        ws.Cells(row, 3).Value = Hex3(vpn * 32) & " - " & Hex3(vpn * 32 + 31)
-        ws.Cells(row, 4).Value = Abs(CLng(entry.Present))
-        ws.Cells(row, 5).Value = IIf(entry.Present, CStr(entry.PFN), "-")
-        ws.Cells(row, 6).Value = Abs(CLng(entry.Dirty))
-        ws.Cells(row, 7).Value = Abs(CLng(entry.Referenced))
-        ws.Cells(row, 8).Value = IIf(entry.Reserved, "IO / RESERVED", "-")
-        ws.Range(ws.Cells(row, 2), ws.Cells(row, 8)).Interior.Color = _
+        ws.Cells(ROW_BASE + row, 2).Value = vpn
+        ws.Cells(ROW_BASE + row, 3).Value = Hex3(vpn * 32) & " - " & Hex3(vpn * 32 + 31)
+        ws.Cells(ROW_BASE + row, 4).Value = Abs(CLng(entry.Present))
+        ws.Cells(ROW_BASE + row, 5).Value = IIf(entry.Present, CStr(entry.PFN), "-")
+        ws.Cells(ROW_BASE + row, 6).Value = Abs(CLng(entry.Dirty))
+        ws.Cells(ROW_BASE + row, 7).Value = Abs(CLng(entry.Referenced))
+        ws.Cells(ROW_BASE + row, 8).Value = IIf(entry.Reserved, "IO / RESERVED", "-")
+        ws.Range(ws.Cells(ROW_BASE + row, 2), ws.Cells(ROW_BASE + row, 8)).Interior.Color = _
             IIf(entry.Reserved, RGB(90, 45, 57), IIf(entry.Present, RGB(30, 65, 84), RGB(30, 41, 59)))
     Next vpn
-    ws.Range("B10").Value = mStatus
+    ws.Range(RA("B10")).Value = mStatus
     n = BusTraceCount()
     If n > 0 Then
-        ws.Range("J13").Value = BusTraceLine(n - 1)
+        ws.Range(RA("J13")).Value = BusTraceLine(n - 1)
     Else
-        ws.Range("J13").Value = "High-Z / sin transferencias"
+        ws.Range(RA("J13")).Value = "High-Z / sin transferencias"
     End If
     If MmuLastFaultVPN() >= 0 Then
-        ws.Range("J19").Value = "VA=" & Hex3(MmuLastFaultVA()) & " / VPN=" & MmuLastFaultVPN() & " / PA=-1"
+        ws.Range(RA("J19")).Value = "VA=" & Hex3(MmuLastFaultVA()) & " / VPN=" & MmuLastFaultVPN() & " / PA=-1"
     Else
-        ws.Range("J19").Value = "Ninguno / None"
+        ws.Range(RA("J19")).Value = "Ninguno / None"
     End If
 End Sub
 
@@ -220,24 +208,18 @@ Private Function Hex3(ByVal value As Long) As String
 End Function
 
 Private Function MmuSheet(ByVal create As Boolean) As Worksheet
-    Dim ws As Worksheet
-    For Each ws In ThisWorkbook.Worksheets
-        If ws.Name = SHEET_NAME Then
-            Set MmuSheet = ws
-            Exit Function
-        End If
-    Next ws
-    If create Then
-        Set ws = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
-        ws.Name = SHEET_NAME
-        Set MmuSheet = ws
-    End If
+    Set MmuSheet = LcaBand("P07_MmuPanelReset", create)
+End Function
+
+' Row shift of this panel inside the shared LCA sheet.
+Private Function RA(ByVal address As String) As String
+    RA = LcaRows(address, ROW_BASE)
 End Function
 
 Private Sub AddMmuButton(ByVal ws As Worksheet, ByVal address As String, _
                          ByVal caption As String, ByVal macroName As String)
     Dim area As Range, button As Shape
-    Set area = ws.Range(address)
+    Set area = ws.Range(RA(address))
     Set button = ws.Shapes.AddShape(msoShapeRoundedRectangle, area.Left, area.Top, area.Width - 4, area.Height - 2)
     button.Name = "P07_" & macroName
     button.Fill.ForeColor.RGB = RGB(37, 99, 235)
