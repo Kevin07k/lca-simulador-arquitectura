@@ -65,7 +65,8 @@ Public Sub CacheInvalidateAll()
 End Sub
 
 ' Called before a PFN is reused (P08) or its backing is reloaded: no stale line survives.
-Public Sub CacheInvalidateFrame(ByVal pfn As Long)
+' Returns how many valid lines were dropped (0 when the frame had none cached).
+Public Function CacheInvalidateFrame(ByVal pfn As Long) As Long
     Dim level As Long, idx As Long, n As Long, lineNo As Long
     If pfn < 0 Or pfn >= LCA_RAM_FRAMES Then Err.Raise LCA_ERR_CACHE_ARGUMENT, "LcaCache", "CACHE_FRAME"
     For level = 0 To 2
@@ -73,12 +74,15 @@ Public Sub CacheInvalidateFrame(ByVal pfn As Long)
         For idx = 0 To n - 1
             If mValid(level, idx) Then
                 lineNo = mTag(level, idx) * n + idx
-                If (lineNo * LCA_CACHE_LINE_BYTES) \ LCA_RAM_FRAME_SIZE = pfn Then mValid(level, idx) = False
+                If (lineNo * LCA_CACHE_LINE_BYTES) \ LCA_RAM_FRAME_SIZE = pfn Then
+                    mValid(level, idx) = False
+                    CacheInvalidateFrame = CacheInvalidateFrame + 1
+                End If
             End If
         Next idx
     Next level
-    AddTrace "INVALIDATE frame " & CStr(pfn) & " in L1I/L1D/L2"
-End Sub
+    AddTrace "INVALIDATE frame " & CStr(pfn) & " in L1I/L1D/L2 (" & CStr(CacheInvalidateFrame) & " lines)"
+End Function
 
 ' Reads one byte requested by the CPU. kind: LCA_CACHE_FETCH (L1I) or LCA_CACHE_DATA (L1D).
 ' PA must be a user-memory address (00..DFh); I/O (E0..EFh) is never cached.
@@ -145,6 +149,34 @@ Public Function CacheWrite(ByVal pa As Long, ByVal value As Long) As Boolean
     CacheWrite = True
     AddTrace AccessText("WRITE", LCA_CACHE_DATA, pa) & "=" & Hex2(value) & " -> " & text & _
              " | " & l2state & " | write-through RAM"
+End Function
+
+' P10 snoop: a write that reached RAM outside CacheWrite (P08 uncached ST path) updates every
+' resident copy of that byte. No counters, no allocation, so no line can keep an old value.
+Public Sub CacheSnoopWrite(ByVal pa As Long, ByVal value As Long)
+    Dim level As Long, n As Long, lineNo As Long, idx As Long
+    RamRequireUserAddress pa
+    CpuRequireByte value
+    lineNo = pa \ LCA_CACHE_LINE_BYTES
+    For level = 0 To 2
+        n = CacheLineCount(level)
+        idx = lineNo Mod n
+        If mValid(level, idx) And mTag(level, idx) = lineNo \ n Then _
+            mData(level, idx, pa Mod LCA_CACHE_LINE_BYTES) = CByte(value)
+    Next level
+End Sub
+
+' Number of valid lines of one level that belong to a physical frame (panel/tests only).
+Public Function CacheFrameLines(ByVal level As Long, ByVal pfn As Long) As Long
+    Dim n As Long, idx As Long
+    n = CacheLineCount(level)
+    If pfn < 0 Or pfn >= LCA_RAM_FRAMES Then Err.Raise LCA_ERR_CACHE_ARGUMENT, "LcaCache", "CACHE_FRAME"
+    For idx = 0 To n - 1
+        If mValid(level, idx) Then
+            If ((mTag(level, idx) * n + idx) * LCA_CACHE_LINE_BYTES) \ LCA_RAM_FRAME_SIZE = pfn Then _
+                CacheFrameLines = CacheFrameLines + 1
+        End If
+    Next idx
 End Function
 
 ' One L2 query per L1 miss; on L2 miss the whole four-byte line is read from RAM.

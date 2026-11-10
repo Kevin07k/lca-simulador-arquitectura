@@ -5,13 +5,15 @@ Requisitos / Requirements: Windows, Excel de escritorio, PowerShell. Una sola ve
 
 | Script | Qué hace / What it does |
 | --- | --- |
-| `Build-Workbook.ps1` | Recrea el libro desde `src/vba`: copia `workbook/LCA.xlsm`, quita los módulos `Lca*`, importa todos en orden y guarda `workbook/LCA.build.xlsm`. `-BuildPanels` ejecuta `ConstruirLca`: una sola hoja **LCA** con las bandas de CPU, diagrama, buses y cachés; `-InPlace` sobrescribe `LCA.xlsm`. |
+| `Build-Workbook.ps1` | Recrea el libro desde `src/vba`: copia `workbook/LCA.xlsm`, quita los módulos `Lca*`, importa todos en orden y guarda `workbook/LCA.build.xlsm`. `-BuildPanels` ejecuta `ConstruirLca` (hoja **LCA** con todas las bandas P04–P10); `-InPlace` sobrescribe `LCA.xlsm`. |
+| `Test-Workbook.ps1` | Ejecuta `LcaVerificarTodoTexto` (P04–P10) en Excel oculto sobre una copia temporal e imprime PASS/FAIL por suite. Código de salida 0 solo si todo pasa. / Runs every suite headless; exit code 0 only when all pass. |
 | `Export-Modules.ps1` | Exporta los módulos `Lca*` de un libro a `src/vba` para conciliar con `git diff`. |
-| `LcaModules.ps1` | Lista y orden de módulos. Añadir aquí cada módulo nuevo (P07, P08...). |
+| `LcaModules.ps1` | Lista y orden de módulos. Añadir aquí cada módulo nuevo. |
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\Build-Workbook.ps1 -BuildPanels
+powershell -ExecutionPolicy Bypass -File scripts\Test-Workbook.ps1
 powershell -ExecutionPolicy Bypass -File scripts\Export-Modules.ps1
 ```
 
-Las macros de prueba (`VerificarCachesP09`, etc.) muestran un `MsgBox`, por eso se ejecutan a mano con `Alt+F8`. El `.xlsm` es binario: un integrador a la vez.
+Las macros de prueba muestran un `MsgBox` cuando se ejecutan a mano con `Alt+F8`; dentro de `VerificarTodo` y de `Test-Workbook.ps1` informan en silencio mediante `LcaReport`. El `.xlsm` es binario: un integrador a la vez.

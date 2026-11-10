@@ -43,13 +43,13 @@ Each row after the first two starts from `CacheReset` except the "write hit" and
 
 1. Work on a copy of the latest `workbook/LCA.xlsm`. In the VBA editor (`Alt+F11`) import `LcaCache.bas`, `LcaLayout.bas`, `LcaCachePanel.bas`, `LcaCacheTests.bas` (and the updated panel modules `LcaPanel`, `LcaDiagrama`, `LcaBusPanel`; or simply run `scripts/Build-Workbook.ps1`) (the P06 modules `LcaRam`, `LcaCpu` must already be present). **Debug → Compile VBAProject**.
 2. `Alt+F8` → `VerificarCachesP09`: expect PASS with the assertion count shown by the macro. Record the **observed** message.
-3. `Alt+F8` → `ConstruirPanelCaches`, run `ConstruirLca` and scroll to the cache band (rows 124-166), then click **NEXT ACCESS** eleven times. Expected counters: after the 4th click L1I 3/1, L1D 0/0, L2 0/1; after the 11th click L1I 3/3, L1D 3/2, L2 1/4 (the last two fetches, 48h then 40h, conflict on L1I index 0 and 40h is served by an L2 hit). Take a screenshot of the sheet.
+3. `Alt+F8` → `ConstruirPanelCaches`, run `ConstruirLca` and scroll to the cache band (rows 194-236 since P10 reordered the bands), then click **NEXT ACCESS** eleven times. Expected counters: after the 4th click L1I 3/1, L1D 0/0, L2 0/1; after the 11th click L1I 3/3, L1D 3/2, L2 1/4 (the last two fetches, 48h then 40h, conflict on L1I index 0 and 40h is served by an L2 hit). Take a screenshot of the sheet.
 4. Run `VerificarRamP06`, `VerificarBusesP05` and `VerificarCpuAlu` as regressions.
 5. Save the copy as `workbook/LCA.xlsm`, export the three new modules, compare with `src/vba` (including `Attribute VB_Name`) and reconcile. Do not merge `.xlsm` as text.
 
 ## Limits and pending
 
-P09 works with physical addresses; translation (P07) and the combined path (P10) are not wired here, and no bus cycles are emitted yet (the fill address is exposed for P10/P12). Static review only in this delivery: desktop Excel compilation, macro execution and screenshots are **pending**, not PASS.
+P09 works with physical addresses only. Translation, page faults, frame invalidation and the four `FILL` bus cycles are wired by P10 ([P10_CACHE_PAGING.md](P10_CACHE_PAGING.md)). Observed on 2026-11-10 with `scripts/Test-Workbook.ps1`: `VerificarCachesP09` PASS, 77 assertions.
 
 </details>
 
@@ -92,6 +92,6 @@ Ver la tabla de la versión en inglés: los valores hit/miss son idénticos y so
 
 ## Límites y pendientes
 
-P09 trabaja con direcciones físicas; la traducción (P07) y el recorrido combinado (P10) no están conectados aquí y aún no se emiten ciclos de bus (la dirección de relleno queda expuesta para P10/P12). Esta entrega solo se revisó de forma estática: compilación en Excel de escritorio, ejecución de macros y capturas están **pendientes**, no PASS.
+P09 trabaja solo con direcciones físicas. La traducción, los fallos de página, la invalidación por marco y los cuatro ciclos de bus `FILL` los conecta P10 ([P10_CACHE_PAGING.md](P10_CACHE_PAGING.md)). Observado el 2026-11-10 con `scripts/Test-Workbook.ps1`: `VerificarCachesP09` PASS, 77 comprobaciones. La banda de cachés está ahora en las filas 194-236.
 
 </details>

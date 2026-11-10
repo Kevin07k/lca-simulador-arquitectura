@@ -91,10 +91,10 @@ Public Sub VerificarPagerP08()
     code = CpuSnapshot()
     Check code.PC = 0 And CpuReadRegister(LcaAX) = &HA5, "demo does not execute opcodes"
     PagerPanelRefresh
-    MsgBox "P08 PASS: " & CStr(mChecks) & " comprobaciones / assertions.", vbInformation
+    LcaReport "P08 PASS: " & CStr(mChecks) & " comprobaciones / assertions.", True
     Exit Sub
 failed:
-    MsgBox "P08 FAIL after " & CStr(mChecks) & " checks: " & Err.Description, vbCritical
+    LcaReport "P08 FAIL after " & CStr(mChecks) & " checks: " & Err.Description, False
 End Sub
 
 Private Sub Check(ByVal condition As Boolean, ByVal message As String)

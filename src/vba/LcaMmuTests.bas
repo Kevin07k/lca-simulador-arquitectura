@@ -157,11 +157,11 @@ Public Sub VerificarMmuP07()
     Check MmuTranslate(&H140, MMU_READ) = 64, "freed PFN 2 reused by VPN 10"
 
     MmuPanelRefresh
-    MsgBox "P07 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
-           "P08 atiende PAGE_FAULT; P09 integra cache y P12 ejecuta instrucciones.", vbInformation
+    LcaReport "P07 PASS: " & mChecks & " comprobaciones / assertions." & vbCrLf & _
+           "P08 atiende PAGE_FAULT; P09 integra cache y P12 ejecuta instrucciones.", True
     Exit Sub
 failed:
-    MsgBox "P07 FAIL after " & mChecks & " checks: " & Err.Description, vbCritical
+    LcaReport "P07 FAIL after " & mChecks & " checks: " & Err.Description, False
 End Sub
 
 Private Sub Check(ByVal condition As Boolean, ByVal message As String)

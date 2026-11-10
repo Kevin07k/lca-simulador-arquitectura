@@ -1,21 +1,24 @@
 Attribute VB_Name = "LcaLayout"
 Option Explicit
 
-' One worksheet ("LCA") hosts every panel as a vertical band. Each panel module keeps its own
-' cell addresses relative to row 1 and shifts them by its band base (ROW_BASE) with LcaRows.
+' One worksheet ("LCA") hosts every panel as a vertical band, in issue order. Each panel module keeps
+' its own cell addresses relative to row 1 and shifts them by its band base (ROW_BASE) with LcaRows.
 Public Const LCA_SHEET As String = "LCA"
-Public Const LCA_BASE_CPU As Long = 0       ' rows   1..44  controls and registers (P04)
-Public Const LCA_BASE_DIAGRAM As Long = 45  ' rows  46..87  CPU block diagram (P04)
-Public Const LCA_BASE_BUS As Long = 88      ' rows  89..122 buses and RAM (P05/P06)
-Public Const LCA_BASE_MMU As Long = 167     ' rows 168..200 page table and translation (P07)
-Public Const LCA_BASE_PAGER As Long = 201   ' rows 202..236 page faults and swap (P08)
-Public Const LCA_BASE_CACHE As Long = 123   ' rows 124..166 caches (P09)
+Public Const LCA_BASE_CPU As Long = 0           ' rows   1..44  controls and registers (P04)
+Public Const LCA_BASE_DIAGRAM As Long = 45      ' rows  46..87  CPU block diagram (P04)
+Public Const LCA_BASE_BUS As Long = 88          ' rows  89..122 buses and RAM (P05/P06)
+Public Const LCA_BASE_MMU As Long = 123         ' rows 124..156 page table and translation (P07)
+Public Const LCA_BASE_PAGER As Long = 157       ' rows 158..192 page faults and swap (P08)
+Public Const LCA_BASE_CACHE As Long = 193       ' rows 194..236 caches (P09)
+Public Const LCA_BASE_CACHE_PATH As Long = 237  ' rows 238..284 caches + paging (P10)
 
-' Builds the whole workbook view: removes the old one-sheet-per-panel layout, then every band.
+' Builds the whole workbook view: removes the old one-sheet-per-panel layout and anything left
+' on the LCA sheet by an older band order, then builds every band top to bottom.
 Public Sub ConstruirLca()
     Dim ws As Worksheet
     Dim item As Variant
     Dim previous As Boolean
+    Dim i As Long
     previous = Application.DisplayAlerts
     Application.DisplayAlerts = False
     For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches", "P07 Paginas", "P08 Swap")
@@ -28,12 +31,19 @@ Public Sub ConstruirLca()
     Next item
     Application.DisplayAlerts = previous
     Set ws = LcaSheet(True)
+    For i = ws.Shapes.Count To 1 Step -1
+        ws.Shapes(i).Delete
+    Next i
+    ws.Cells.UnMerge
+    ws.Cells.Clear
+    ws.Cells.Validation.Delete
     ConstruirDiagramaCpu
     ConstruirPanelCpu
     ConstruirPanelBuses
     ConstruirPanelPaginas
     ConstruirPanelSwap
     ConstruirPanelCaches
+    ConstruirPanelCachePaginacion
     LcaGoto ws, LCA_BASE_CPU
 End Sub
 
@@ -150,4 +160,8 @@ End Sub
 
 Public Sub LcaIrSwap()
     LcaGoto LcaSheet(True), LCA_BASE_PAGER
+End Sub
+
+Public Sub LcaIrCachePaginacion()
+    LcaGoto LcaSheet(True), LCA_BASE_CACHE_PATH
 End Sub

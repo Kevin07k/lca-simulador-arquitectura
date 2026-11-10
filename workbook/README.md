@@ -1,20 +1,30 @@
-# Libro inicial / Initial workbook
+# Libro / Workbook
 
-La hoja **CPU Diagrama** muestra la arquitectura con formas editables y flechas. Los botones DIAGRAMA / CONTROLES enlazan las dos vistas. [Guía bilingüe](../docs/P04_DIAGRAM.md).
+`LCA.xlsm` es el simulador ejecutable. Abrirlo en Microsoft Excel de escritorio y habilitar macros solo si se confía en este código revisado. Nunca renombrar un `.xlsx` a `.xlsm`.
 
-English: **CPU Diagrama** shows the architecture with editable shapes and arrows. DIAGRAM / CONTROLS link the two views. See the bilingual guide above.
+`LCA.xlsm` is the executable simulator. Open it in desktop Excel and enable macros only if you trust this reviewed code.
 
-La hoja **CPU** es el panel interactivo de P04: valores DEC/HEX/BIN, flags, controles de carga/ALU/reset e historial. [Instrucciones bilingües](../docs/P04_INTERFACE.md).
+## Hojas / Sheets
 
-English: the **CPU** sheet is the P04 interactive dashboard: DEC/HEX/BIN values, flags, load/ALU/reset controls and recent-action trace. See the bilingual instructions above.
+| Hoja / Sheet | Contenido / Content |
+| --- | --- |
+| `Inicio` | Portada. `VerificarInstalacion` escribe `VBA OK - P03` en `B13`. |
+| `LCA` | Todas las bandas en una sola hoja, de arriba abajo / every band on one sheet, top to bottom. |
 
-Abrir `LCA.xlsm` en Microsoft Excel de escritorio. Conserva la portada `Inicio` y el módulo inicial `LcaInicio`, junto a los módulos CPU/ALU de P04 descritos abajo. No se debe renombrar un `.xlsx` a `.xlsm`.
+| Filas / Rows | Banda / Band | Guía / Guide |
+| --- | --- | --- |
+| 1–44 | P04 CPU / ALU: registros, ALU, flags, historial | [P04_INTERFACE](../docs/P04_INTERFACE.md) |
+| 46–87 | P04 diagrama de bloques del CPU | [P04_DIAGRAM](../docs/P04_DIAGRAM.md) |
+| 89–122 | P05/P06 buses, micropalabra y RAM | [P05](../docs/P05_BUS_CONTROL.md), [P06](../docs/P06_RAM.md) |
+| 124–156 | P07 tabla de páginas y traducción | [P07](../docs/P07_MMU.md) |
+| 158–192 | P08 page fault, CLOCK y swap | [P08](../docs/P08_PAGE_FAULT_SWAP.md) |
+| 194–236 | P09 cachés L1I, L1D, L2 | [P09](../docs/P09_CACHE.md) |
+| 238–284 | P10 caché + paginación | [P10](../docs/P10_CACHE_PAGING.md) |
 
-P04 incorpora además `LcaCpu`, `LcaAlu` y `LcaCpuTests`. Ejecutar `VerificarCpuAlu` con Alt+F8 para generar el reporte `P04 Tests`: PASS, 197120 casos aritméticos y 1379895 comprobaciones. [API y reproducción](../docs/P04_CPU_ALU.md). El ciclo completo se implementa en P12.
+`ConstruirLca` (Alt+F8) reconstruye la hoja completa. Las bandas tienen botones de navegación (`VER P08`, `VER P09`, `DIAGRAMA`...).
 
-La macro `VerificarInstalacion` cambia `Inicio!B13` a `VBA OK - P03`. Procedimiento y responsables: [VBA_WORKFLOW.md](../docs/VBA_WORKFLOW.md).
+## Mantener libro y fuente alineados / Keep workbook and source aligned
 
-English: open `LCA.xlsm` in desktop Microsoft Excel. It contains the `Inicio` sheet and `LcaInicio` module, not the future simulator. Run `VerificarInstalacion` to write `VBA OK - P03` to `Inicio!B13`. See the synchronization guide.
+La fuente de verdad del código es `src/vba`. Para regenerar el libro: `scripts\Build-Workbook.ps1 -BuildPanels -InPlace`; para comprobarlo: `scripts\Test-Workbook.ps1` o `VerificarTodo`. Procedimiento manual: [VBA_WORKFLOW.md](../docs/VBA_WORKFLOW.md). `LCA.build.xlsm` es una salida local ignorada por Git.
 
-English: P04 also includes `LcaCpu`, `LcaAlu` and `LcaCpuTests`. Run `VerificarCpuAlu` with Alt+F8: `P04 Tests` reports PASS, 197120 arithmetic cases and 1379895 assertions. See the bilingual API above. Full instruction execution belongs to P12.
-
+The source of truth for code is `src/vba`. Rebuild with `Build-Workbook.ps1 -BuildPanels -InPlace` and verify with `Test-Workbook.ps1` or `VerificarTodo`.

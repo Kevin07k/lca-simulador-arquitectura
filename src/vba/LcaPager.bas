@@ -1,8 +1,8 @@
 Attribute VB_Name = "LcaPager"
 Option Explicit
 
-' P08 pager. P09/P10 must invalidate all cache lines of the selected PFN
-' before the RAM frame is reused (see docs/P08_PAGE_FAULT_SWAP.md).
+' P08 pager. P10: before a frame is reused, every L1I/L1D/L2 line of that PFN is
+' invalidated (docs/P08_PAGE_FAULT_SWAP.md, docs/P10_CACHE_PAGING.md).
 Public Const LCA_ERR_PAGER_STATE As Long = vbObjectError + 2082
 
 Private mReady As Boolean
@@ -12,16 +12,19 @@ Private mEvictionCount As Long
 Private mWritebackCount As Long
 Private mLoadByteCount As Long
 Private mWritebackByteCount As Long
+Private mInvalidationCount As Long
+Private mInvalidatedLines As Long
 Private mLastVA As Long
 Private mLastVPN As Long
 Private mLastVictim As Long
 Private mTrace(0 To 127) As String
 Private mTraceCount As Long
 
-' Reset memory/image/page table together; callers reset CPU and bus separately.
+' Reset memory/caches/image/page table together; callers reset CPU and bus separately.
 Public Sub PagerReset()
     Dim i As Long
     RamReset
+    CacheReset              ' P10: no cache line may survive a RAM reset
     MmuReset
     SwapReset
     mReady = True
@@ -31,6 +34,8 @@ Public Sub PagerReset()
     mWritebackCount = 0
     mLoadByteCount = 0
     mWritebackByteCount = 0
+    mInvalidationCount = 0
+    mInvalidatedLines = 0
     mLastVA = -1
     mLastVPN = -1
     mLastVictim = -1
@@ -83,10 +88,11 @@ Public Sub PagerStoreByte(ByVal va As Long, ByVal sourceRegister As Long)
     pa = PagerResolve(va, MMU_WRITE)
     MemoryStorePrepare va, pa, sourceRegister
     MemoryStoreCommit
+    CacheSnoopWrite pa, value     ' P10: this uncached ST keeps any resident line coherent
     MmuCommitAccess va, MMU_WRITE, pa
 End Sub
 
-' P09/P12 can replace this direct byte path with their cache/bus data-read path.
+' Uncached P08 byte path (RAM is current under write-through). Cached path: CachePathReadByte (P10).
 Public Function PagerReadByte(ByVal va As Long) As Byte
     Dim pa As Long
     RequirePager
@@ -97,7 +103,7 @@ End Function
 
 ' Explicit handler for an absent, access-validated VPN; normally called by PagerResolve.
 Private Sub PagerHandleFault(ByVal va As Long, ByVal vpn As Long)
-    Dim pfn As Long, victim As Long, offset As Long, pa As Long
+    Dim pfn As Long, victim As Long, offset As Long, pa As Long, lines As Long
     Dim entry As LcaPageEntry
     RequirePager
     If vpn < 0 Or vpn > 14 Or MmuVpnOf(va) <> vpn Then _
@@ -115,8 +121,12 @@ Private Sub PagerHandleFault(ByVal va As Long, ByVal vpn As Long)
     If victim >= 0 Then
         mLastVictim = victim
         entry = MmuPage(victim)
-        ' P09/P10 cache invalidation must occur here, before reading dirty RAM
-        ' and before unmapping or overwriting the old frame.
+        ' P10: drop every cached line of the frame before the writeback reads RAM and before
+        ' the frame is unmapped or overwritten. Write-through keeps RAM authoritative for swap.
+        lines = CacheInvalidateFrame(pfn)
+        mInvalidationCount = mInvalidationCount + 1
+        mInvalidatedLines = mInvalidatedLines + lines
+        AddTrace "INVALIDATE PFN=" & CStr(pfn) & " lines=" & CStr(lines) & " (L1I/L1D/L2)"
         If entry.Dirty Then
             For offset = 0 To 31
                 pa = pfn * 32 + offset
@@ -223,6 +233,16 @@ End Function
 Public Function PagerLastVictimVPN() As Long
     RequirePager
     PagerLastVictimVPN = mLastVictim
+End Function
+
+Public Function PagerInvalidationCount() As Long
+    RequirePager
+    PagerInvalidationCount = mInvalidationCount
+End Function
+
+Public Function PagerInvalidatedLines() As Long
+    RequirePager
+    PagerInvalidatedLines = mInvalidatedLines
 End Function
 
 Public Function PagerTraceCount() As Long
