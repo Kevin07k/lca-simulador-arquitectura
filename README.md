@@ -23,7 +23,9 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P09 | L1I, L1D and L2 caches | Integrated |
 | P10 | Caches integrated with paging | Integrated |
 | P11 | Assembly editor, assembler and loader | In review |
-| P12–P22 | Full CPU cycle, I/O, programs, delivery | Pending |
+| P12 | Full CPU cycle and ISA | Pending |
+| P13 | Keyboard and eight-byte FIFO queue | In review |
+| P14–P22 | LCD, programs, documentation, delivery | Pending |
 
 ## Team
 
