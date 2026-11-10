@@ -5,18 +5,22 @@ Option Explicit
 ' addresses relative to A1 of a 20-column block (A..T) and shifts them by its block origin
 ' (ROW_BASE, COL_BASE) with LcaShift / LcaCell. Column letters beyond T are clamped to the block.
 '
-'   COLUMN 1 (A..T)        COLUMN 2 (U..AN)         COLUMN 3 (AO..BH)      COLUMN 4 (BI..CB)
-'   P12 machine   1-68     P11 editor    1-98       P13 keyboard  1-36     P07 pages    1-33
-'   P04 CPU      70-113    P10 cache+pag 100-146    P14 LCD      38-73     P08 swap    35-69
-'   P04 diagram 115-156                             P05/P06 buses 75-108   P09 caches  71-113
+'   COLUMN 1 (A..T)          COLUMN 2 (U..AN)         COLUMN 3 (AO..BH)      COLUMN 4 (BI..CB)
+'   cover (portada) 1-26     P11 editor    1-98       P13 keyboard  1-36     P07 pages             1-33
+'   P12 machine    28-95     P10 cache+pag 100-146    P14 LCD      38-73     P08 swap+CLOCK+map   35-104
+'   P04 CPU+detail 97-168                             P05/P06 buses 75-108   P09 caches+chart    106-148
+'   P04 diagram   170-211
+' Long traces live on the separate "Logs" sheet (LcaLogs).
 Public Const LCA_SHEET As String = "LCA"
 Public Const LCA_BLOCK_COLS As Long = 20
 
-Public Const LCA_BASE_MACHINE As Long = 0
+Public Const LCA_BASE_COVER As Long = 0
+Public Const LCA_COL_COVER As Long = 0
+Public Const LCA_BASE_MACHINE As Long = 27
 Public Const LCA_COL_MACHINE As Long = 0
-Public Const LCA_BASE_CPU As Long = 69
+Public Const LCA_BASE_CPU As Long = 96
 Public Const LCA_COL_CPU As Long = 0
-Public Const LCA_BASE_DIAGRAM As Long = 114
+Public Const LCA_BASE_DIAGRAM As Long = 169
 Public Const LCA_COL_DIAGRAM As Long = 0
 
 Public Const LCA_BASE_EDITOR As Long = 0
@@ -35,21 +39,28 @@ Public Const LCA_BASE_MMU As Long = 0
 Public Const LCA_COL_MMU As Long = 60
 Public Const LCA_BASE_PAGER As Long = 34
 Public Const LCA_COL_PAGER As Long = 60
-Public Const LCA_BASE_CACHE As Long = 70
+Public Const LCA_BASE_CACHE As Long = 105
 Public Const LCA_COL_CACHE As Long = 60
 
-Private Const GRID_LAST_ROW As Long = 160
+Private Const GRID_LAST_ROW As Long = 215
 Private Const GRID_LAST_COL As Long = 80
 Private Const BG As Long = 2758415          ' RGB(15, 23, 42)
 
 ' Builds the whole dashboard. Two passes: the first settles the shared row heights of blocks that sit
-' side by side, the second places every shape on its final cells. Removes old sheets (including the
-' P04 test report) and opens on the P12 machine block.
+' side by side, the second places every shape on its final cells. Removes the old sheets (Inicio, the
+' P04 test report, the one-sheet-per-panel layout), keeps the logo, builds the Logs sheet and opens
+' on the cover. The workbook ends with two sheets: LCA and Logs.
 Public Sub ConstruirLca()
     Dim ws As Worksheet, item As Variant, previous As Boolean, i As Long, pass As Long
+    Application.ScreenUpdating = False
+    Set ws = LcaSheet(True)
+    For i = ws.Shapes.Count To 1 Step -1
+        If ws.Shapes(i).Name <> LCA_LOGO_SHAPE Then ws.Shapes(i).Delete
+    Next i
+    PreserveLogo ws
     previous = Application.DisplayAlerts
     Application.DisplayAlerts = False
-    For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches", "P07 Paginas", "P08 Swap", "P04 Tests")
+    For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches", "P07 Paginas", "P08 Swap", "P04 Tests", "Inicio")
         For Each ws In ThisWorkbook.Worksheets
             If ws.Name = CStr(item) Then
                 ws.Delete
@@ -58,10 +69,10 @@ Public Sub ConstruirLca()
         Next ws
     Next item
     Application.DisplayAlerts = previous
-    Application.ScreenUpdating = False
     Set ws = LcaSheet(True)
+    If ws.Index <> 1 Then ws.Move Before:=ThisWorkbook.Worksheets(1)
     For i = ws.Shapes.Count To 1 Step -1
-        ws.Shapes(i).Delete
+        If ws.Shapes(i).Name <> LCA_LOGO_SHAPE Then ws.Shapes(i).Delete
     Next i
     ws.Cells.UnMerge
     ws.Cells.Clear
@@ -69,12 +80,15 @@ Public Sub ConstruirLca()
     ws.Rows.RowHeight = 12
     ws.Range(ws.Cells(1, 1), ws.Cells(GRID_LAST_ROW, GRID_LAST_COL)).Interior.Color = BG
     For pass = 1 To 2
+        ConstruirPortada
         ConstruirPanelEditor
         ConstruirDiagramaCpu
         ConstruirPanelCpu
+        ConstruirCpuDetalle
         ConstruirPanelBuses
         ConstruirPanelPaginas
         ConstruirPanelSwap
+        ConstruirMemoriaDetalle
         ConstruirPanelCaches
         ConstruirPanelCachePaginacion
         ConstruirPanelTeclado
@@ -82,8 +96,42 @@ Public Sub ConstruirLca()
         ConstruirPanelMaquina
     Next pass
     LcaPulirBandas ws
+    ConstruirLogs
+    MemoriaDetalleActualizar
+    PanelActualizar
+    ws.Activate
     Application.ScreenUpdating = True
-    LcaIrMaquina
+    LcaIrPortada
+End Sub
+
+' Moves the team logo from the old Inicio sheet into LCA (once) so the cover can show it.
+Private Sub PreserveLogo(ByVal lca As Worksheet)
+    Dim inicio As Worksheet, s As Shape, p As Shape
+    For Each s In lca.Shapes
+        If s.Name = LCA_LOGO_SHAPE Then Exit Sub
+    Next s
+    For Each inicio In ThisWorkbook.Worksheets
+        If inicio.Name = "Inicio" Then Exit For
+    Next inicio
+    If inicio Is Nothing Then Exit Sub
+    Dim before As Long
+    On Error Resume Next
+    For Each s In inicio.Shapes
+        If s.Type = msoPicture Then
+            before = lca.Shapes.Count
+            s.Copy
+            lca.Activate
+            lca.Range("B2").Select
+            lca.Paste
+            If lca.Shapes.Count = before + 1 Then
+                Set p = lca.Shapes(lca.Shapes.Count)
+                If p.Type = msoPicture Then p.Name = LCA_LOGO_SHAPE Else p.Delete
+            End If
+            Exit For
+        End If
+    Next s
+    Application.CutCopyMode = False
+    On Error GoTo 0
 End Sub
 
 ' Visual polish shared by the older text-only blocks (P05/P06, P07, P08, P09): centred tables,

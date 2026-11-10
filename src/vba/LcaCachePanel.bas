@@ -53,11 +53,8 @@ Public Sub ConstruirPanelCaches()
     ws.Range(RA("B17:J28")).Interior.Color = RGB(30, 41, 59)
     ws.Range(RA("B10:J28")).HorizontalAlignment = xlLeft
     ws.Range(RA("B30:R30")).Merge
-    ws.Range(RA("B30")).Value = "TRAZA REAL DEL MOTOR / LIVE ENGINE TRACE (ultimos 8 / last 8)"
-    For i = 31 To 38
-        ws.Range(CL(ws, ROW_BASE + i, 2), CL(ws, ROW_BASE + i, 18)).Merge
-    Next i
-    ws.Range(RA("B31:R38")).Interior.Color = RGB(30, 41, 59)
+    ws.Range(RA("B30")).Value = "GRAFICA HIT / MISS POR NIVEL  (la traza completa esta en la hoja Logs)"
+    AddCacheChart ws
     ws.Range(RA("B40:R41")).Merge
     ws.Range(RA("B40:R41")).WrapText = True
     ws.Range(RA("B40")).Font.Color = RGB(125, 211, 252)
@@ -117,11 +114,6 @@ Public Sub CachePanelActualizar()
             row = row + 1
         Next idx
     Next level
-    n = CacheTraceCount()
-    For i = 0 To 7
-        CL(ws, ROW_BASE + 31 + i, 2).Value = vbNullString
-        If n > i Then CL(ws, ROW_BASE + 31 + i, 2).Value = CacheTraceLine(n - 1 - i)
-    Next i
     ws.Range(RA("B40")).Value = mDemoStatus
 End Sub
 
@@ -198,6 +190,48 @@ Private Sub AddCacheButton(ByVal ws As Worksheet, ByVal address As String, _
     button.TextFrame2.TextRange.ParagraphFormat.Alignment = msoAlignCenter
     button.TextFrame2.VerticalAnchor = msoAnchorMiddle
     button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
+End Sub
+
+' Clustered columns hit / miss for L1I, L1D, L2, fed by the counter table (B11:E13); it updates by itself.
+Private Sub AddCacheChart(ByVal ws As Worksheet)
+    Dim area As Range, co As ChartObject
+    Set area = ws.Range(RA("B31:R39"))
+    Set co = ws.ChartObjects.Add(area.Left, area.Top + 2, area.Width, area.Height - 4)
+    co.Name = "P09_chart"
+    co.Placement = xlMove
+    With co.Chart
+        .ChartType = xlColumnClustered
+        Do While .SeriesCollection.Count > 0
+            .SeriesCollection(1).Delete
+        Loop
+        With .SeriesCollection.NewSeries
+            .Name = "HIT"
+            .Values = ws.Range(RA("D11:D13"))
+            .XValues = ws.Range(RA("B11:B13"))
+            .Format.Fill.ForeColor.RGB = RGB(46, 211, 129)
+            .HasDataLabels = True
+            .DataLabels.Font.Color = RGB(226, 232, 240)
+        End With
+        With .SeriesCollection.NewSeries
+            .Name = "MISS"
+            .Values = ws.Range(RA("E11:E13"))
+            .XValues = ws.Range(RA("B11:B13"))
+            .Format.Fill.ForeColor.RGB = RGB(251, 146, 60)
+            .HasDataLabels = True
+            .DataLabels.Font.Color = RGB(226, 232, 240)
+        End With
+        .HasTitle = False
+        .HasLegend = True
+        .Legend.Position = xlLegendPositionRight
+        .Legend.Font.Color = RGB(226, 232, 240)
+        .ChartArea.Format.Fill.ForeColor.RGB = RGB(30, 41, 59)
+        .ChartArea.Format.Line.ForeColor.RGB = RGB(125, 211, 252)
+        .PlotArea.Format.Fill.ForeColor.RGB = RGB(30, 41, 59)
+        .Axes(xlValue).TickLabels.Font.Color = RGB(148, 163, 184)
+        .Axes(xlValue).MajorGridlines.Format.Line.ForeColor.RGB = RGB(51, 65, 85)
+        .Axes(xlCategory).TickLabels.Font.Color = RGB(226, 232, 240)
+        .Axes(xlCategory).TickLabels.Font.Bold = True
+    End With
 End Sub
 
 ' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.

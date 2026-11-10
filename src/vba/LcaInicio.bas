@@ -7,11 +7,9 @@ Private mSilent As Boolean
 Private mLastPassed As Boolean
 Private mLastReport As String
 
-' Entry point for the initial workbook. No CPU simulation is implemented here.
+' Installation check: writes "VBA OK - P03" in the status line of the cover (LCA sheet).
 Public Sub VerificarInstalacion()
-    Dim inicio As Worksheet
-    Set inicio = ThisWorkbook.Worksheets("Inicio")
-    inicio.Range("B13").Value = "VBA OK - " & LCA_VERSION
+    PortadaEstado "VBA OK - " & LCA_VERSION & "   |   macros habilitadas   " & Format$(Now, "yyyy-mm-dd hh:nn")
 End Sub
 
 ' Every Verificar* macro reports here: a MsgBox for a person, silent inside VerificarTodo/scripts.
@@ -61,6 +59,12 @@ Public Function LcaVerificarTodoTexto() As String
     Next i
     mSilent = False
     LcaVerificarTodoTexto = IIf(allOk, "ALL PASS", "SOME FAIL") & vbCrLf & out
+    ' Keep the report on the Logs sheet and a one-line summary on the cover.
+    On Error Resume Next
+    LogsGuardarPruebas LcaVerificarTodoTexto
+    PortadaEstado IIf(allOk, "VerificarTodo: ALL PASS", "VerificarTodo: SOME FAIL") & "  (" & CStr(UBound(suites) + 1) & _
+                  " suites, P04-P14)   " & Format$(Now, "yyyy-mm-dd hh:nn")
+    On Error GoTo 0
 End Function
 
 Public Sub VerificarTodo()

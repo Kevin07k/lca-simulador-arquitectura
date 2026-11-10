@@ -1,8 +1,8 @@
 # Shared list: import order of the LCA VBA modules (src/vba). Add new modules here.
 $script:LcaModules = @(
     'LcaInicio', 'LcaCpu', 'LcaAlu', 'LcaBus', 'LcaControl',
-    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaMmu', 'LcaMmuPath', 'LcaSwap', 'LcaPager', 'LcaCachePath', 'LcaAssembler', 'LcaLoader', 'LcaKeyboard', 'LcaLcd', 'LcaExecutor', 'LcaLayout',
-    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel', 'LcaCachePathPanel', 'LcaEditorPanel', 'LcaKeyboardPanel', 'LcaLcdPanel', 'LcaMachinePanel',
+    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaMmu', 'LcaMmuPath', 'LcaSwap', 'LcaPager', 'LcaCachePath', 'LcaAssembler', 'LcaLoader', 'LcaKeyboard', 'LcaLcd', 'LcaExecutor', 'LcaLogs', 'LcaLayout',
+    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel', 'LcaCachePathPanel', 'LcaEditorPanel', 'LcaKeyboardPanel', 'LcaLcdPanel', 'LcaMachinePanel', 'LcaCoverPanel', 'LcaCpuDetail', 'LcaMemoryDetail',
     'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaMmuTests', 'LcaPagerTests', 'LcaCacheTests', 'LcaCachePathTests', 'LcaAssemblerTests', 'LcaKeyboardTests', 'LcaLcdTests', 'LcaExecutorTests'
 )
 

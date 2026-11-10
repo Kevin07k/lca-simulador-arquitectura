@@ -138,11 +138,11 @@ Public Sub ConstruirPanelMaquina()
     ' Listing and trace: first rows below the drawing, whatever the row heights shared with other blocks.
     lr = ListRow(ws)
     Title ws, "B" & CStr(lr - 1) & ":H" & CStr(lr - 1), "PROGRAMA CARGADO  (fila resaltada = PC)"
-    Title ws, "J" & CStr(lr - 1) & ":S" & CStr(lr - 1), "TRAZA DE EJECUCION  (registros, memoria y senales; mas reciente arriba)"
+    Title ws, "J" & CStr(lr - 1) & ":S" & CStr(lr - 1), "INDICADORES EN VIVO  (la traza completa de cada instruccion esta en la hoja Logs)"
     For i = 0 To LIST_ROWS - 1
         ws.Range(CL(ws, ROW_BASE + lr + i, 4), CL(ws, ROW_BASE + lr + i, 8)).Merge
-        ws.Range(CL(ws, ROW_BASE + lr + i, 10), CL(ws, ROW_BASE + lr + i, 19)).Merge
     Next i
+    DrawIndicators ws, lr
     With ws.Range(CL(ws, ROW_BASE + lr, 2), CL(ws, ROW_BASE + lr + LIST_ROWS - 1, 19))
         .Font.Name = "Consolas"
         .Font.Size = 9
@@ -168,9 +168,10 @@ End Sub
 
 Private Sub NavBar(ByVal ws As Worksheet)
     Dim labels As Variant, macros As Variant, i As Long, x As Double, w As Double, top As Double, n As Long
-    labels = Array("VISTA GENERAL", "CPU", "DIAGRAMA", "BUSES", "PAGINAS", "SWAP", "CACHES", "CACHE+PAG", "EDITOR", "TECLADO", "LCD")
-    macros = Array("LcaVistaGeneral", "LcaIrCpu", "LcaIrDiagrama", "LcaIrBuses", "LcaIrPaginas", "LcaIrSwap", "LcaIrCaches", _
-                   "LcaIrCachePaginacion", "LcaIrEditor", "LcaIrTeclado", "LcaIrLcd")
+    labels = Array("PORTADA", "VISTA GENERAL", "CPU", "DIAGRAMA", "BUSES", "PAGINAS", "SWAP", "CACHES", "CACHE+PAG", _
+                   "EDITOR", "TECLADO", "LCD", "LOGS")
+    macros = Array("LcaIrPortada", "LcaVistaGeneral", "LcaIrCpu", "LcaIrDiagrama", "LcaIrBuses", "LcaIrPaginas", "LcaIrSwap", _
+                   "LcaIrCaches", "LcaIrCachePaginacion", "LcaIrEditor", "LcaIrTeclado", "LcaIrLcd", "LcaIrLogs")
     n = UBound(labels) + 1
     x = CL(ws, ROW_BASE + 5, 2).Left
     w = (CL(ws, ROW_BASE + 5, 20).Left - x) / n
@@ -344,6 +345,7 @@ Public Sub MaquinaPaso()
     mMessage = vbNullString
     MaquinaRefrescar
     If mSpeed > 0 And Not ws Is Nothing Then AnimateLastStep ws
+    AfterAction
     Exit Sub
 failed:
     mMessage = "ERROR: " & Err.Description
@@ -373,6 +375,7 @@ Public Sub MaquinaEjecutar()
         mSpeed = keepSpeed
     End If
     mMessage = CStr(n) & " instrucciones ejecutadas."
+    AfterAction
     MaquinaRefrescar
     Exit Sub
 failed:
@@ -385,6 +388,7 @@ Public Sub MaquinaReset()
     If Not LoaderLoaded() Then MaquinaEjemplo
     ExecReset
     mMessage = "Reset: CPU, buses, RAM, caches, tabla de paginas, teclado y LCD reiniciados; PC = 000h."
+    AfterAction
     MaquinaRefrescar
     Exit Sub
 failed:
@@ -400,6 +404,7 @@ Public Sub MaquinaTeclear()
     text = CStr(ws.Range(RA("C10")).Value)
     n = KeyboardPushText(text)
     mMessage = CStr(n) & " tecla(s) en la cola" & IIf(n < Len(text), " (" & CStr(Len(text) - n) & " rechazada(s): KBD_FULL)", "") & "."
+    AfterAction
     MaquinaRefrescar
     Exit Sub
 failed:
@@ -423,6 +428,7 @@ Public Sub MaquinaTecla()
         Flash ws, Mid$(nm, 5), LAMP_ON, HEAD, 2
         If accepted Then Flash ws, "kq" & CStr((KeyboardTail() + 7) Mod 8), LAMP_ON, DATA_FILL, 2
     End If
+    AfterAction
     Exit Sub
 failed:
     mMessage = "ERROR: " & Err.Description
@@ -445,6 +451,7 @@ Private Sub LoadProgram(ByVal source As Variant, ByVal message As String)
     Else
         mMessage = "Error al ensamblar el programa de demostracion."
     End If
+    AfterAction
     MaquinaRefrescar
 End Sub
 
@@ -854,19 +861,115 @@ Private Sub RefreshListing(ByVal ws As Worksheet)
                 CL(ws, row, 4).Value = InstructionAt(addr) & "      <- PC"
             End If
         End If
-        CL(ws, row, 10).Value = vbNullString
-        ws.Range(CL(ws, row, 10), CL(ws, row, 19)).Interior.Color = CARD
-        If i < ExecTraceCount() Then
-            CL(ws, row, 10).Value = ExecTraceLine(i)
-            If InStr(ExecTraceLine(i), "ERROR") > 0 Then
-                ws.Range(CL(ws, row, 10), CL(ws, row, 19)).Interior.Color = BAD
-            ElseIf InStr(ExecTraceLine(i), "PAGE_FAULT") > 0 Or InStr(ExecTraceLine(i), "IN_EMPTY") > 0 Then
-                ws.Range(CL(ws, row, 10), CL(ws, row, 19)).Interior.Color = WARN
-            ElseIf i = 0 Then
-                ws.Range(CL(ws, row, 10), CL(ws, row, 19)).Interior.Color = HEAD
-            End If
-        End If
     Next i
+    RefreshIndicators ws, lr
+End Sub
+
+' Six KPI tiles and a hit/miss chart per cache level (data cells hidden under the chart).
+Private Sub DrawIndicators(ByVal ws As Worksheet, ByVal lr As Long)
+    Dim area As Range, x0 As Double, y0 As Double, w As Double, i As Long, co As ChartObject, names As Variant
+    Set area = ws.Range(CL(ws, ROW_BASE + lr, 10), CL(ws, ROW_BASE + lr + LIST_ROWS - 1, 19))
+    area.Interior.Color = BG
+    x0 = area.Left
+    y0 = area.Top
+    w = area.Width / 3
+    names = Array("INSTRUCCIONES", "FALLOS DE PAGINA", "LLENADOS DE LINEA", "ACIERTOS L1I", "ACIERTOS L1D", "E/S  teclado | LCD")
+    For i = 0 To 5
+        RawBox ws, "kpi" & CStr(i), x0 + (i Mod 3) * w + 4, y0 + (i \ 3) * 62, w - 8, 56, CARD, CStr(names(i)) & vbCr & "0", 10
+        ws.Shapes("P12_kpi" & CStr(i)).TextFrame2.TextRange.Paragraphs(2).Font.Size = 20
+        ws.Shapes("P12_kpi" & CStr(i)).TextFrame2.TextRange.Paragraphs(2).Font.Bold = msoTrue
+        ws.Shapes("P12_kpi" & CStr(i)).Line.ForeColor.RGB = ACCENT
+    Next i
+    For i = 0 To 2
+        CL(ws, ROW_BASE + lr + 12 + i, 11).Value = CacheLevelName(i)
+        CL(ws, ROW_BASE + lr + 12 + i, 12).Value = 0
+        CL(ws, ROW_BASE + lr + 12 + i, 13).Value = 0
+    Next i
+    Set co = ws.ChartObjects.Add(x0 + 4, y0 + 130, area.Width - 8, area.Top + area.Height - (y0 + 130) - 4)
+    co.Name = "P12_chart"
+    co.Placement = xlMove
+    With co.Chart
+        .ChartType = xlBarClustered
+        Do While .SeriesCollection.Count > 0
+            .SeriesCollection(1).Delete
+        Loop
+        With .SeriesCollection.NewSeries
+            .Name = "hit"
+            .Values = ws.Range(CL(ws, ROW_BASE + lr + 12, 12), CL(ws, ROW_BASE + lr + 14, 12))
+            .XValues = ws.Range(CL(ws, ROW_BASE + lr + 12, 11), CL(ws, ROW_BASE + lr + 14, 11))
+            .Format.Fill.ForeColor.RGB = LINE_ON
+            .HasDataLabels = True
+            .DataLabels.Font.Color = INK
+        End With
+        With .SeriesCollection.NewSeries
+            .Name = "miss"
+            .Values = ws.Range(CL(ws, ROW_BASE + lr + 12, 13), CL(ws, ROW_BASE + lr + 14, 13))
+            .XValues = ws.Range(CL(ws, ROW_BASE + lr + 12, 11), CL(ws, ROW_BASE + lr + 14, 11))
+            .Format.Fill.ForeColor.RGB = RGB(251, 146, 60)
+            .HasDataLabels = True
+            .DataLabels.Font.Color = INK
+        End With
+        .HasTitle = True
+        .ChartTitle.Text = "CACHES: aciertos vs fallos"
+        .ChartTitle.Font.Color = ACCENT
+        .ChartTitle.Font.Size = 11
+        .HasLegend = True
+        .Legend.Position = xlLegendPositionTop
+        .Legend.Font.Color = INK
+        .ChartArea.Format.Fill.ForeColor.RGB = CARD
+        .ChartArea.Format.Line.ForeColor.RGB = ACCENT
+        .PlotArea.Format.Fill.ForeColor.RGB = CARD
+        .Axes(xlValue).TickLabels.Font.Color = MUTED
+        .Axes(xlValue).MajorGridlines.Format.Line.ForeColor.RGB = EDGE
+        .Axes(xlCategory).TickLabels.Font.Color = INK
+        .Axes(xlCategory).TickLabels.Font.Bold = True
+    End With
+End Sub
+
+Private Sub RefreshIndicators(ByVal ws As Worksheet, ByVal lr As Long)
+    Dim i As Long, values As Variant, l1i As Long, l1d As Long
+    l1i = CacheHits(LCA_CACHE_L1I) + CacheMisses(LCA_CACHE_L1I)
+    l1d = CacheHits(LCA_CACHE_L1D) + CacheMisses(LCA_CACHE_L1D)
+    ' IIf evaluates both branches, so the percentages are computed only when there were accesses.
+    values = Array(CStr(ExecSteps()), CStr(PagerFaultCount()), CStr(CacheRamFills()), _
+                   HitRate(CacheHits(LCA_CACHE_L1I), l1i), HitRate(CacheHits(LCA_CACHE_L1D), l1d), _
+                   CStr(KeyboardConsumed()) & " | " & CStr(LcdWrites()))
+    For i = 0 To 5
+        With ws.Shapes("P12_kpi" & CStr(i)).TextFrame2.TextRange.Paragraphs(2)
+            If .Text <> CStr(values(i)) Then .Text = CStr(values(i))
+        End With
+    Next i
+    For i = 0 To 2
+        CL(ws, ROW_BASE + lr + 12 + i, 12).Value = CacheHits(i)
+        CL(ws, ROW_BASE + lr + 12 + i, 13).Value = CacheMisses(i)
+    Next i
+End Sub
+
+Private Function HitRate(ByVal hits As Long, ByVal total As Long) As String
+    If total = 0 Then
+        HitRate = "-"
+    Else
+        HitRate = Format$(100 * hits / total, "0") & " %"
+    End If
+End Function
+
+' Absolute-position box (points), used for the indicator tiles.
+Private Sub RawBox(ByVal ws As Worksheet, ByVal name As String, ByVal left As Double, ByVal top As Double, _
+                   ByVal w As Double, ByVal h As Double, ByVal fill As Long, ByVal text As String, ByVal size As Single)
+    Dim s As Shape
+    Set s = ws.Shapes.AddShape(msoShapeRoundedRectangle, left, top, w, h)
+    s.Name = "P12_" & name
+    s.Fill.ForeColor.RGB = fill
+    s.Line.ForeColor.RGB = EDGE
+    With s.TextFrame2
+        .VerticalAnchor = msoAnchorMiddle
+        .TextRange.Text = text
+        .TextRange.Font.Name = "Segoe UI"
+        .TextRange.Font.Size = size
+        .TextRange.Font.Fill.ForeColor.RGB = INK
+        .TextRange.ParagraphFormat.Alignment = msoAlignCenter
+    End With
+    s.Placement = xlMove
 End Sub
 
 ' --- Helpers -------------------------------------------------------------------------------------
@@ -1075,3 +1178,10 @@ End Function
 Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
     Set CL = ws.Cells(r, c + COL_BASE)
 End Function
+
+' Heavier views (Logs sheet, RAM map, CLOCK) are refreshed once per user action, not per animation frame.
+Private Sub AfterAction()
+    On Error Resume Next
+    LogsActualizar
+    MemoriaDetalleActualizar
+End Sub

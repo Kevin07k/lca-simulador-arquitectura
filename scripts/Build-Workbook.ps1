@@ -61,6 +61,19 @@ try {
             $null = $excel.Run("'$($wb.Name)'!$macro")
             Write-Host "Ran $macro"
         }
+        # Embed the team logo (assets/lca-chip.png) on the cover once; ConstruirLca keeps it afterwards.
+        $ws = $wb.Worksheets.Item('LCA')
+        $logo = $null
+        foreach ($s in $ws.Shapes) { if ($s.Name -eq 'LOGO_LCA') { $logo = $s } }
+        $png = Join-Path $root 'assets\lca-chip.png'
+        if ((Test-Path $png) -and ($null -eq $logo -or $logo.Type -ne 13)) {   # 13 = msoPicture
+            if ($logo) { $logo.Delete() }
+            $pic = $ws.Shapes.AddPicture($png, 0, -1, 20, 20, -1, -1)
+            $pic.Name = 'LOGO_LCA'
+            $null = $excel.Run("'$($wb.Name)'!ConstruirPortada")
+            $null = $excel.Run("'$($wb.Name)'!LcaIrPortada")
+            Write-Host "Embedded logo"
+        }
     }
 
     $wb.Save()

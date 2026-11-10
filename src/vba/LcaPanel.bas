@@ -179,6 +179,7 @@ Public Sub PanelActualizar()
         CL(ws, ROW_BASE + 15, 8 + index * 2).value = Right$("000" & Hex$(values(index)), IIf(index < 2, 3, 2)) & "h"
     Next index
     DiagramaActualizar
+    CpuDetalleActualizar
 End Sub
 
 Public Sub PanelCargar()
