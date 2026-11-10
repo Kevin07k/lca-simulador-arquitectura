@@ -27,13 +27,13 @@ Public Sub LcaReport(ByVal text As String, ByVal passed As Boolean)
     End If
 End Sub
 
-' Runs every engine regression (P04..P11) without dialogs and returns one line per suite.
+' Runs every engine regression (P04..P11, P13) without dialogs and returns one line per suite.
 ' First line is "ALL PASS" or "SOME FAIL". Used by VerificarTodo and scripts/Test-Workbook.ps1.
 Public Function LcaVerificarTodoTexto() As String
     Dim suites As Variant, i As Long, out As String, allOk As Boolean
     suites = Array("VerificarCpuAlu", "VerificarBusesP05", "VerificarRamP06", "VerificarMmuP07", _
                    "VerificarPagerP08", "VerificarCachesP09", "VerificarCachePaginacionP10", _
-                   "VerificarEnsambladorP11")
+                   "VerificarEnsambladorP11", "VerificarTecladoP13")
     allOk = True
     mSilent = True
     For i = LBound(suites) To UBound(suites)
@@ -60,9 +60,9 @@ Public Sub VerificarTodo()
     Dim text As String
     text = LcaVerificarTodoTexto()
     If Left$(text, 8) = "ALL PASS" Then
-        MsgBox text, vbInformation, "LCA - P04..P11"
+        MsgBox text, vbInformation, "LCA - P04..P13"
     Else
-        MsgBox text, vbCritical, "LCA - P04..P11"
+        MsgBox text, vbCritical, "LCA - P04..P13"
     End If
 End Sub
 
