@@ -21,8 +21,9 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P05–P06 | Buses tri-estado, micropalabra, RAM | Integrado |
 | P07–P08 | Tabla de páginas, fallos de página, CLOCK, swap | Integrado |
 | P09 | Cachés L1I, L1D y L2 | Integrado |
-| P10 | Caché integrada con paginación | En revisión |
-| P11–P22 | Cargador, ciclo CPU completo, E/S, programas, entrega | Pendiente |
+| P10 | Caché integrada con paginación | Integrado |
+| P11 | Editor ASM, ensamblador y cargador | En revisión |
+| P12–P22 | Ciclo CPU completo, E/S, programas, entrega | Pendiente |
 
 ## Equipo
 
@@ -53,7 +54,7 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- P11 cargador y P12 ciclo completo del CPU sobre el recorrido de memoria con caché de P10.
+- P12 ciclo completo del CPU: ejecutar los programas cargados por P11 con el recorrido de memoria con caché de P10.
 - P13/P14 E/S de teclado y LCD, fuera de la paginación y las cachés.
 - Programas de demostración, documentación final y entrega en ambos idiomas.
 

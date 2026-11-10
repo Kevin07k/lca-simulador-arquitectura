@@ -5,8 +5,8 @@ Requisitos / Requirements: Windows, Excel de escritorio, PowerShell. Una sola ve
 
 | Script | Qué hace / What it does |
 | --- | --- |
-| `Build-Workbook.ps1` | Recrea el libro desde `src/vba`: copia `workbook/LCA.xlsm`, quita los módulos `Lca*`, importa todos en orden y guarda `workbook/LCA.build.xlsm`. `-BuildPanels` ejecuta `ConstruirLca` (hoja **LCA** con todas las bandas P04–P10); `-InPlace` sobrescribe `LCA.xlsm`. |
-| `Test-Workbook.ps1` | Ejecuta `LcaVerificarTodoTexto` (P04–P10) en Excel oculto sobre una copia temporal e imprime PASS/FAIL por suite. Código de salida 0 solo si todo pasa. / Runs every suite headless; exit code 0 only when all pass. |
+| `Build-Workbook.ps1` | Recrea el libro desde `src/vba`: copia `workbook/LCA.xlsm`, quita los módulos `Lca*`, importa todos en orden y guarda `workbook/LCA.build.xlsm`. `-BuildPanels` ejecuta `ConstruirLca` (hoja **LCA** con todas las bandas P04–P11); `-InPlace` sobrescribe `LCA.xlsm`. |
+| `Test-Workbook.ps1` | Ejecuta `LcaVerificarTodoTexto` (P04–P11) en Excel oculto sobre una copia temporal e imprime PASS/FAIL por suite. Código de salida 0 solo si todo pasa. / Runs every suite headless; exit code 0 only when all pass. |
 | `Export-Modules.ps1` | Exporta los módulos `Lca*` de un libro a `src/vba` para conciliar con `git diff`. |
 | `LcaModules.ps1` | Lista y orden de módulos. Añadir aquí cada módulo nuevo. |
 
