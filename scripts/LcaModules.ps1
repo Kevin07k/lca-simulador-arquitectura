@@ -17,8 +17,9 @@ function Start-LcaExcel {
 }
 
 function Assert-VbaAccess($workbook) {
-    try { $null = $workbook.VBProject.VBComponents.Count }
-    catch {
+    $ok = $false
+    try { $ok = $null -ne $workbook.VBProject -and $null -ne $workbook.VBProject.VBComponents } catch { $ok = $false }
+    if (-not $ok) {
         throw ("Excel bloquea el acceso al proyecto VBA / Excel blocks VBA project access.`n" +
                "Activar manualmente / Enable manually: Excel > Archivo > Opciones > Centro de confianza > " +
                "Configuracion del Centro de confianza > Configuracion de macros > " +
