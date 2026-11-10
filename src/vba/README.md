@@ -34,3 +34,12 @@ English: P09 adds the three caches (physical tags, direct mapped, write-through/
 `LcaLayout.bas` reúne los paneles en una sola hoja **LCA** (bandas verticales: CPU, diagrama, buses/RAM y cachés). `ConstruirLca` reconstruye todo y elimina las hojas antiguas CPU, CPU Diagrama, P05 Buses y P09 Caches; cada `Construir...` reconstruye solo su banda. Los paneles desplazan sus filas con `LcaRows` según su `ROW_BASE`.
 
 English: `LcaLayout.bas` places every panel on one **LCA** worksheet as vertical bands (CPU, diagram, buses/RAM, caches). `ConstruirLca` rebuilds everything and removes the old per-panel sheets; each `Construir...` macro rebuilds only its band.
+
+P07 añade `LcaMmu.bas`, `LcaMmuPath.bas`, `LcaMmuPanel.bas` y `LcaMmuTests.bas`: 16 PTE, traducción VA→PA, página 15 reservada, distinción PFN0/ausencia, fallos de página y panel con 16 filas. Importar los cuatro y ejecutar `VerificarMmuP07` y `ConstruirPanelPaginas`. [Contrato y guía bilingüe](../../docs/P07_MMU.md).
+
+English: P07 adds a page table, translation, a bus/RAM adapter, a 16-row worksheet and verification. Import the four modules; run `VerificarMmuP07` and `ConstruirPanelPaginas`. See the [P07 guide](../../docs/P07_MMU.md). Page replacement belongs to P08.
+
+P08 añade `LcaSwap.bas`, `LcaPager.bas`, `LcaPagerPanel.bas` y `LcaPagerTests.bas`. El respaldo contiene 15 páginas de 32 bytes; el paginador usa marcos libres y después CLOCK con escritura de víctimas dirty. Importa los cuatro sobre un libro con P04–P07, ejecuta `VerificarPagerP08` y `ConstruirPanelSwap`; el ejemplo de diez pasos usa ocho VPN. [Contrato y reproducción](../../docs/P08_PAGE_FAULT_SWAP.md). Las macros P07 siguen verificando el fallo sin resolver.
+
+English: P08 resolves page faults with an exact 32-byte backing image, CLOCK replacement and dirty writeback. The four modules provide a live page-fault worksheet and regression macro. Import them into the workbook after P04–P07, then run `VerificarPagerP08` and `ConstruirPanelSwap`. See the [P08 guide](../../docs/P08_PAGE_FAULT_SWAP.md). P09/P10 must invalidate physical cache lines before a reused frame is observed.
+

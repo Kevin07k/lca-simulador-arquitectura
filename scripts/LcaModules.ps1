@@ -1,9 +1,9 @@
 # Shared list: import order of the LCA VBA modules (src/vba). Add new modules here.
 $script:LcaModules = @(
     'LcaInicio', 'LcaCpu', 'LcaAlu', 'LcaBus', 'LcaControl',
-    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaLayout',
-    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaCachePanel',
-    'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaCacheTests'
+    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaMmu', 'LcaMmuPath', 'LcaSwap', 'LcaPager', 'LcaLayout',
+    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel',
+    'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaMmuTests', 'LcaPagerTests', 'LcaCacheTests'
 )
 
 function Get-RepoRoot { (Resolve-Path (Join-Path $PSScriptRoot '..')).Path }

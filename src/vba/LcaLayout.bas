@@ -7,6 +7,8 @@ Public Const LCA_SHEET As String = "LCA"
 Public Const LCA_BASE_CPU As Long = 0       ' rows   1..44  controls and registers (P04)
 Public Const LCA_BASE_DIAGRAM As Long = 45  ' rows  46..87  CPU block diagram (P04)
 Public Const LCA_BASE_BUS As Long = 88      ' rows  89..122 buses and RAM (P05/P06)
+Public Const LCA_BASE_MMU As Long = 167     ' rows 168..200 page table and translation (P07)
+Public Const LCA_BASE_PAGER As Long = 201   ' rows 202..236 page faults and swap (P08)
 Public Const LCA_BASE_CACHE As Long = 123   ' rows 124..166 caches (P09)
 
 ' Builds the whole workbook view: removes the old one-sheet-per-panel layout, then every band.
@@ -16,7 +18,7 @@ Public Sub ConstruirLca()
     Dim previous As Boolean
     previous = Application.DisplayAlerts
     Application.DisplayAlerts = False
-    For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches")
+    For Each item In Array("CPU", "CPU Diagrama", "P05 Buses", "P09 Caches", "P07 Paginas", "P08 Swap")
         For Each ws In ThisWorkbook.Worksheets
             If ws.Name = CStr(item) Then
                 ws.Delete
@@ -29,6 +31,8 @@ Public Sub ConstruirLca()
     ConstruirDiagramaCpu
     ConstruirPanelCpu
     ConstruirPanelBuses
+    ConstruirPanelPaginas
+    ConstruirPanelSwap
     ConstruirPanelCaches
     LcaGoto ws, LCA_BASE_CPU
 End Sub
@@ -138,4 +142,12 @@ End Sub
 
 Public Sub LcaIrCaches()
     LcaGoto LcaSheet(True), LCA_BASE_CACHE
+End Sub
+
+Public Sub LcaIrPaginas()
+    LcaGoto LcaSheet(True), LCA_BASE_MMU
+End Sub
+
+Public Sub LcaIrSwap()
+    LcaGoto LcaSheet(True), LCA_BASE_PAGER
 End Sub
