@@ -50,8 +50,9 @@ Public Sub ConstruirPanelCachePaginacion()
         .Value = "VA -> PTE (residencia primero) -> PA -> L1I/L1D -> L2 -> RAM  |  invalidacion por marco  |  write-through: swap recupera el dato"
         .Font.Color = MUTED
     End With
-    AddButton ws, "N2:P2", "VER P08", "LcaIrSwap", HEAD
-    AddButton ws, "Q2:S2", "VER P09", "LcaIrCaches", HEAD
+    AddButton ws, "N2:O2", "VER P08", "LcaIrSwap", HEAD
+    AddButton ws, "P2:Q2", "VER P09", "LcaIrCaches", HEAD
+    AddButton ws, "R2:S2", "VER P11", "LcaIrEditor", HEAD
     AddButton ws, "B5:E6", "REINICIAR / RESET", "CachePathDemoReset", button
     AddButton ws, "F5:I6", "SIGUIENTE / NEXT", "CachePathDemoNext", button
     AddButton ws, "J5:M6", "EJECUTAR TODO / RUN ALL", "CachePathDemoRun", button
