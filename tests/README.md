@@ -1,6 +1,33 @@
 # Verificación / Verification
 
-Las evidencias iniciales están en [P03_VERIFICATION.md](../docs/P03_VERIFICATION.md). Para CPU/ALU, ejecutar `VerificarCpuAlu` (Alt+F8) en `workbook/LCA.xlsm`: esperado PASS, 197120 casos y 1379895 comprobaciones en `P04 Tests`. Fuente: `src/vba/LcaCpuTests.bas`. [Pasos y resultados de P04](../docs/P04_CPU_ALU.md). La macro borra el contenido de su propia hoja de reporte y reinicia el estado CPU; no ejecutar durante una simulación que se quiera conservar.
+Las pruebas viven en el libro como macros (`src/vba/Lca*Tests.bas`). No hay framework externo: cada macro reinicia el estado que usa, comprueba resultados exactos e informa PASS/FAIL con el número de comprobaciones.
 
-English: initial verification is recorded in [P03_VERIFICATION.md](../docs/P03_VERIFICATION.md). Run `VerificarCpuAlu` (Alt+F8) in `workbook/LCA.xlsm`: expect PASS, 197120 cases and 1379895 assertions in `P04 Tests`. Source: `src/vba/LcaCpuTests.bas`. See the P04 guide above. This macro clears its own report sheet and resets CPU state; do not run during a simulation you need to preserve. Memory and I/O tests belong to their future implementations.
+The tests are workbook macros (`src/vba/Lca*Tests.bas`). Each one resets the state it uses, checks exact results and reports PASS/FAIL with its assertion count.
 
+## Ejecutar todo / Run everything
+
+- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P10).
+- Sin abrir Excel en pantalla / headless (Windows + Excel de escritorio):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\Build-Workbook.ps1 -BuildPanels
+powershell -ExecutionPolicy Bypass -File scripts\Test-Workbook.ps1
+```
+
+`Test-Workbook.ps1` trabaja sobre una copia temporal y termina con código 0 solo si todo pasa.
+
+## Suites
+
+| Macro | Tarea / Task | Último resultado observado / Last observed (2026-11-10) |
+| --- | --- | --- |
+| `VerificarCpuAlu` | P04 | PASS (hoja `P04 Tests`; esperado / expected 197120 casos, 1379895 comprobaciones) |
+| `VerificarBusesP05` | P05 | PASS — 38 |
+| `VerificarRamP06` | P06 | PASS — 38 |
+| `VerificarMmuP07` | P07 | PASS — 86 |
+| `VerificarPagerP08` | P08 | PASS — 32 |
+| `VerificarCachesP09` | P09 | PASS — 77 |
+| `VerificarCachePaginacionP10` | P10 | PASS — 58 |
+
+Cada macro reinicia CPU, memoria o cachés; no ejecutarlas durante una simulación que se quiera conservar. Evidencia inicial de P03: [P03_VERIFICATION.md](../docs/P03_VERIFICATION.md).
+
+Each macro resets CPU, memory or caches; do not run them during a simulation you want to keep.

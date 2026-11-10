@@ -1,45 +1,41 @@
 # Fuente VBA / VBA source
 
-`LcaDiagrama.bas`: esquema vectorial editable con registros, operandos, ALU y flags conectados al motor. Importarlo junto con `LcaPanel.bas`. [Uso y reconstrucción / Usage and rebuild](../../docs/P04_DIAGRAM.md).
+Módulos estándar exportados de `workbook/LCA.xlsm`, en ASCII con CRLF. El orden de importación está en [`scripts/LcaModules.ps1`](../../scripts/LcaModules.ps1); `scripts/Build-Workbook.ps1` los importa todos. Los módulos de **motor** no tocan hojas; los de **panel** dibujan una banda de la hoja única **LCA**; los de **prueba** informan con `LcaReport`.
 
-English: `LcaDiagrama.bas` provides the editable CPU block diagram with live register/ALU state. Import it together with `LcaPanel.bas`; see the guide above.
+Standard modules exported from `workbook/LCA.xlsm` (ASCII, CRLF). **Engine** modules never touch worksheets; **panel** modules draw one band of the single **LCA** sheet; **test** modules report through `LcaReport`.
 
-`LcaPanel.bas`: panel interactivo de P04; ejecutar `MostrarPanelCpu` para abrirlo o `ConstruirPanelCpu` para reconstruirlo (reinicia CPU y contenido de su hoja). [Uso bilingüe](../../docs/P04_INTERFACE.md).
+| Tarea / Task | Motor / Engine | Panel | Prueba / Test | Guía / Guide |
+| --- | --- | --- | --- | --- |
+| P03 | `LcaInicio` (`VerificarInstalacion`, `LcaReport`, `VerificarTodo`) | — | — | [VBA_WORKFLOW](../../docs/VBA_WORKFLOW.md) |
+| P04 | `LcaCpu`, `LcaAlu` | `LcaPanel`, `LcaDiagrama` | `LcaCpuTests` → `VerificarCpuAlu` | [P04](../../docs/P04_CPU_ALU.md) |
+| P05 | `LcaBus`, `LcaControl` | `LcaBusPanel` | `LcaBusTests` → `VerificarBusesP05` | [P05](../../docs/P05_BUS_CONTROL.md) |
+| P06 | `LcaRam`, `LcaMemoryPath` | `LcaBusPanel` | `LcaRamTests` → `VerificarRamP06` | [P06](../../docs/P06_RAM.md) |
+| P07 | `LcaMmu`, `LcaMmuPath` | `LcaMmuPanel` | `LcaMmuTests` → `VerificarMmuP07` | [P07](../../docs/P07_MMU.md) |
+| P08 | `LcaSwap`, `LcaPager` | `LcaPagerPanel` | `LcaPagerTests` → `VerificarPagerP08` | [P08](../../docs/P08_PAGE_FAULT_SWAP.md) |
+| P09 | `LcaCache` | `LcaCachePanel` | `LcaCacheTests` → `VerificarCachesP09` | [P09](../../docs/P09_CACHE.md) |
+| P10 | `LcaCachePath` | `LcaCachePathPanel` | `LcaCachePathTests` → `VerificarCachePaginacionP10` | [P10](../../docs/P10_CACHE_PAGING.md) |
+| Hoja / sheet | `LcaLayout` (`ConstruirLca`, `LcaRows`, navegación `LcaIr*`) | | | |
 
-English: `LcaPanel.bas` is the P04 interactive dashboard. Run `MostrarPanelCpu` to open it or `ConstruirPanelCpu` to rebuild it (resets CPU and its dashboard sheet). See the bilingual guide above.
+## Recorrido de memoria / Memory path
 
-`LcaInicio.bas` es el módulo inicial de P03. Ejecutar `VerificarInstalacion` escribe `VBA OK - P03` en `Inicio!B13` del libro que contiene el módulo (`ThisWorkbook`). No modifica otros libros.
+```
+CPU ── LcaCachePath (P10) ── LcaPager (P08) ── LcaMmu (P07)      residencia / residency
+             │                    └─ invalida marco / invalidates frame ─┐
+             └── LcaCache (P09: L1I, L1D, L2) ── LcaRam (P06) ◄──────────┘
+                     └── LcaControl + LcaBus (P05): ciclos FILL / LD / ST
+```
 
-P04 añade `LcaCpu.bas` (estado privado, reset y accesos validados), `LcaAlu.bas` (ADD/SUB/CMP/INC/DEC) y `LcaCpuTests.bas` (macro `VerificarCpuAlu`). Consultar [API y verificación bilingüe](../../docs/P04_CPU_ALU.md). Los módulos de motor no acceden a hojas; las pruebas escriben su reporte en `P04 Tests`.
+`LcaMmuPath` (P07) y `PagerFetchFour` / `PagerReadByte` / `PagerStoreByte` (P08) siguen siendo recorridos **sin caché** para sus propias pruebas. P12 debe usar `LcaCachePath`.
+`LcaMmuPath` (P07) and the P08 `Pager*` byte paths remain **uncached** paths for their own tests; P12 must use `LcaCachePath`.
 
-Buses, memoria, MMU, caché, cargador, ciclo completo y E/S se añadirán en sus issues según [los contratos de P02](../../docs/ARQUITECTURA_ES.md).
+## Hoja LCA / LCA sheet
 
-English: `LcaInicio.bas` is the P03 bootstrap module. `VerificarInstalacion` writes `VBA OK - P03` to `Inicio!B13` in its own workbook. Simulation modules belong to later issues. See the [synchronization guide](../../docs/VBA_WORKFLOW.md).
+`ConstruirLca` borra la hoja y construye las bandas en orden: CPU (1–44), diagrama (46–87), buses/RAM (89–122), P07 (124–156), P08 (158–192), P09 (194–236), P10 (238–284). Cada `Construir...` reconstruye solo su banda; las direcciones se desplazan con `LcaRows` según `ROW_BASE`.
 
-English: P04 adds `LcaCpu.bas` (private state, reset, validated access), `LcaAlu.bas` (ADD/SUB/CMP/INC/DEC) and `LcaCpuTests.bas` (`VerificarCpuAlu`). Engine modules do not access worksheets; tests write to `P04 Tests`. See the bilingual API above. Buses, memory, MMU, caches, loader, full instruction execution and I/O belong to later tasks.
+`ConstruirLca` clears the sheet and builds every band in that order; each `Construir...` macro rebuilds only its own band.
 
-P05 añade `LcaBus.bas`, `LcaControl.bas`, `LcaBusPanel.bas` y `LcaBusTests.bas`. Importar los cuatro, compilar, ejecutar `ConstruirPanelBuses` y `VerificarBusesP05`. El panel muestra ciclos de bus y micropalabras generados por el motor; desde P06 la demostración usa `LcaRam` en vez de la memoria de prueba original. [Contrato y recorrido bilingüe](../../docs/P05_BUS_CONTROL.md). La ejecución completa de instrucciones corresponde a P12.
+## Convenciones / Conventions
 
-English: P05 adds bus arbitration, fetch/store transfer steps, a live bus worksheet and a verification macro. Import all four modules and follow the [P05 integration and test guide](../../docs/P05_BUS_CONTROL.md). P06 replaces the original panel fixture with real RAM; caches remain future work.
-
-P06 añade `LcaRam.bas`, `LcaMemoryPath.bas` y `LcaRamTests.bas`; también actualiza `LcaBusPanel.bas` para mostrar lecturas y escrituras de la RAM real. Importar los módulos nuevos, reemplazar el panel existente, compilar y ejecutar `VerificarRamP06`. [Contrato, límites y prueba bilingüe](../../docs/P06_RAM.md).
-
-English: P06 adds 256 bytes in eight 32-byte frames and wires P05 fetch/store cycles to real RAM. Import the three new modules and replace `LcaBusPanel.bas`. See the [P06 test and integration guide](../../docs/P06_RAM.md). P07/P09/P12 still own translation, caches and full instruction execution.
-
-
-P09 añade `LcaCache.bas` (L1I 8 B, L1D 8 B y L2 32 B, directas, write-through/write-allocate, etiquetas físicas), `LcaCachePanel.bas` (`ConstruirPanelCaches`) y `LcaCacheTests.bas` (`VerificarCachesP09`). Importar los tres, compilar y ejecutar la prueba. [Política, trazas esperadas y prueba bilingüe](../../docs/P09_CACHE.md). La traducción (P07) y el recorrido combinado (P10) siguen pendientes.
-
-English: P09 adds the three caches (physical tags, direct mapped, write-through/write-allocate), a live counter/line panel and the `VerificarCachesP09` macro. Import the three modules and follow the [P09 policy and test guide](../../docs/P09_CACHE.md). Translation (P07) and the integrated path (P10) remain separate tasks.
-
-`LcaLayout.bas` reúne los paneles en una sola hoja **LCA** (bandas verticales: CPU, diagrama, buses/RAM y cachés). `ConstruirLca` reconstruye todo y elimina las hojas antiguas CPU, CPU Diagrama, P05 Buses y P09 Caches; cada `Construir...` reconstruye solo su banda. Los paneles desplazan sus filas con `LcaRows` según su `ROW_BASE`.
-
-English: `LcaLayout.bas` places every panel on one **LCA** worksheet as vertical bands (CPU, diagram, buses/RAM, caches). `ConstruirLca` rebuilds everything and removes the old per-panel sheets; each `Construir...` macro rebuilds only its band.
-
-P07 añade `LcaMmu.bas`, `LcaMmuPath.bas`, `LcaMmuPanel.bas` y `LcaMmuTests.bas`: 16 PTE, traducción VA→PA, página 15 reservada, distinción PFN0/ausencia, fallos de página y panel con 16 filas. Importar los cuatro y ejecutar `VerificarMmuP07` y `ConstruirPanelPaginas`. [Contrato y guía bilingüe](../../docs/P07_MMU.md).
-
-English: P07 adds a page table, translation, a bus/RAM adapter, a 16-row worksheet and verification. Import the four modules; run `VerificarMmuP07` and `ConstruirPanelPaginas`. See the [P07 guide](../../docs/P07_MMU.md). Page replacement belongs to P08.
-
-P08 añade `LcaSwap.bas`, `LcaPager.bas`, `LcaPagerPanel.bas` y `LcaPagerTests.bas`. El respaldo contiene 15 páginas de 32 bytes; el paginador usa marcos libres y después CLOCK con escritura de víctimas dirty. Importa los cuatro sobre un libro con P04–P07, ejecuta `VerificarPagerP08` y `ConstruirPanelSwap`; el ejemplo de diez pasos usa ocho VPN. [Contrato y reproducción](../../docs/P08_PAGE_FAULT_SWAP.md). Las macros P07 siguen verificando el fallo sin resolver.
-
-English: P08 resolves page faults with an exact 32-byte backing image, CLOCK replacement and dirty writeback. The four modules provide a live page-fault worksheet and regression macro. Import them into the workbook after P04–P07, then run `VerificarPagerP08` and `ConstruirPanelSwap`. See the [P08 guide](../../docs/P08_PAGE_FAULT_SWAP.md). P09/P10 must invalidate physical cache lines before a reused frame is observed.
-
+- Errores `vbObjectError + n`, un bloque por tarea: CPU 2001–2005 (prueba 2100), bus 2051–2054, RAM 2061–2064, MMU 2071–2076, swap/pager 2081–2083, caché 2091–2092, P10 2101–2102.
+- Estado privado en el módulo y acceso por funciones; las pruebas reinician el estado que usan.
+- Solo ASCII en `.bas` (Excel importa en ANSI). No fusionar el `.xlsm` como texto.

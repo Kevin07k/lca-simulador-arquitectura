@@ -12,7 +12,17 @@ Build a Microsoft Excel simulator with VBA macros to visualize the CPU, tri-stat
 
 ## Current status
 
-P04 CPU state and arithmetic are implemented in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) includes the source modules and a reproducible CPU/ALU test macro. Run `VerificarCpuAlu` with Alt+F8: the `P04 Tests` sheet reports PASS for 197120 arithmetic cases and 1379895 assertions. Full instruction execution, memory, buses and I/O remain for later tasks. P04 awaits Javier's review and PR integration.
+Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows every part on one **LCA** sheet ([band map](workbook/README.md)). Run `VerificarTodo` with Alt+F8 (or `scripts\Test-Workbook.ps1`) to execute every regression.
+
+| Task | Part | State |
+| --- | --- | --- |
+| P01–P03 | Workflow, contracts, workbook | Integrated |
+| P04 | CPU registers and ALU | Integrated |
+| P05–P06 | Tri-state buses, control word, RAM | Integrated |
+| P07–P08 | Page table, page faults, CLOCK, swap | Integrated |
+| P09 | L1I, L1D and L2 caches | Integrated |
+| P10 | Caches integrated with paging | In review |
+| P11–P22 | Loader, full CPU cycle, I/O, programs, delivery | Pending |
 
 ## Team
 
@@ -28,12 +38,9 @@ Use `main` for stable versions, `develop` for integration, and one `feature/name
 
 Export VBA modules as text files for Git reviews and keep the workbook synchronized with the source.
 
-- [Open the workbook and synchronize VBA](docs/VBA_WORKFLOW.md).
-- [VBA source](src/vba/README.md), [programs](programs/README.md), [tests](tests/README.md) and [identity](docs/IDENTITY.md).
-- [P03 verification](docs/P03_VERIFICATION.md).
-- [P04 CPU/ALU API and verification (English / Español)](docs/P04_CPU_ALU.md).
-- [Interactive CPU dashboard: controls and visual verification (English / Español)](docs/P04_INTERFACE.md). Open the **CPU** sheet to load registers and operate the ALU with buttons.
-- [CPU architectural diagram (English / Español)](docs/P04_DIAGRAM.md): open **CPU Diagrama** for live registers, operands, ALU, flags and write-back visualization.
+- [Documentation index: every task guide, test macro and sheet band](docs/README.md).
+- [Open the workbook and synchronize VBA](docs/VBA_WORKFLOW.md) · [automation scripts](scripts/README.md).
+- [VBA source by layer](src/vba/README.md), [tests](tests/README.md), [workbook](workbook/README.md), [programs](programs/README.md) and [identity](docs/IDENTITY.md).
 
 ## Task management
 
@@ -46,8 +53,8 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- Complete Javier's identity and P03 peer review.
-- Continue with CPU and buses using the P02 contracts integrated into `develop`.
-- Complete the technical documentation, operating instructions, and demo traces in both languages.
+- P11 loader and P12 full CPU cycle on top of the P10 cached memory path.
+- P13/P14 keyboard and LCD I/O, outside paging and caches.
+- Demo programs, final documentation and delivery in both languages.
 
 This README will be updated as development progresses.

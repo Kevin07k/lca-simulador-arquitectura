@@ -12,7 +12,17 @@ Construir un simulador en Microsoft Excel con macros VBA para visualizar el CPU,
 
 ## Estado actual
 
-Estado CPU y aritmética de P04 implementados en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) incluye los módulos fuente y una macro reproducible de pruebas CPU/ALU. Ejecutar `VerificarCpuAlu` con Alt+F8: la hoja `P04 Tests` informa PASS para 197120 casos aritméticos y 1379895 comprobaciones. La ejecución completa de instrucciones, memoria, buses y E/S quedan para tareas posteriores. P04 espera revisión de Javier e integración del PR.
+Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra todas las partes en una sola hoja **LCA** ([mapa de bandas](workbook/README.md)). Ejecutar `VerificarTodo` con Alt+F8 (o `scripts\Test-Workbook.ps1`) para correr todas las pruebas.
+
+| Tarea | Parte | Estado |
+| --- | --- | --- |
+| P01–P03 | Flujo, contratos, libro | Integrado |
+| P04 | Registros del CPU y ALU | Integrado |
+| P05–P06 | Buses tri-estado, micropalabra, RAM | Integrado |
+| P07–P08 | Tabla de páginas, fallos de página, CLOCK, swap | Integrado |
+| P09 | Cachés L1I, L1D y L2 | Integrado |
+| P10 | Caché integrada con paginación | En revisión |
+| P11–P22 | Cargador, ciclo CPU completo, E/S, programas, entrega | Pendiente |
 
 ## Equipo
 
@@ -28,12 +38,9 @@ Se usa `main` para versiones estables, `develop` para integración y una rama `f
 
 Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el libro se mantiene sincronizado con el código fuente.
 
-- [Abrir el libro y sincronizar VBA](docs/VBA_WORKFLOW.md).
-- [Fuente VBA](src/vba/README.md), [programas](programs/README.md), [pruebas](tests/README.md) e [identidad](docs/IDENTITY.md).
-- [Verificación realizada de P03](docs/P03_VERIFICATION.md).
-- [API y verificación CPU/ALU de P04 (English / Español)](docs/P04_CPU_ALU.md).
-- [Panel CPU interactivo: controles y verificación visual (English / Español)](docs/P04_INTERFACE.md). Abrir la hoja **CPU** para cargar registros y operar la ALU con botones.
-- [Diagrama de arquitectura CPU (English / Español)](docs/P04_DIAGRAM.md): abrir **CPU Diagrama** para ver registros, operandos, ALU, flags y retorno de escritura reales.
+- [Índice de documentación: guía, macro de prueba y banda de cada tarea](docs/README.md).
+- [Abrir el libro y sincronizar VBA](docs/VBA_WORKFLOW.md) · [scripts de automatización](scripts/README.md).
+- [Fuente VBA por capas](src/vba/README.md), [pruebas](tests/README.md), [libro](workbook/README.md), [programas](programs/README.md) e [identidad](docs/IDENTITY.md).
 
 ## Gestión de tareas
 
@@ -46,8 +53,8 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- Completar la revisión de identidad y de P03 por Javier.
-- Continuar con CPU y buses según los contratos de P02 integrados en `develop`.
-- Completar la documentación técnica, las instrucciones de uso y las trazas de demostración en ambos idiomas.
+- P11 cargador y P12 ciclo completo del CPU sobre el recorrido de memoria con caché de P10.
+- P13/P14 E/S de teclado y LCD, fuera de la paginación y las cachés.
+- Programas de demostración, documentación final y entrega en ambos idiomas.
 
 Este README se actualizará conforme avance el desarrollo.
