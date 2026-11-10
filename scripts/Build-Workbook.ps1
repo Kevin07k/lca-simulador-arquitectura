@@ -7,7 +7,7 @@
   panels and saves the result. The base workbook is never modified unless -InPlace is passed.
 .PARAMETER OutputPath   Destination .xlsm (default: workbook/LCA.build.xlsm).
 .PARAMETER BasePath     Starting workbook (default: workbook/LCA.xlsm if present, else a blank workbook).
-.PARAMETER BuildPanels  Also runs ConstruirPanelCpu, ConstruirPanelBuses and ConstruirPanelCaches.
+.PARAMETER BuildPanels  Also runs ConstruirLca (one "LCA" sheet with CPU, diagram, buses and cache bands).
 .PARAMETER InPlace      Write over workbook/LCA.xlsm instead of the .build copy.
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File scripts\Build-Workbook.ps1 -BuildPanels
@@ -57,7 +57,7 @@ try {
     }
 
     if ($BuildPanels) {
-        foreach ($macro in 'ConstruirPanelCpu', 'ConstruirPanelBuses', 'ConstruirPanelCaches') {
+        foreach ($macro in 'ConstruirLca') {
             $null = $excel.Run("'$($wb.Name)'!$macro")
             Write-Host "Ran $macro"
         }

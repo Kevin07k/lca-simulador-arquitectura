@@ -1,7 +1,7 @@
 # Shared list: import order of the LCA VBA modules (src/vba). Add new modules here.
 $script:LcaModules = @(
     'LcaInicio', 'LcaCpu', 'LcaAlu', 'LcaBus', 'LcaControl',
-    'LcaRam', 'LcaMemoryPath', 'LcaCache',
+    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaLayout',
     'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaCachePanel',
     'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaCacheTests'
 )

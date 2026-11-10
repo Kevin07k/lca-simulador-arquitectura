@@ -23,7 +23,7 @@
 
 ## API
 
-`CacheRead(PA, kind)`, `CacheWrite(PA, byte)`, `CacheReset`, `CacheInvalidateAll`, `CacheInvalidateFrame(pfn)`, `CacheHits(level)`, `CacheMisses(level)`, `CacheContains(level, PA)`, `CacheLineValid/Tag/Byte`, `CacheRamFills`, `CacheLastFillPA`, `CacheLastEvent`, `CacheTraceCount/Line`. Errors: `LCA_ERR_CACHE_ARGUMENT` (2091) plus the RAM/CPU codes for protection, range and byte errors. `LcaCachePanel.bas` builds the **P09 Caches** sheet (`ConstruirPanelCaches`) with per-level hit/miss counters, every line (valid, tag, bytes, covered PA) and the live trace. `LcaCacheTests.bas` runs `VerificarCachesP09`.
+`CacheRead(PA, kind)`, `CacheWrite(PA, byte)`, `CacheReset`, `CacheInvalidateAll`, `CacheInvalidateFrame(pfn)`, `CacheHits(level)`, `CacheMisses(level)`, `CacheContains(level, PA)`, `CacheLineValid/Tag/Byte`, `CacheRamFills`, `CacheLastFillPA`, `CacheLastEvent`, `CacheTraceCount/Line`. Errors: `LCA_ERR_CACHE_ARGUMENT` (2091) plus the RAM/CPU codes for protection, range and byte errors. `LcaCachePanel.bas` builds the cache band of the single **LCA** sheet (`ConstruirPanelCaches`, or `ConstruirLca` for every band) with per-level hit/miss counters, every line (valid, tag, bytes, covered PA) and the live trace. `LcaCacheTests.bas` runs `VerificarCachesP09`.
 
 ## Expected traces (physical addresses)
 
@@ -41,9 +41,9 @@ Each row after the first two starts from `CacheReset` except the "write hit" and
 
 ## Reproduce in desktop Excel
 
-1. Work on a copy of the latest `workbook/LCA.xlsm`. In the VBA editor (`Alt+F11`) import `LcaCache.bas`, `LcaCachePanel.bas`, `LcaCacheTests.bas` (the P06 modules `LcaRam`, `LcaCpu` must already be present). **Debug → Compile VBAProject**.
+1. Work on a copy of the latest `workbook/LCA.xlsm`. In the VBA editor (`Alt+F11`) import `LcaCache.bas`, `LcaLayout.bas`, `LcaCachePanel.bas`, `LcaCacheTests.bas` (and the updated panel modules `LcaPanel`, `LcaDiagrama`, `LcaBusPanel`; or simply run `scriptsBuild-Workbook.ps1`) (the P06 modules `LcaRam`, `LcaCpu` must already be present). **Debug → Compile VBAProject**.
 2. `Alt+F8` → `VerificarCachesP09`: expect PASS with the assertion count shown by the macro. Record the **observed** message.
-3. `Alt+F8` → `ConstruirPanelCaches`, then click **NEXT ACCESS** eleven times. Expected counters: after the 4th click L1I 3/1, L1D 0/0, L2 0/1; after the 11th click L1I 3/3, L1D 3/2, L2 1/4 (the last two fetches, 48h then 40h, conflict on L1I index 0 and 40h is served by an L2 hit). Take a screenshot of the sheet.
+3. `Alt+F8` → `ConstruirPanelCaches`, run `ConstruirLca` and scroll to the cache band (rows 124-166), then click **NEXT ACCESS** eleven times. Expected counters: after the 4th click L1I 3/1, L1D 0/0, L2 0/1; after the 11th click L1I 3/3, L1D 3/2, L2 1/4 (the last two fetches, 48h then 40h, conflict on L1I index 0 and 40h is served by an L2 hit). Take a screenshot of the sheet.
 4. Run `VerificarRamP06`, `VerificarBusesP05` and `VerificarCpuAlu` as regressions.
 5. Save the copy as `workbook/LCA.xlsm`, export the three new modules, compare with `src/vba` (including `Attribute VB_Name`) and reconcile. Do not merge `.xlsm` as text.
 
@@ -76,7 +76,7 @@ P09 works with physical addresses; translation (P07) and the combined path (P10)
 
 ## Interfaz
 
-`CacheRead(PA, tipo)`, `CacheWrite(PA, byte)`, `CacheReset`, `CacheInvalidateAll`, `CacheInvalidateFrame(pfn)`, `CacheHits(nivel)`, `CacheMisses(nivel)`, `CacheContains(nivel, PA)`, `CacheLineValid/Tag/Byte`, `CacheRamFills`, `CacheLastFillPA`, `CacheLastEvent`, `CacheTraceCount/Line`. Errores: `LCA_ERR_CACHE_ARGUMENT` (2091) y los códigos de RAM/CPU para protección, rango y byte. `LcaCachePanel.bas` construye la hoja **P09 Caches** (`ConstruirPanelCaches`) con contadores hit/miss por nivel, todas las líneas (válida, etiqueta, bytes, PA cubiertas) y la traza real. `LcaCacheTests.bas` ejecuta `VerificarCachesP09`.
+`CacheRead(PA, tipo)`, `CacheWrite(PA, byte)`, `CacheReset`, `CacheInvalidateAll`, `CacheInvalidateFrame(pfn)`, `CacheHits(nivel)`, `CacheMisses(nivel)`, `CacheContains(nivel, PA)`, `CacheLineValid/Tag/Byte`, `CacheRamFills`, `CacheLastFillPA`, `CacheLastEvent`, `CacheTraceCount/Line`. Errores: `LCA_ERR_CACHE_ARGUMENT` (2091) y los códigos de RAM/CPU para protección, rango y byte. `LcaCachePanel.bas` construye la banda de cachés de la hoja única **LCA** (`ConstruirPanelCaches`, o `ConstruirLca` para todas) con contadores hit/miss por nivel, todas las líneas (válida, etiqueta, bytes, PA cubiertas) y la traza real. `LcaCacheTests.bas` ejecuta `VerificarCachesP09`.
 
 ## Trazas esperadas (direcciones físicas)
 
@@ -84,7 +84,7 @@ Ver la tabla de la versión en inglés: los valores hit/miss son idénticos y so
 
 ## Reproducir en Excel de escritorio
 
-1. Trabajar sobre una copia del último `workbook/LCA.xlsm`. En el editor VBA (`Alt+F11`) importar `LcaCache.bas`, `LcaCachePanel.bas` y `LcaCacheTests.bas` (los módulos de P06 `LcaRam` y `LcaCpu` ya deben estar). **Depurar → Compilar VBAProject**.
+1. Trabajar sobre una copia del último `workbook/LCA.xlsm`. En el editor VBA (`Alt+F11`) importar `LcaCache.bas`, `LcaLayout.bas`, `LcaCachePanel.bas` y `LcaCacheTests.bas` (y los paneles actualizados `LcaPanel`, `LcaDiagrama`, `LcaBusPanel`; o solo ejecutar `scriptsBuild-Workbook.ps1`) (los módulos de P06 `LcaRam` y `LcaCpu` ya deben estar). **Depurar → Compilar VBAProject**.
 2. `Alt+F8` → `VerificarCachesP09`: se espera PASS con el número de comprobaciones que muestre la macro. Registrar el mensaje **observado**.
 3. `Alt+F8` → `ConstruirPanelCaches` y pulsar **SIGUIENTE ACCESO** once veces; Esperado: tras el 4.º clic L1I 3/1, L1D 0/0, L2 0/1; tras el 11.º L1I 3/3, L1D 3/2, L2 1/4 (los dos últimos fetch, 48h y 40h, chocan en el índice 0 de L1I y 40h se sirve con un acierto de L2). Tomar captura de la hoja.
 4. Ejecutar `VerificarRamP06`, `VerificarBusesP05` y `VerificarCpuAlu` como regresión.

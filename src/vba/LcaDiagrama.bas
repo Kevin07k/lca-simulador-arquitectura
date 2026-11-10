@@ -1,7 +1,7 @@
 Attribute VB_Name = "LcaDiagrama"
 Option Explicit
 
-Private Const DIAGRAM_NAME As String = "CPU Diagrama"
+Private Const ROW_BASE As Long = LCA_BASE_DIAGRAM
 Private mHasOperation As Boolean
 Private mOperation As String
 Private mDestination As Long
@@ -22,19 +22,14 @@ Public Sub ConstruirDiagramaCpu()
     Dim form As FreeformBuilder
     Dim names As Variant
     Set ws = DiagramSheet(True)
-    ws.Cells.UnMerge
-    ws.Cells.Clear
-    For index = ws.Shapes.Count To 1 Step -1
-        ws.Shapes(index).Delete
-    Next index
+    LcaPrepareBand ws, ROW_BASE, 42, "D_"
     ws.Activate
     ActiveWindow.DisplayGridlines = False
-    ws.Columns("A:T").ColumnWidth = 13
-    ws.Rows("1:38").RowHeight = 18
-    ws.Range("A1:AZ70").Interior.color = RGB(242, 246, 251)
-    ws.Range("A1:T5").Interior.color = RGB(15, 23, 42)
-    ws.Range("B2:N3").Merge
-    With ws.Range("B2:N3")
+    ws.Rows(RA("1:38")).RowHeight = 18
+    ws.Range(RA("A1:AZ42")).Interior.color = RGB(242, 246, 251)
+    ws.Range(RA("A1:T5")).Interior.color = RGB(15, 23, 42)
+    ws.Range(RA("B2:N3")).Merge
+    With ws.Range(RA("B2:N3"))
         .value = "LCA  /  ARQUITECTURA DEL CPU"
         .Font.name = "Segoe UI"
         .Font.size = 26
@@ -42,17 +37,17 @@ Public Sub ConstruirDiagramaCpu()
         .Font.color = RGB(255, 255, 255)
         .VerticalAlignment = xlCenter
     End With
-    ws.Range("B4:S4").Merge
-    With ws.Range("B4:S4")
+    ws.Range(RA("B4:S4")).Merge
+    With ws.Range(RA("B4:S4"))
         .value = "CPU block diagram  |  Registros, ALU y flags / Registers, ALU and flags  |  P04"
         .Font.name = "Segoe UI"
         .Font.size = 13
         .Font.color = RGB(125, 211, 252)
     End With
-    x = ws.Range("B7").Left
-    y = ws.Range("B7").Top
-    w = ws.Range("B7:S29").Width
-    h = ws.Range("B7:S29").Height
+    x = ws.Range(RA("B7")).Left
+    y = ws.Range(RA("B7")).Top
+    w = ws.Range(RA("B7:S29")).Width
+    h = ws.Range(RA("B7:S29")).Height
     Set box = DiagramBox(ws, "D_Chip", x, y, w, h, "", RGB(255, 255, 255), RGB(180, 195, 212), 14)
     box.Line.Weight = 2
     DiagramBox ws, "D_ChipTitle", x + w * 0.02, y + h * 0.02, w * 0.26, 24, _
@@ -116,16 +111,16 @@ Public Sub ConstruirDiagramaCpu()
                "P04  /  CPU STATE", RGB(255, 255, 255), RGB(255, 255, 255), 12
     names = Array("ADD", "SUB", "CMP", "INC", "DEC", "RESET")
     For index = 0 To 5
-        Set box = DiagramBox(ws, "D_Button" & index, ws.Cells(32, 2 + index * 3).Left, ws.Rows(32).Top, _
-                             ws.Range(ws.Cells(32, 2 + index * 3), ws.Cells(33, 4 + index * 3)).Width - 8, _
-                             ws.Range("B32:B33").Height, CStr(names(index)), RGB(37, 99, 235), RGB(37, 99, 235), 16, True)
+        Set box = DiagramBox(ws, "D_Button" & index, ws.Cells(ROW_BASE + 32, 2 + index * 3).Left, ws.Rows(ROW_BASE + 32).Top, _
+                             ws.Range(ws.Cells(ROW_BASE + 32, 2 + index * 3), ws.Cells(ROW_BASE + 33, 4 + index * 3)).Width - 8, _
+                             ws.Range(RA("B32:B33")).Height, CStr(names(index)), RGB(37, 99, 235), RGB(37, 99, 235), 16, True)
         box.OnAction = "'" & ThisWorkbook.name & "'!" & CStr(ArrayMacro(index))
     Next index
-    Set box = DiagramBox(ws, "D_OpenPanel", ws.Range("O2").Left, ws.Rows(2).Top, ws.Range("O2:S3").Width, _
-                         ws.Range("O2:O3").Height, "CONTROLES / CONTROLS", RGB(37, 99, 235), RGB(37, 99, 235), 15, True)
-    box.OnAction = "'" & ThisWorkbook.name & "'!MostrarPanelCpu"
-    ws.Range("B35:S36").Merge
-    With ws.Range("B35:S36")
+    Set box = DiagramBox(ws, "D_OpenPanel", ws.Range(RA("O2")).Left, ws.Rows(ROW_BASE + 2).Top, ws.Range(RA("O2:S3")).Width, _
+                         ws.Range(RA("O2:O3")).Height, "CONTROLES / CONTROLS", RGB(37, 99, 235), RGB(37, 99, 235), 15, True)
+    box.OnAction = "'" & ThisWorkbook.name & "'!LcaIrCpu"
+    ws.Range(RA("B35:S36")).Merge
+    With ws.Range(RA("B35:S36"))
         .value = "Carga valores y elige registros en CONTROLES. Flechas = dependencias ALU; microciclos de buses: P05." & vbLf & _
                  "Load values and select registers in CONTROLS. Arrows = ALU dependencies; bus microcycles: P05."
         .Font.name = "Segoe UI"
@@ -144,7 +139,6 @@ Public Sub MostrarDiagramaCpu()
     If ws Is Nothing Then
         ConstruirDiagramaCpu
     Else
-        ws.Activate
         DiagramaActualizar
         FitDiagram ws
     End If
@@ -216,28 +210,16 @@ Private Function ArrayMacro(ByVal index As Long) As String
 End Function
 
 Private Function DiagramSheet(ByVal create As Boolean) As Worksheet
-    Dim ws As Worksheet
-    For Each ws In ThisWorkbook.Worksheets
-        If ws.name = DIAGRAM_NAME Then
-            Set DiagramSheet = ws
-            Exit Function
-        End If
-    Next ws
-    If create Then
-        Set ws = ThisWorkbook.Worksheets.Add(Before:=ThisWorkbook.Worksheets(1))
-        ws.name = DIAGRAM_NAME
-        Set DiagramSheet = ws
-    End If
+    Set DiagramSheet = LcaBand("D_Chip", create)
+End Function
+
+' Row shift of this diagram inside the shared LCA sheet.
+Private Function RA(ByVal address As String) As String
+    RA = LcaRows(address, ROW_BASE)
 End Function
 
 Private Sub FitDiagram(ByVal ws As Worksheet)
-    ActiveWindow.DisplayGridlines = False
-    ws.Range("A1:T38").Select
-    ActiveWindow.Zoom = True
-    If ActiveWindow.Zoom > 100 Then ActiveWindow.Zoom = 100
-    ActiveWindow.ScrollRow = 1
-    ActiveWindow.ScrollColumn = 1
-    ws.Range("A1").Select
+    LcaGoto ws, ROW_BASE
 End Sub
 
 Private Function DiagramBox(ByVal ws As Worksheet, ByVal name As String, ByVal x As Single, ByVal y As Single, _

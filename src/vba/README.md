@@ -30,3 +30,7 @@ English: P06 adds 256 bytes in eight 32-byte frames and wires P05 fetch/store cy
 P09 añade `LcaCache.bas` (L1I 8 B, L1D 8 B y L2 32 B, directas, write-through/write-allocate, etiquetas físicas), `LcaCachePanel.bas` (`ConstruirPanelCaches`) y `LcaCacheTests.bas` (`VerificarCachesP09`). Importar los tres, compilar y ejecutar la prueba. [Política, trazas esperadas y prueba bilingüe](../../docs/P09_CACHE.md). La traducción (P07) y el recorrido combinado (P10) siguen pendientes.
 
 English: P09 adds the three caches (physical tags, direct mapped, write-through/write-allocate), a live counter/line panel and the `VerificarCachesP09` macro. Import the three modules and follow the [P09 policy and test guide](../../docs/P09_CACHE.md). Translation (P07) and the integrated path (P10) remain separate tasks.
+
+`LcaLayout.bas` reúne los paneles en una sola hoja **LCA** (bandas verticales: CPU, diagrama, buses/RAM y cachés). `ConstruirLca` reconstruye todo y elimina las hojas antiguas CPU, CPU Diagrama, P05 Buses y P09 Caches; cada `Construir...` reconstruye solo su banda. Los paneles desplazan sus filas con `LcaRows` según su `ROW_BASE`.
+
+English: `LcaLayout.bas` places every panel on one **LCA** worksheet as vertical bands (CPU, diagram, buses/RAM, caches). `ConstruirLca` rebuilds everything and removes the old per-panel sheets; each `Construir...` macro rebuilds only its band.
