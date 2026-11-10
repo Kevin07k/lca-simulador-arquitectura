@@ -25,10 +25,11 @@ Index of task guides. Each guide is bilingual unless noted.
 | P09 cachés L1I/L1D/L2 | [P09_CACHE.md](P09_CACHE.md) | `VerificarCachesP09` | filas 194–236 |
 | P10 caché + paginación | [P10_CACHE_PAGING.md](P10_CACHE_PAGING.md) | `VerificarCachePaginacionP10` | filas 238–284 |
 | P11 editor + ensamblador + cargador | [P11_ASSEMBLER_LOADER.md](P11_ASSEMBLER_LOADER.md) | `VerificarEnsambladorP11` | filas 286–383 |
+| **P12 maquina completa (vista de defensa)** | [P12_CPU_CYCLE.md](P12_CPU_CYCLE.md) | `VerificarCicloP12` | **filas 458–523** (se abre aqui) |
 | P13 teclado + cola FIFO | [P13_KEYBOARD.md](P13_KEYBOARD.md) | `VerificarTecladoP13` | filas 385–420 |
 | P14 LCD 8x1 + video | [P14_LCD.md](P14_LCD.md) | `VerificarLcdP14` | filas 421–456 |
 
-`VerificarTodo` (Alt+F8) ejecuta P04–P11, P13 y P14 y muestra un resumen; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
-`VerificarTodo` runs P04–P11, P13 and P14 and shows one summary; `scripts/Test-Workbook.ps1` does the same headless.
+`VerificarTodo` (Alt+F8) ejecuta P04–P14, P13 y P14 y muestra un resumen; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
+`VerificarTodo` runs P04–P14, P13 and P14 and shows one summary; `scripts/Test-Workbook.ps1` does the same headless.
 
 Capturas / screenshots: [`img/`](img/).

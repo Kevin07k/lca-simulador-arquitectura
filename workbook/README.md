@@ -23,6 +23,7 @@
 | 286–383 | P11 editor ASM, ensamblador y cargador | [P11](../docs/P11_ASSEMBLER_LOADER.md) |
 | 385–420 | P13 teclado y cola FIFO E0–E7h | [P13](../docs/P13_KEYBOARD.md) |
 | 421–456 | P14 LCD 8x1 y video E8–EFh | [P14](../docs/P14_LCD.md) |
+| **458–523** | **P12 maquina completa: vista de defensa** (el libro se abre aqui) | [P12](../docs/P12_CPU_CYCLE.md) |
 
 `ConstruirLca` (Alt+F8) reconstruye la hoja completa. Las bandas tienen botones de navegación (`VER P08`, `VER P09`, `VER P10`, `VER P11`, `DIAGRAMA`...).
 

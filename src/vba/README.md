@@ -15,6 +15,7 @@ Standard modules exported from `workbook/LCA.xlsm` (ASCII, CRLF). **Engine** mod
 | P09 | `LcaCache` | `LcaCachePanel` | `LcaCacheTests` → `VerificarCachesP09` | [P09](../../docs/P09_CACHE.md) |
 | P10 | `LcaCachePath` | `LcaCachePathPanel` | `LcaCachePathTests` → `VerificarCachePaginacionP10` | [P10](../../docs/P10_CACHE_PAGING.md) |
 | P11 | `LcaAssembler`, `LcaLoader` | `LcaEditorPanel` | `LcaAssemblerTests` → `VerificarEnsambladorP11` | [P11](../../docs/P11_ASSEMBLER_LOADER.md) |
+| P12 | `LcaExecutor` | `LcaMachinePanel` | `LcaExecutorTests` → `VerificarCicloP12` | [P12](../../docs/P12_CPU_CYCLE.md) |
 | P13 | `LcaKeyboard` | `LcaKeyboardPanel` | `LcaKeyboardTests` → `VerificarTecladoP13` | [P13](../../docs/P13_KEYBOARD.md) |
 | P14 | `LcaLcd` | `LcaLcdPanel` | `LcaLcdTests` → `VerificarLcdP14` | [P14](../../docs/P14_LCD.md) |
 | Hoja / sheet | `LcaLayout` (`ConstruirLca`, `LcaRows`, navegación `LcaIr*`) | | | |
@@ -22,18 +23,18 @@ Standard modules exported from `workbook/LCA.xlsm` (ASCII, CRLF). **Engine** mod
 ## Recorrido de memoria / Memory path
 
 ```
-CPU ── LcaCachePath (P10) ── LcaPager (P08) ── LcaMmu (P07)      residencia / residency
+CPU (P12 LcaExecutor) ── LcaCachePath (P10) ── LcaPager (P08) ── LcaMmu (P07)      residencia / residency
              │                    └─ invalida marco / invalidates frame ─┐
              └── LcaCache (P09: L1I, L1D, L2) ── LcaRam (P06) ◄──────────┘
                      └── LcaControl + LcaBus (P05): ciclos FILL / LD / ST
 ```
 
-`LcaMmuPath` (P07) y `PagerFetchFour` / `PagerReadByte` / `PagerStoreByte` (P08) siguen siendo recorridos **sin caché** para sus propias pruebas. P12 debe usar `LcaCachePath`.
-`LcaMmuPath` (P07) and the P08 `Pager*` byte paths remain **uncached** paths for their own tests; P12 must use `LcaCachePath`.
+`LcaMmuPath` (P07) y `PagerFetchFour` / `PagerReadByte` / `PagerStoreByte` (P08) siguen siendo recorridos **sin caché** para sus propias pruebas. P12 (`LcaExecutor`) usa `LcaCachePath`.
+`LcaMmuPath` (P07) and the P08 `Pager*` byte paths remain **uncached** paths for their own tests; P12 (`LcaExecutor`) uses `LcaCachePath`.
 
 ## Hoja LCA / LCA sheet
 
-`ConstruirLca` borra la hoja y construye las bandas en orden: CPU (1–44), diagrama (46–87), buses/RAM (89–122), P07 (124–156), P08 (158–192), P09 (194–236), P10 (238–284), P11 (286–383), P13 (385–420), P14 (421–456). Cada `Construir...` reconstruye solo su banda; las direcciones se desplazan con `LcaRows` según `ROW_BASE`.
+`ConstruirLca` borra la hoja y construye las bandas en orden: CPU (1–44), diagrama (46–87), buses/RAM (89–122), P07 (124–156), P08 (158–192), P09 (194–236), P10 (238–284), P11 (286–383), P13 (385–420), P14 (421–456) y la máquina P12 (458–523), donde se abre el libro. Cada `Construir...` reconstruye solo su banda; las direcciones se desplazan con `LcaRows` según `ROW_BASE`.
 
 `ConstruirLca` clears the sheet and builds every band in that order; each `Construir...` macro rebuilds only its own band.
 
