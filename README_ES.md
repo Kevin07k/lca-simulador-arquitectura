@@ -22,10 +22,10 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P07–P08 | Tabla de páginas, fallos de página, CLOCK, swap | Integrado |
 | P09 | Cachés L1I, L1D y L2 | Integrado |
 | P10 | Caché integrada con paginación | Integrado |
-| P11 | Editor ASM, ensamblador y cargador | En revisión |
-| P12 | Ciclo CPU completo e ISA | Pendiente |
+| P11 | Editor ASM, ensamblador y cargador | Integrado |
+| P12 | Ciclo CPU completo e ISA, vista de máquina para la defensa | En revisión |
 | P13 | Teclado y cola FIFO de ocho bytes | Integrado |
-| P14 | LCD 8x1 y buffer de video | En revisión |
+| P14 | LCD 8x1 y buffer de video | Integrado |
 | P15–P22 | Programas, documentación, entrega | Pendiente |
 
 ## Equipo

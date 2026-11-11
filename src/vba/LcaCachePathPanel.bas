@@ -4,6 +4,7 @@ Option Explicit
 ' P10 band of the LCA sheet: last-access pipeline (VA -> PTE -> PA -> L1 -> L2 -> RAM),
 ' the seven frames with their cached lines, global counters and the integrated trace.
 Private Const ROW_BASE As Long = LCA_BASE_CACHE_PATH
+Private Const COL_BASE As Long = LCA_COL_CACHE_PATH
 Private Const BAND_ROWS As Long = 47
 Private Const BG As Long = 2758415          ' RGB(15, 23, 42)
 Private Const CARD As Long = 3877150        ' RGB(30, 41, 59)
@@ -25,8 +26,8 @@ Private mStatus As String
 Public Sub ConstruirPanelCachePaginacion()
     Dim ws As Worksheet, i As Long, Stage As Variant, col As Long
     Set ws = PathSheet(True)
-    LcaPrepareBand ws, ROW_BASE, BAND_ROWS, "P10_"
-    ws.Rows(RA("1:" & CStr(BAND_ROWS))).RowHeight = 21
+    LcaPrepareBand ws, ROW_BASE, BAND_ROWS, "P10_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:" & CStr(BAND_ROWS))), 21
     With ws.Range(RA("A1:AZ" & CStr(BAND_ROWS)))
         .Interior.Color = BG
         .Font.Name = "Consolas"
@@ -36,7 +37,7 @@ Public Sub ConstruirPanelCachePaginacion()
     End With
 
     ' Header and controls
-    ws.Rows(ROW_BASE + 2).RowHeight = 30
+    LcaRowHeight ws.Rows(ROW_BASE + 2), 30
     ws.Range(RA("B2:M2")).Merge
     With ws.Range(RA("B2"))
         .Value = "P10  /  CACHE + PAGINACION"
@@ -70,35 +71,35 @@ Public Sub ConstruirPanelCachePaginacion()
     SectionTitle ws, "B11:S11", "01   RECORRIDO DEL ULTIMO ACCESO / LAST ACCESS PATH"
     col = 2
     For Each Stage In Array("VA", "PTE / PAGINA", "PA", "L1", "L2", "RAM")
-        With ws.Range(ws.Cells(ROW_BASE + 12, col), ws.Cells(ROW_BASE + 12, col + 2))
+        With ws.Range(CL(ws, ROW_BASE + 12, col), CL(ws, ROW_BASE + 12, col + 2))
             .Merge
             .Value = CStr(Stage)
             .Font.Bold = True
             .Font.Color = MUTED
             .HorizontalAlignment = xlCenter
         End With
-        With ws.Range(ws.Cells(ROW_BASE + 13, col), ws.Cells(ROW_BASE + 14, col + 2))
+        With ws.Range(CL(ws, ROW_BASE + 13, col), CL(ws, ROW_BASE + 14, col + 2))
             .Merge
             .Font.Size = 18
             .Font.Bold = True
             .HorizontalAlignment = xlCenter
         End With
-        With ws.Range(ws.Cells(ROW_BASE + 15, col), ws.Cells(ROW_BASE + 15, col + 2))
+        With ws.Range(CL(ws, ROW_BASE + 15, col), CL(ws, ROW_BASE + 15, col + 2))
             .Merge
             .Font.Size = 9
             .HorizontalAlignment = xlCenter
         End With
         If col < 17 Then
             ' A thick background-coloured edge splits the stages into separate cards.
-            With ws.Range(ws.Cells(ROW_BASE + 12, col + 2), ws.Cells(ROW_BASE + 15, col + 2)).Borders(xlEdgeRight)
+            With ws.Range(CL(ws, ROW_BASE + 12, col + 2), CL(ws, ROW_BASE + 15, col + 2)).Borders(xlEdgeRight)
                 .Color = BG
                 .Weight = xlThick
             End With
         End If
         col = col + 3
     Next Stage
-    ws.Rows(ROW_BASE + 13).RowHeight = 24
-    ws.Rows(ROW_BASE + 14).RowHeight = 24
+    LcaRowHeight ws.Rows(ROW_BASE + 13), 24
+    LcaRowHeight ws.Rows(ROW_BASE + 14), 24
 
     ' Frames (left) and counters (right)
     SectionTitle ws, "B17:J17", "02   MARCOS / FRAMES  (lineas en cache por nivel)"
@@ -142,7 +143,7 @@ Public Sub ConstruirPanelCachePaginacion()
     ws.Range(RA("B46")).Value = "Paso 11: sin invalidar PFN1, L2 devolveria A5h (dato viejo de VPN8) en lugar del codigo 10h. Prueba: VerificarCachePaginacionP10."
 
     CachePathDemoReset
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelCachePaginacion()
@@ -151,7 +152,7 @@ Public Sub MostrarPanelCachePaginacion()
     If ws Is Nothing Then
         ConstruirPanelCachePaginacion
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
         CachePathPanelRefresh
     End If
 End Sub
@@ -269,9 +270,9 @@ Private Sub Stage(ByVal ws As Worksheet, ByVal index As Long, ByVal big As Strin
                   ByVal detail As String, ByVal color As Long)
     Dim col As Long
     col = 2 + 3 * index
-    ws.Cells(ROW_BASE + 13, col).Value = big
-    ws.Cells(ROW_BASE + 15, col).Value = detail
-    ws.Range(ws.Cells(ROW_BASE + 12, col), ws.Cells(ROW_BASE + 15, col + 2)).Interior.Color = color
+    CL(ws, ROW_BASE + 13, col).Value = big
+    CL(ws, ROW_BASE + 15, col).Value = detail
+    ws.Range(CL(ws, ROW_BASE + 12, col), CL(ws, ROW_BASE + 15, col + 2)).Interior.Color = color
 End Sub
 
 Private Sub DrawFrames(ByVal ws As Worksheet)
@@ -280,32 +281,32 @@ Private Sub DrawFrames(ByVal ws As Worksheet)
     s = CachePathLast()
     For pfn = 0 To 7
         row = ROW_BASE + 19 + pfn
-        ws.Cells(row, 2).Value = pfn
+        CL(ws, row, 2).Value = pfn
         If pfn = 7 Then
-            ws.Range(ws.Cells(row, 3), ws.Cells(row, 9)).Value = "-"
-            ws.Cells(row, 10).Value = "E/S RESERVADA"
+            ws.Range(CL(ws, row, 3), CL(ws, row, 9)).Value = "-"
+            CL(ws, row, 10).Value = "E/S RESERVADA"
             color = RESERVED
         Else
             owner = PagerFrameOwner(pfn)
             If owner < 0 Then
-                ws.Range(ws.Cells(row, 3), ws.Cells(row, 5)).Value = "-"
-                ws.Cells(row, 10).Value = "LIBRE / FREE"
+                ws.Range(CL(ws, row, 3), CL(ws, row, 5)).Value = "-"
+                CL(ws, row, 10).Value = "LIBRE / FREE"
                 color = CARD
             Else
                 entry = MmuPage(owner)
-                ws.Cells(row, 3).Value = owner
-                ws.Cells(row, 4).Value = Abs(CLng(entry.Dirty))
-                ws.Cells(row, 5).Value = Abs(CLng(entry.Referenced))
-                ws.Cells(row, 10).Value = IIf(owner <= 7, "CODIGO", "DATOS")
+                CL(ws, row, 3).Value = owner
+                CL(ws, row, 4).Value = Abs(CLng(entry.Dirty))
+                CL(ws, row, 5).Value = Abs(CLng(entry.Referenced))
+                CL(ws, row, 10).Value = IIf(owner <= 7, "CODIGO", "DATOS")
                 color = RESIDENT
             End If
             If pfn = s.PFN And Not s.Failed Then color = IIf(s.PageFault, WARN, OK_GREEN)
         End If
-        ws.Cells(row, 6).Value = CacheFrameLines(LCA_CACHE_L1I, pfn)
-        ws.Cells(row, 7).Value = CacheFrameLines(LCA_CACHE_L1D, pfn)
-        ws.Cells(row, 8).Value = CacheFrameLines(LCA_CACHE_L2, pfn)
-        If pfn < 7 Then ws.Cells(row, 9).Value = IIf(PagerHand() = pfn, "<- mano", "")
-        ws.Range(ws.Cells(row, 2), ws.Cells(row, 10)).Interior.Color = color
+        CL(ws, row, 6).Value = CacheFrameLines(LCA_CACHE_L1I, pfn)
+        CL(ws, row, 7).Value = CacheFrameLines(LCA_CACHE_L1D, pfn)
+        CL(ws, row, 8).Value = CacheFrameLines(LCA_CACHE_L2, pfn)
+        If pfn < 7 Then CL(ws, row, 9).Value = IIf(PagerHand() = pfn, "<- mano", "")
+        ws.Range(CL(ws, row, 2), CL(ws, row, 10)).Interior.Color = color
     Next pfn
 End Sub
 
@@ -319,8 +320,8 @@ Private Sub DrawCounters(ByVal ws As Worksheet)
                    HitMiss(LCA_CACHE_L1I), HitMiss(LCA_CACHE_L1D), HitMiss(LCA_CACHE_L2), _
                    CStr(CachePathRamCycles()))
     For i = 0 To 8
-        ws.Cells(ROW_BASE + 19 + i, 12).Value = names(i)
-        ws.Cells(ROW_BASE + 19 + i, 17).Value = "'" & values(i)
+        CL(ws, ROW_BASE + 19 + i, 12).Value = names(i)
+        CL(ws, ROW_BASE + 19 + i, 17).Value = "'" & values(i)
     Next i
 End Sub
 
@@ -330,14 +331,14 @@ Private Sub DrawTrace(ByVal ws As Worksheet)
         row = ROW_BASE + 30 + i
         text = vbNullString
         If i < CachePathTraceCount() Then text = CachePathTraceLine(i)
-        ws.Cells(row, 2).Value = text
+        CL(ws, row, 2).Value = text
         color = CARD
         If InStr(1, text, "ERROR", vbBinaryCompare) > 0 Then
             color = BAD
         ElseIf InStr(1, text, "evict", vbBinaryCompare) > 0 Then
             color = WARN
         End If
-        ws.Range(ws.Cells(row, 2), ws.Cells(row, 19)).Interior.Color = color
+        ws.Range(CL(ws, row, 2), CL(ws, row, 19)).Interior.Color = color
     Next i
 End Sub
 
@@ -360,9 +361,9 @@ End Sub
 Private Sub HeaderRow(ByVal ws As Worksheet, ByVal row As Long, ByVal labels As Variant)
     Dim i As Long
     For i = 0 To UBound(labels)
-        ws.Cells(ROW_BASE + row, 2 + i).Value = labels(i)
+        CL(ws, ROW_BASE + row, 2 + i).Value = labels(i)
     Next i
-    With ws.Range(ws.Cells(ROW_BASE + row, 2), ws.Cells(ROW_BASE + row, 2 + UBound(labels)))
+    With ws.Range(CL(ws, ROW_BASE + row, 2), CL(ws, ROW_BASE + row, 2 + UBound(labels)))
         .Interior.Color = HEAD
         .Font.Bold = True
         .HorizontalAlignment = xlCenter
@@ -385,7 +386,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddButton(ByVal ws As Worksheet, ByVal address As String, ByVal caption As String, _
@@ -421,4 +422,9 @@ Private Function Hex3(ByVal value As Long) As String
     Else
         Hex3 = Right$("000" & Hex$(value), 3) & "h"
     End If
+End Function
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
 End Function

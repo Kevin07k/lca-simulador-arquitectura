@@ -20,7 +20,7 @@ The ALU does not advance PC, decode instructions, access worksheets, or bypass b
 1. Open `workbook/LCA.xlsm` in desktop Excel and open its VBA project with Alt+F11.
 2. Compile via Debug → Compile VBAProject.
 3. Return to Excel; Alt+F8 → `VerificarCpuAlu` → Run.
-4. Expect `P04 Tests!B1 = PASS`, B2 = 197120, B3 = 1379895, and final CPU state RESET. The macro clears the contents of its own report sheet before each run and resets CPU state on success or failure. It does not reset other simulator modules.
+4. Expect the message `P04 PASS: 197120 casos aritmeticos, 1379895 comprobaciones` and final CPU state RESET (no report sheet is created since P12). The macro resets CPU state on success or failure. It does not reset other simulator modules.
 
 To rebuild, import `LcaInicio.bas`, `LcaCpu.bas`, `LcaAlu.bas`, `LcaCpuTests.bas`, `LcaPanel.bas` and `LcaDiagrama.bas` using the [VBA workflow](VBA_WORKFLOW.md). Avoid duplicate module names. Tests and presentation are separate from the engine; only these adapters write to worksheets.
 
@@ -54,7 +54,7 @@ La ALU no avanza PC, decodifica instrucciones, accede a hojas ni evita buses par
 1. Abrir `workbook/LCA.xlsm` en Excel de escritorio y su proyecto VBA con Alt+F11.
 2. Usar Depurar → Compilar VBAProject.
 3. Volver a Excel; Alt+F8 → `VerificarCpuAlu` → Ejecutar.
-4. Esperado: `P04 Tests!B1 = PASS`, B2 = 197120, B3 = 1379895 y estado final CPU RESET. La macro limpia el contenido de su propia hoja de reporte en cada ejecución y reinicia CPU al terminar o fallar. No reinicia otros módulos del simulador.
+4. Esperado: el mensaje `P04 PASS: 197120 casos aritmeticos, 1379895 comprobaciones` y estado final CPU RESET (desde P12 no se crea hoja de reporte). La macro reinicia CPU al terminar o fallar. No reinicia otros módulos del simulador.
 
 Para reconstruir, importar `LcaInicio.bas`, `LcaCpu.bas`, `LcaAlu.bas`, `LcaCpuTests.bas`, `LcaPanel.bas` y `LcaDiagrama.bas` según el [flujo VBA](VBA_WORKFLOW.md), evitando nombres duplicados. Pruebas y presentación están separadas del motor; solo esos adaptadores escriben en hojas.
 

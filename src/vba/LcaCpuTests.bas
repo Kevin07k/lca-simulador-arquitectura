@@ -5,50 +5,21 @@ Private mAssertions As Long
 Private mCases As Long
 
 ' Reproducible Excel test entry point. Engine modules never access worksheets.
+' Reports through LcaReport like every other suite (no report sheet is created).
 Public Sub VerificarCpuAlu()
-    Dim report As Worksheet
-    Dim errorNumber As Long
-    Dim errorText As String
     On Error GoTo Failed
-    Set report = ReportSheet()
-    report.Cells.ClearContents
-    report.Range("A1:B1").value = Array("P04 CPU / ALU", "RUNNING")
     mAssertions = 0
     mCases = 0
     CheckStateAndValidation
     CheckAllArithmetic
     CpuReset
-    report.Range("A1:B1").value = Array("P04 CPU / ALU", "PASS")
-    report.Range("A2:B2").value = Array("Arithmetic cases / Casos", mCases)
-    report.Range("A3:B3").value = Array("Assertions / Comprobaciones", mAssertions)
-    report.Range("A4:B4").value = Array("Result / Resultado", "All checks passed / Sin fallos")
-    report.Range("A5:B5").value = Array("Final CPU / CPU final", "RESET")
-    report.Columns("A:B").AutoFit
-    Debug.Print "P04 PASS; cases=" & mCases & "; assertions=" & mAssertions
+    LcaReport "P04 PASS: " & CStr(mCases) & " casos aritmeticos, " & CStr(mAssertions) & _
+              " comprobaciones / assertions.", True
     Exit Sub
 Failed:
-    errorNumber = Err.Number
-    errorText = Err.Description
     CpuReset
-    If Not report Is Nothing Then
-        report.Range("B1").value = "FAIL"
-        report.Range("A4:B4").value = Array("Failure / Fallo", errorText)
-    End If
-    Err.Raise errorNumber, "LcaCpuTests", errorText
+    LcaReport "P04 FAIL after " & CStr(mAssertions) & " checks: " & Err.Description, False
 End Sub
-
-Private Function ReportSheet() As Worksheet
-    Dim sheet As Worksheet
-    For Each sheet In ThisWorkbook.Worksheets
-        If sheet.Name = "P04 Tests" Then
-            Set ReportSheet = sheet
-            Exit Function
-        End If
-    Next sheet
-    Set sheet = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
-    sheet.Name = "P04 Tests"
-    Set ReportSheet = sheet
-End Function
 
 Private Sub AssertEqual(ByVal actual As Long, ByVal expected As Long, ByVal label As String)
     mAssertions = mAssertions + 1

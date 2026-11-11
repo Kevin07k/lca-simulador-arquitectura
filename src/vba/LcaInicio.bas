@@ -7,11 +7,9 @@ Private mSilent As Boolean
 Private mLastPassed As Boolean
 Private mLastReport As String
 
-' Entry point for the initial workbook. No CPU simulation is implemented here.
+' Installation check: writes "VBA OK - P03" in the status line of the cover (LCA sheet).
 Public Sub VerificarInstalacion()
-    Dim inicio As Worksheet
-    Set inicio = ThisWorkbook.Worksheets("Inicio")
-    inicio.Range("B13").Value = "VBA OK - " & LCA_VERSION
+    PortadaEstado "VBA OK - " & LCA_VERSION & "   |   macros habilitadas   " & Format$(Now, "yyyy-mm-dd hh:nn")
 End Sub
 
 ' Every Verificar* macro reports here: a MsgBox for a person, silent inside VerificarTodo/scripts.
@@ -27,20 +25,28 @@ Public Sub LcaReport(ByVal text As String, ByVal passed As Boolean)
     End If
 End Sub
 
-' Runs every engine regression (P04..P11, P13, P14) without dialogs and returns one line per suite.
+' Result of the last suite that reported (used by panel buttons).
+Public Function LcaLastPassed() As Boolean
+    LcaLastPassed = mLastPassed
+End Function
+
+Public Function LcaLastReport() As String
+    LcaLastReport = mLastReport
+End Function
+
+' Runs every engine regression (P04..P14) without dialogs and returns one line per suite.
 ' First line is "ALL PASS" or "SOME FAIL". Used by VerificarTodo and scripts/Test-Workbook.ps1.
 Public Function LcaVerificarTodoTexto() As String
     Dim suites As Variant, i As Long, out As String, allOk As Boolean
     suites = Array("VerificarCpuAlu", "VerificarBusesP05", "VerificarRamP06", "VerificarMmuP07", _
                    "VerificarPagerP08", "VerificarCachesP09", "VerificarCachePaginacionP10", _
-                   "VerificarEnsambladorP11", "VerificarTecladoP13", "VerificarLcdP14")
+                   "VerificarEnsambladorP11", "VerificarCicloP12", "VerificarTecladoP13", "VerificarLcdP14", _
+                   "VerificarInterfazUI")
     allOk = True
     mSilent = True
     For i = LBound(suites) To UBound(suites)
-        ' VerificarCpuAlu writes its own sheet and raises on failure instead of reporting.
-        mLastPassed = (suites(i) = "VerificarCpuAlu")
-        mLastReport = "P04 PASS (hoja / sheet P04 Tests)"
-        If Not mLastPassed Then mLastReport = CStr(suites(i)) & ": sin reporte / no report"
+        mLastPassed = False
+        mLastReport = CStr(suites(i)) & ": sin reporte / no report"
         On Error Resume Next
         Application.Run "'" & Replace(ThisWorkbook.name, "'", "''") & "'!" & CStr(suites(i))
         If Err.Number <> 0 Then
@@ -54,6 +60,12 @@ Public Function LcaVerificarTodoTexto() As String
     Next i
     mSilent = False
     LcaVerificarTodoTexto = IIf(allOk, "ALL PASS", "SOME FAIL") & vbCrLf & out
+    ' Keep the report on the Logs sheet and a one-line summary on the cover.
+    On Error Resume Next
+    LogsGuardarPruebas LcaVerificarTodoTexto
+    PortadaEstado IIf(allOk, "VerificarTodo: ALL PASS", "VerificarTodo: SOME FAIL") & "  (" & CStr(UBound(suites) + 1) & _
+                  " suites, P04-P14)   " & Format$(Now, "yyyy-mm-dd hh:nn")
+    On Error GoTo 0
 End Function
 
 Public Sub VerificarTodo()

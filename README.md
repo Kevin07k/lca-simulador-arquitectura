@@ -22,10 +22,10 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P07–P08 | Page table, page faults, CLOCK, swap | Integrated |
 | P09 | L1I, L1D and L2 caches | Integrated |
 | P10 | Caches integrated with paging | Integrated |
-| P11 | Assembly editor, assembler and loader | In review |
-| P12 | Full CPU cycle and ISA | Pending |
+| P11 | Assembly editor, assembler and loader | Integrated |
+| P12 | Full CPU cycle and ISA, machine view for the defense | In review |
 | P13 | Keyboard and eight-byte FIFO queue | Integrated |
-| P14 | 8x1 LCD and video buffer | In review |
+| P14 | 8x1 LCD and video buffer | Integrated |
 | P15–P22 | Programs, documentation, delivery | Pending |
 
 ## Team

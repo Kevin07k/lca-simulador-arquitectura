@@ -2,13 +2,14 @@ Attribute VB_Name = "LcaMmuPanel"
 Option Explicit
 
 Private Const ROW_BASE As Long = LCA_BASE_MMU
+Private Const COL_BASE As Long = LCA_COL_MMU
 Private mStatus As String
 
 Public Sub ConstruirPanelPaginas()
     Dim ws As Worksheet, i As Long
     Set ws = MmuSheet(True)
-    LcaPrepareBand ws, ROW_BASE, 33, "P07_"
-    ws.Rows(RA("1:33")).RowHeight = 24
+    LcaPrepareBand ws, ROW_BASE, 33, "P07_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:33")), 24
     ws.Range(RA("A1:S33")).Interior.Color = RGB(15, 23, 42)
     With ws.Range(RA("A1:S33")).Font
         .Name = "Consolas"
@@ -62,12 +63,12 @@ Public Sub ConstruirPanelPaginas()
     ws.Range(RA("J18")).Value = "FALLO RECUPERABLE / PAGE FAULT"
     ws.Range(RA("J19:S20")).Merge
     ws.Range(RA("J19:S20")).Interior.Color = RGB(30, 41, 59)
-    ws.Range(RA("J22:S26")).Merge
-    ws.Range(RA("J22:S26")).WrapText = True
-    ws.Range(RA("J22")).Value = "VPN 15 es E/S reservada. PAGE_FAULT no asigna un marco: P08 cargara la pagina y reintentara. " & _
+    ws.Range(RA("J29:S32")).Merge
+    ws.Range(RA("J29:S32")).WrapText = True
+    ws.Range(RA("J29")).Value = "VPN 15 es E/S reservada. PAGE_FAULT no asigna un marco: P08 cargara la pagina y reintentara. " & _
                            "FETCH y ST usan la RAM P06 y los buses P05; P12 ejecutara el opcode."
     MmuDemoSetup
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelPaginas()
@@ -76,7 +77,7 @@ Public Sub MostrarPanelPaginas()
     If ws Is Nothing Then
         ConstruirPanelPaginas
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
         MmuPanelRefresh
     End If
 End Sub
@@ -173,14 +174,14 @@ Public Sub MmuPanelRefresh()
     For vpn = 0 To 15
         entry = MmuPage(vpn)
         row = 13 + vpn
-        ws.Cells(ROW_BASE + row, 2).Value = vpn
-        ws.Cells(ROW_BASE + row, 3).Value = Hex3(vpn * 32) & " - " & Hex3(vpn * 32 + 31)
-        ws.Cells(ROW_BASE + row, 4).Value = Abs(CLng(entry.Present))
-        ws.Cells(ROW_BASE + row, 5).Value = IIf(entry.Present, CStr(entry.PFN), "-")
-        ws.Cells(ROW_BASE + row, 6).Value = Abs(CLng(entry.Dirty))
-        ws.Cells(ROW_BASE + row, 7).Value = Abs(CLng(entry.Referenced))
-        ws.Cells(ROW_BASE + row, 8).Value = IIf(entry.Reserved, "IO / RESERVED", "-")
-        ws.Range(ws.Cells(ROW_BASE + row, 2), ws.Cells(ROW_BASE + row, 8)).Interior.Color = _
+        CL(ws, ROW_BASE + row, 2).Value = vpn
+        CL(ws, ROW_BASE + row, 3).Value = Hex3(vpn * 32) & " - " & Hex3(vpn * 32 + 31)
+        CL(ws, ROW_BASE + row, 4).Value = Abs(CLng(entry.Present))
+        CL(ws, ROW_BASE + row, 5).Value = IIf(entry.Present, CStr(entry.PFN), "-")
+        CL(ws, ROW_BASE + row, 6).Value = Abs(CLng(entry.Dirty))
+        CL(ws, ROW_BASE + row, 7).Value = Abs(CLng(entry.Referenced))
+        CL(ws, ROW_BASE + row, 8).Value = IIf(entry.Reserved, "IO / RESERVED", "-")
+        ws.Range(CL(ws, ROW_BASE + row, 2), CL(ws, ROW_BASE + row, 8)).Interior.Color = _
             IIf(entry.Reserved, RGB(90, 45, 57), IIf(entry.Present, RGB(30, 65, 84), RGB(30, 41, 59)))
     Next vpn
     ws.Range(RA("B10")).Value = mStatus
@@ -195,6 +196,7 @@ Public Sub MmuPanelRefresh()
     Else
         ws.Range(RA("J19")).Value = "Ninguno / None"
     End If
+    MmuDetalleActualizar
 End Sub
 
 Private Function CpuIrValue() As Long
@@ -213,7 +215,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddMmuButton(ByVal ws As Worksheet, ByVal address As String, _
@@ -232,3 +234,8 @@ Private Sub AddMmuButton(ByVal ws As Worksheet, ByVal address As String, _
     button.TextFrame2.VerticalAnchor = msoAnchorMiddle
     button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
 End Sub
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
+End Function

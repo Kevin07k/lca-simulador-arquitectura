@@ -2,14 +2,15 @@ Attribute VB_Name = "LcaPagerPanel"
 Option Explicit
 
 Private Const ROW_BASE As Long = LCA_BASE_PAGER
+Private Const COL_BASE As Long = LCA_COL_PAGER
 Private mDemoStep As Long
 Private mStatus As String
 
 Public Sub ConstruirPanelSwap()
     Dim ws As Worksheet, i As Long
     Set ws = PagerSheet(True)
-    LcaPrepareBand ws, ROW_BASE, 35, "P08_"
-    ws.Rows(RA("1:35")).RowHeight = 23
+    LcaPrepareBand ws, ROW_BASE, 35, "P08_", COL_BASE
+    LcaRowHeight ws.Rows(RA("1:35")), 23
     ws.Range(RA("A1:S35")).Interior.Color = RGB(15, 23, 42)
     With ws.Range(RA("A1:S35")).Font
         .Name = "Consolas"
@@ -39,16 +40,11 @@ Public Sub ConstruirPanelSwap()
     ws.Range(RA("G12")).Value = "BACKING[0]"
     ws.Range(RA("H12")).Value = "ESTADO"
     ws.Range(RA("B12:H12")).Interior.Color = RGB(30, 64, 105)
-    ws.Range(RA("J12:S12")).Merge
-    ws.Range(RA("J12")).Value = "PAGE_FAULT / CLOCK / ULTIMOS EVENTOS"
-    ws.Range(RA("J12:S12")).Interior.Color = RGB(30, 64, 105)
-    For i = 13 To 28
-        ws.Range(RA("J" & CStr(i) & ":S" & CStr(i))).Merge
-    Next i
+    ' J12:S28 holds the drawn CLOCK (LcaMemoryDetail); the full paging trace is on the Logs sheet.
     ws.Range(RA("B30:S30")).Merge
     ws.Range(RA("B30")).Value = "El paso 8 reemplaza una pagina limpia; el paso 9 preserva la pagina dirty; el paso 10 recupera A5h."
     PagerDemoReset
-    LcaGoto ws, ROW_BASE
+    LcaGoto ws, ROW_BASE, COL_BASE
 End Sub
 
 Public Sub MostrarPanelSwap()
@@ -57,7 +53,7 @@ Public Sub MostrarPanelSwap()
     If ws Is Nothing Then
         ConstruirPanelSwap
     Else
-        LcaGoto ws, ROW_BASE
+        LcaGoto ws, ROW_BASE, COL_BASE
         PagerPanelRefresh
     End If
 End Sub
@@ -136,37 +132,26 @@ Public Sub PagerPanelRefresh()
     For vpn = 0 To 15
         row = 13 + vpn
         entry = MmuPage(vpn)
-        ws.Cells(ROW_BASE + row, 2).Value = vpn
-        ws.Cells(ROW_BASE + row, 3).Value = Abs(CLng(entry.Present))
-        ws.Cells(ROW_BASE + row, 4).Value = IIf(entry.Present, CStr(entry.PFN), "-")
-        ws.Cells(ROW_BASE + row, 5).Value = Abs(CLng(entry.Dirty))
-        ws.Cells(ROW_BASE + row, 6).Value = Abs(CLng(entry.Referenced))
+        CL(ws, ROW_BASE + row, 2).Value = vpn
+        CL(ws, ROW_BASE + row, 3).Value = Abs(CLng(entry.Present))
+        CL(ws, ROW_BASE + row, 4).Value = IIf(entry.Present, CStr(entry.PFN), "-")
+        CL(ws, ROW_BASE + row, 5).Value = Abs(CLng(entry.Dirty))
+        CL(ws, ROW_BASE + row, 6).Value = Abs(CLng(entry.Referenced))
         If vpn = 15 Then
-            ws.Cells(ROW_BASE + row, 7).Value = "-"
-            ws.Cells(ROW_BASE + row, 8).Value = "E/S RESERVADA"
+            CL(ws, ROW_BASE + row, 7).Value = "-"
+            CL(ws, ROW_BASE + row, 8).Value = "E/S RESERVADA"
         Else
-            ws.Cells(ROW_BASE + row, 7).Value = Hex2(SwapReadByte(vpn, 0))
-            ws.Cells(ROW_BASE + row, 8).Value = IIf(entry.Present, "RESIDENTE", "SWAP")
+            CL(ws, ROW_BASE + row, 7).Value = Hex2(SwapReadByte(vpn, 0))
+            CL(ws, ROW_BASE + row, 8).Value = IIf(entry.Present, "RESIDENTE", "SWAP")
         End If
-        ws.Range(ws.Cells(ROW_BASE + row, 2), ws.Cells(ROW_BASE + row, 8)).Interior.Color = _
+        ws.Range(CL(ws, ROW_BASE + row, 2), CL(ws, ROW_BASE + row, 8)).Interior.Color = _
             IIf(vpn = PagerLastFaultVPN(), RGB(153, 78, 24), _
             IIf(vpn = 15, RGB(90, 45, 57), IIf(entry.Present, RGB(30, 65, 84), RGB(30, 41, 59))))
     Next vpn
     ws.Range(RA("B9")).Value = mStatus & " Paso " & CStr(mDemoStep) & "/10; faults=" & _
         CStr(PagerFaultCount()) & "; evicciones=" & CStr(PagerEvictionCount()) & _
         "; writebacks=" & CStr(PagerWritebackCount()) & "; cursor CLOCK=" & CStr(PagerHand())
-    For i = 13 To 28
-        ws.Range(RA("J" & CStr(i))).Value = vbNullString
-        ws.Range(RA("J" & CStr(i) & ":S" & CStr(i))).Interior.Color = RGB(30, 41, 59)
-    Next i
-    first = PagerTraceCount() - 16
-    If first < 0 Then first = 0
-    For index = first To PagerTraceCount() - 1
-        row = 13 + index - first
-        ws.Range(RA("J" & CStr(row))).Value = PagerTraceLine(index)
-        If InStr(1, PagerTraceLine(index), "PAGE_FAULT", vbTextCompare) > 0 Then _
-            ws.Range(RA("J" & CStr(row) & ":S" & CStr(row))).Interior.Color = RGB(153, 78, 24)
-    Next index
+    MemoriaDetalleActualizar
 End Sub
 
 Private Function PagerSheet(ByVal create As Boolean) As Worksheet
@@ -175,7 +160,7 @@ End Function
 
 ' Row shift of this panel inside the shared LCA sheet.
 Private Function RA(ByVal address As String) As String
-    RA = LcaRows(address, ROW_BASE)
+    RA = LcaShift(address, ROW_BASE, COL_BASE)
 End Function
 
 Private Sub AddPagerButton(ByVal ws As Worksheet, ByVal address As String, _
@@ -197,4 +182,9 @@ End Sub
 
 Private Function Hex2(ByVal value As Long) As String
     Hex2 = Right$("00" & Hex$(value), 2) & "h"
+End Function
+
+' Cell of this block: row is absolute (ROW_BASE already added), column is relative to the block.
+Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As Range
+    Set CL = ws.Cells(r, c + COL_BASE)
 End Function

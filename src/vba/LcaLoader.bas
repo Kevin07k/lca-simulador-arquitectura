@@ -43,13 +43,17 @@ End Sub
 '  - control idle, both buses High-Z (MemoryPathReset via CachePathReset);
 '  - RAM 00..DFh cleared, LCD buffer eight spaces (RamReset); caches invalidated and counters zeroed;
 '  - every PTE non-present, CLOCK hand 0, paging counters zeroed;
-'  - backing image restored: loaded code in VPN 0..7, zero data in VPN 8..14.
-' Keyboard queue/cursor reset belongs to P13/P14 when those modules exist.
+'  - keyboard queue empty, head/tail/count 0 (P13); LCD eight spaces, cursor 0 (P14);
+'  - backing image restored: loaded code in VPN 0..7, zero data in VPN 8..14;
+'  - executor state READY with an empty trace (P12).
 Public Sub LoaderResetExecution()
     Dim vpn As Long, offset As Long
     If Not mLoaded Then Err.Raise LCA_ERR_LOADER, "LcaLoader", "NO_PROGRAM_LOADED"
     CpuReset
     CachePathReset
+    KeyboardReset            ' after RamReset: clears E0..E7h and the queue pointers
+    LcdReset                 ' after RamReset: E8..EFh = spaces, cursor 0
+    ExecClearState
     For vpn = 0 To 7
         For offset = 0 To 31
             SwapWriteByte vpn, offset, mImage(vpn * 32 + offset)
