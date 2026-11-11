@@ -52,24 +52,26 @@ Public Sub ConstruirPortada()
     End With
     Chips ws
 
-    ' Navigation tiles: 2 rows x 4.
+    ' Navigation tiles: 2 rows x 5.
     tiles = Array( _
         Array("INICIAR SIMULADOR", "P12  maquina completa animada", "LcaIrMaquina", LAMP_ON), _
+        Array("DEMOS ARITMETICOS", "P15  suma, producto, Fibonacci...", "LcaIrAritmetica", RGB(236, 72, 153)), _
         Array("EDITOR ASM", "P11  escribir, ensamblar y cargar", "LcaIrEditor", BLUE), _
         Array("CPU + ALU", "P04  registros, bits, flags, ALU", "LcaIrCpu", BLUE), _
         Array("BUSES + RAM", "P05/P06  ciclos y micropalabra", "LcaIrBuses", BLUE), _
         Array("MEMORIA VIRTUAL", "P07/P08  paginas, CLOCK, swap", "LcaIrSwap", BLUE), _
         Array("CACHES", "P09/P10  L1I, L1D, L2 + paginacion", "LcaIrCaches", BLUE), _
         Array("TECLADO + LCD", "P13/P14  E/S con cola FIFO", "LcaIrTeclado", BLUE), _
+        Array("TABLERO COMPLETO", "vista general de todo el simulador", "LcaVistaGeneral", HEAD), _
         Array("LOGS", "trazas completas y pruebas", "LcaIrLogs", HEAD))
     left0 = CL(ws, ROW_BASE + 9, 2).Left
     top0 = CL(ws, ROW_BASE + 9, 2).Top
     span = CL(ws, ROW_BASE + 9, 20).Left - left0
-    w = span / 4 - 12
+    w = span / 5 - 12
     h = CL(ws, ROW_BASE + 15, 2).Top - top0 - 10
-    For i = 0 To 7
-        x = left0 + (i Mod 4) * (span / 4)
-        y = top0 + (i \ 4) * (h + 14)
+    For i = 0 To 9
+        x = left0 + (i Mod 5) * (span / 5)
+        y = top0 + (i \ 5) * (h + 14)
         Tile ws, "tile" & CStr(i), x, y, w, h, CStr(tiles(i)(0)), CStr(tiles(i)(1)), CStr(tiles(i)(2)), CLng(tiles(i)(3))
     Next i
 
@@ -83,8 +85,8 @@ Public Sub ConstruirPortada()
         .IndentLevel = 1
     End With
     SmallButton ws, "K" & CStr(STATUS_ROW) & ":M" & CStr(STATUS_ROW), "VERIFICAR INSTALACION", "VerificarInstalacion"
-    SmallButton ws, "N" & CStr(STATUS_ROW) & ":P" & CStr(STATUS_ROW), "VERIFICAR TODO (P04-P14)", "VerificarTodo"
-    SmallButton ws, "Q" & CStr(STATUS_ROW) & ":S" & CStr(STATUS_ROW), "VISTA GENERAL", "LcaVistaGeneral"
+    SmallButton ws, "N" & CStr(STATUS_ROW) & ":P" & CStr(STATUS_ROW), "VERIFICAR TODO (P04-P15)", "VerificarTodo"
+    SmallButton ws, "Q" & CStr(STATUS_ROW) & ":S" & CStr(STATUS_ROW), "PROBAR DEMOS P15", "VerificarDemoAritmeticaP15"
 End Sub
 
 ' Writes a status text in the cover (used by VerificarInstalacion and VerificarTodo).
@@ -200,7 +202,7 @@ Private Sub Tile(ByVal ws As Worksheet, ByVal name As String, ByVal x As Double,
         .TextRange.Font.Name = "Segoe UI"
         .TextRange.Font.Fill.ForeColor.RGB = tileInk
         .TextRange.ParagraphFormat.Alignment = msoAlignCenter
-        .TextRange.Paragraphs(1).Font.Size = 18
+        .TextRange.Paragraphs(1).Font.Size = 16
         .TextRange.Paragraphs(1).Font.Bold = msoTrue
         .TextRange.Paragraphs(2).Font.Size = 10
     End With
