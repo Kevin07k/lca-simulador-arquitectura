@@ -30,7 +30,8 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P16 | Keyboard-to-LCD echo program | In review |
 | P17 | Page fault and cache demo | Integrated |
 | P18 | Worksheet controls (LOAD, STEP, RUN, PAUSE, RESET) and synchronized panels | In review |
-| P19–P22 | Documentation, delivery | Pending |
+| P19 | Spanish technical documentation | In review |
+| P20–P22 | English documentation, regression, delivery | Pending |
 
 ## Team
 
@@ -61,7 +62,7 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- P19/P20 technical documentation; P21 regression and defense rehearsal.
+- P20 English technical documentation; P21 regression and defense rehearsal.
 - P22 release and submission check.
 
 This README will be updated as development progresses.

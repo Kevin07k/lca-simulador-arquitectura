@@ -32,6 +32,7 @@ Index of task guides. Each guide is bilingual unless noted.
 | P16 eco teclado → LCD | [P16_ECHO_DEMO.md](P16_ECHO_DEMO.md) | `VerificarEcoP16` | col. 3, filas 148–202 |
 | **P17 memoria: faults y caché** | [P17_MEMORY_DEMO.md](P17_MEMORY_DEMO.md) | `VerificarMemoriaP17` | col. 4, filas 150–217 |
 | **P18 controles + sincronización** | [P18_CONTROLS.md](P18_CONTROLS.md) | `VerificarControlesP18` | barra de la máquina, col. 1, filas 28–40 |
+| **P19 documentación técnica en español** | [DOCUMENTACION_TECNICA_ES.md](DOCUMENTACION_TECNICA_ES.md) | `VerificarTodo` | — |
 
 `VerificarTodo` (Alt+F8) ejecuta P04–P18 y la prueba de interfaz `VerificarInterfazUI`, muestra un resumen y lo guarda en la hoja **Logs**; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
 `VerificarTodo` runs P04–P18 plus the `VerificarInterfazUI` interface test, shows one summary and stores it on the **Logs** sheet; `scripts/Test-Workbook.ps1` does the same headless.
