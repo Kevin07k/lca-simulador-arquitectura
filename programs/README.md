@@ -26,6 +26,14 @@ The source of truth is `src/vba/LcaArith.bas`; `scripts/Test-Workbook.ps1` check
 
 La fuente de verdad es `src/vba/LcaEcho.bas` (comprobado por `scripts/Test-Workbook.ps1`). Comportamiento y ejercicio con ocho caracteres: [P16_ECHO_DEMO.md](../docs/P16_ECHO_DEMO.md).
 
+## `memoria/` — P17, faults de página y caché / page faults and cache
+
+[`memoria.asm`](memoria/memoria.asm): siete `ST` a páginas dispersas (faults + misses), un bucle que lee `[100h]` cuatro veces (hits), 10 páginas para 7 marcos (la CLOCK desaloja y guarda las páginas dirty) y la recuperación del dato modificado (`BX = A1h`). Contadores esperados: 30 instrucciones, 11 faltas, 4 evicciones, 3 write-backs, L1D 3/10, L1I 93/27, L2 6/31.
+
+[`memoria.asm`](memoria/memoria.asm): seven scattered `ST` (faults + misses), a loop that reads `[100h]` four times (hits), 10 pages for 7 frames (the CLOCK evicts and writes back dirty pages) and recovery of the modified byte.
+
+La fuente de verdad es `src/vba/LcaMemDemo.bas` (comprobado por `scripts/Test-Workbook.ps1`). Derivación de los contadores: [P17_MEMORY_DEMO.md](../docs/P17_MEMORY_DEMO.md).
+
 ## Pendiente / Pending
 
 P17 (fallos de página y caché).
