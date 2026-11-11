@@ -27,7 +27,7 @@ Issue [#12](https://github.com/Kevin07k/lca-simulador-arquitectura/issues/12). D
 
 ## Machine block (defense view)
 
-Navigation bar to every block plus **VISTA GENERAL** (zoomed-out view of the whole 2-D dashboard); buttons **CARGAR EDITOR** (program of the P11 editor), **EJEMPLO SUMA**, **DEMO ECO**, **PASO**, **EJECUTAR**, **RESET**, **VELOCIDAD** (normal → slow → no animation → fast), a key input with **TECLEAR** and 16 clickable on-screen keys.
+Navigation bar to every block plus **VISTA GENERAL** (zoomed-out view of the whole 2-D dashboard); buttons **CARGAR EDITOR** (program of the P11 editor), **EJEMPLO SUMA**, **DEMO ECO**, **PASO**, **EJECUTAR**, **RESET**, **VELOCIDAD** (normal → slow → no animation → fast), a key input with **TECLEAR** and 16 clickable on-screen keys. Since P18 the program buttons are entries of the program list + **CARGAR**, and **PAUSA** stops RUN ([P18_CONTROLS.md](P18_CONTROLS.md)).
 
 **Animation.** Every **PASO** replays the instruction on the drawing:
 

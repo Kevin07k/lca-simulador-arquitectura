@@ -682,9 +682,9 @@ End Sub
 
 ' --- Helpers -----------------------------------------------------------------------------------
 
+' P18: every view of the shared machine follows the action of this block.
 Private Sub AfterAction()
-    On Error Resume Next
-    LogsActualizar
+    Call LcaSincronizar
 End Sub
 
 Private Sub Geometry(ByVal ws As Worksheet)

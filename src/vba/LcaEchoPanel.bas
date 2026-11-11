@@ -606,9 +606,9 @@ Private Sub EnsureLoaded()
     End If
 End Sub
 
+' P18: every view of the shared machine follows the action of this block.
 Private Sub AfterAction()
-    On Error Resume Next
-    LogsActualizar
+    Call LcaSincronizar
 End Sub
 
 Private Function HexByte(ByVal v As Long) As String

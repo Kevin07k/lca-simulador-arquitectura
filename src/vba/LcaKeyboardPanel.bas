@@ -194,10 +194,9 @@ Public Sub TecladoPanelActualizar()
     ws.Range(RA("B35")).Value = mStatus
 End Sub
 
+' P18: this block, the CPU, the buses, the machine and every other view show the new state.
 Private Sub RefreshAll()
-    TecladoPanelActualizar
-    PanelActualizar          ' CPU band shows the new AX
-    BusPanelActualizar       ' bus band shows the IN cycle
+    Call LcaSincronizar
 End Sub
 
 Private Sub EnsureKeyboard()
