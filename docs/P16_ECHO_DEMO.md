@@ -131,7 +131,7 @@ Panel driven in Excel (with and without animation) gave these results:
 ## Notes
 
 - Loading the echo replaces the program loaded by P11, P12 or P15, because the machine is shared.
-- The P12 machine still has its own short **DEMO ECO** loop (`IN`, `OUT`, `JMP`), which never ends. P16 is the complete version, with an end key and a character count.
+- Since P18 the machine bar loads this program from its list (`ECO TECLADO-LCD (P16)`); the old short **DEMO ECO** loop of P12 (`IN`, `OUT`, `JMP`, never ends) is still available as the macro `MaquinaEco`.
 - P18 integrates the final controls.
 
 </details>
@@ -222,7 +222,7 @@ El panel se probó en Excel con y sin animación:
 ## Notas
 
 - Cargar el eco reemplaza el programa de P11, P12 o P15, porque la máquina es compartida.
-- El botón **DEMO ECO** de P12 sigue siendo el bucle corto sin fin (`IN`, `OUT`, `JMP`). P16 es la versión completa, con tecla de fin y conteo.
+- Desde P18 la barra de la máquina carga este programa desde su lista (`ECO TECLADO-LCD (P16)`); el bucle corto **DEMO ECO** de P12 sigue disponible como la macro `MaquinaEco`.
 - P18 integra los controles finales.
 
 </details>

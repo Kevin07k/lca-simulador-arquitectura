@@ -28,8 +28,9 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P14 | LCD 8x1 y buffer de video | Integrado |
 | P15 | Demos aritméticos con transporte de datos animado | Integrado |
 | P16 | Programa de eco teclado → LCD | En revisión |
-| P17 | Demo de fallos de página y caché | En revisión |
-| P18–P22 | Integración, documentación, entrega | Pendiente |
+| P17 | Demo de fallos de página y caché | Integrado |
+| P18 | Controles de la hoja (CARGAR, PASO, EJECUTAR, PAUSA, RESET) y paneles sincronizados | En revisión |
+| P19–P22 | Documentación, entrega | Pendiente |
 
 ## Equipo
 
@@ -60,7 +61,7 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- P18 controles finales de la hoja; P19/P20 documentación técnica; P21 regresión y ensayo de la defensa.
+- P19/P20 documentación técnica; P21 regresión y ensayo de la defensa.
 - P22 entrega y verificación de la entrega.
 
 Este README se actualizará conforme avance el desarrollo.
