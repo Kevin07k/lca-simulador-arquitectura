@@ -125,6 +125,7 @@ Public Sub LcdPanelOut()
         If code < 0 Or code > 255 Then Err.Raise LCA_ERR_LCD, "LcaLcdPanel", "LCD_NOT_ASCII"
         CpuWriteRegister LcaAX, code
         cell = LcdOut(LcaAX)
+        AnimarOut ws, Left$(text, 1), cell
         mStatus = "OUT AX: " & Right$("00" & Hex$(code), 2) & "h en la celda / in cell " & CStr(cell) & _
                   "; cursor = " & CStr(LcdCursor()) & "."
     End If
@@ -237,6 +238,17 @@ End Sub
 
 Private Sub EnsureLcd()
     If Not LcdReady() Then LcdReset
+End Sub
+
+' OUT: the character leaves the input box, crosses the bus (Ld_LCD) and lights its screen cell.
+Private Sub AnimarOut(ByVal ws As Worksheet, ByVal ch As String, ByVal cell As Long)
+    Dim target As Range
+    If ws Is Nothing Then Exit Sub
+    If Not FlowOn() Then Exit Sub
+    Set target = CL(ws, ROW_BASE + 12, 3 + cell)
+    Application.ScreenUpdating = True
+    FlowSend ws, ch, FlowPacketColor(), ws.Range(RA("C9:D9")), ws.Range(RA("B22:R23")), target
+    FlowPulseRange target, RGB(190, 242, 100), 2
 End Sub
 
 Private Function LcdSheet(ByVal create As Boolean) As Worksheet

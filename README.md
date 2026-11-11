@@ -23,10 +23,11 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P09 | L1I, L1D and L2 caches | Integrated |
 | P10 | Caches integrated with paging | Integrated |
 | P11 | Assembly editor, assembler and loader | Integrated |
-| P12 | Full CPU cycle and ISA, machine view for the defense | In review |
+| P12 | Full CPU cycle and ISA, machine view for the defense | Integrated |
 | P13 | Keyboard and eight-byte FIFO queue | Integrated |
 | P14 | 8x1 LCD and video buffer | Integrated |
-| P15–P22 | Programs, documentation, delivery | Pending |
+| P15 | Arithmetic demos with animated data transport | In review |
+| P16–P22 | Programs, documentation, delivery | Pending |
 
 ## Team
 
@@ -57,8 +58,8 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- P12 full CPU cycle: execute the programs loaded by P11 through the P10 cached memory path.
-- P13/P14 keyboard and LCD I/O, outside paging and caches.
-- Demo programs, final documentation and delivery in both languages.
+- P16 keyboard-to-LCD echo and P17 page-fault / cache demo, reusing the P15 data-transport animation.
+- P18 final worksheet controls; P19/P20 technical documentation; P21 regression and defense rehearsal.
+- P22 release and submission check.
 
 This README will be updated as development progresses.

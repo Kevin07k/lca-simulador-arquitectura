@@ -85,13 +85,15 @@ failed:
 End Sub
 
 Public Sub PagerDemoNext()
-    Dim vpn As Long, value As Byte
+    Dim vpn As Long, value As Byte, f0 As Long, w0 As Long
     On Error GoTo failed
     If mDemoStep >= 10 Then
         mStatus = "Fin de la demostracion; pulsa REINICIAR para repetir."
         PagerPanelRefresh
         Exit Sub
     End If
+    f0 = PagerFaultCount()
+    w0 = PagerWritebackCount()
     Select Case mDemoStep
         Case 0, 8
             PagerFetchFour 0
@@ -107,6 +109,7 @@ Public Sub PagerDemoNext()
             value = PagerReadByte(256)
             mStatus = "READ VPN8 recuperada: " & Hex2(value) & " (esperado A5h)."
     End Select
+    AnimarPaginacion f0, w0
     mDemoStep = mDemoStep + 1
     PagerPanelRefresh
     Exit Sub
@@ -152,6 +155,30 @@ Public Sub PagerPanelRefresh()
         CStr(PagerFaultCount()) & "; evicciones=" & CStr(PagerEvictionCount()) & _
         "; writebacks=" & CStr(PagerWritebackCount()) & "; cursor CLOCK=" & CStr(PagerHand())
     MemoriaDetalleActualizar
+End Sub
+
+' Page fault: a dirty victim travels from its frame back to the swap row, then the missing page travels
+' from the swap row into the frame (the clock face when it is drawn, otherwise the table row).
+Private Sub AnimarPaginacion(ByVal f0 As Long, ByVal w0 As Long)
+    Dim ws As Worksheet, vpn As Long, victim As Long, pfn As Long, frame As Variant, e As LcaPageEntry
+    If Not FlowOn() Then Exit Sub
+    If PagerFaultCount() = f0 Then Exit Sub
+    Set ws = PagerSheet(False)
+    If ws Is Nothing Then Exit Sub
+    vpn = PagerLastFaultVPN()
+    victim = PagerLastVictimVPN()
+    e = MmuPage(vpn)
+    pfn = e.PFN
+    If FlowHasShape(ws, "P08D_fr" & CStr(pfn)) Then
+        frame = "P08D_fr" & CStr(pfn)
+    Else
+        Set frame = CL(ws, ROW_BASE + 13 + vpn, 4)
+    End If
+    Application.ScreenUpdating = True
+    If PagerWritebackCount() > w0 And victim >= 0 Then
+        FlowSend ws, "32 B", RGB(251, 146, 60), frame, CL(ws, ROW_BASE + 13 + victim, 8)
+    End If
+    FlowSend ws, "VPN" & CStr(vpn), FlowPacketColor(), CL(ws, ROW_BASE + 13 + vpn, 8), frame
 End Sub
 
 Private Function PagerSheet(ByVal create As Boolean) As Worksheet

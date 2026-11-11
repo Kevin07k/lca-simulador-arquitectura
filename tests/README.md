@@ -6,7 +6,7 @@ The tests are workbook macros (`src/vba/Lca*Tests.bas`). Each one resets the sta
 
 ## Ejecutar todo / Run everything
 
-- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P14 y la prueba de interfaz); el reporte también queda en la hoja **Logs** y en la portada.
+- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P15 y la prueba de interfaz); el reporte también queda en la hoja **Logs** y en la portada.
 - Sin abrir Excel en pantalla / headless (Windows + Excel de escritorio):
 
 ```powershell
@@ -31,8 +31,11 @@ powershell -ExecutionPolicy Bypass -File scripts\Test-Workbook.ps1
 | `VerificarCicloP12` | P12 | PASS — 45 |
 | `VerificarTecladoP13` | P13 | PASS — 94 |
 | `VerificarLcdP14` | P14 | PASS — 52 |
-| `VerificarInterfazUI` | Interfaz | PASS — 39 (cuadricula 2D, hojas LCA + Logs, elementos de cada bloque, refresco de vistas) |
+| `VerificarDemoAritmeticaP15` | P15 | PASS — 153 (cinco programas: resultados, pasos, banderas, memoria, fallos de página, traza por vuelta, STEP = RUN) |
+| `VerificarInterfazUI` | Interfaz | PASS — 43 (cuadricula 2D, hojas LCA + Logs, elementos de cada bloque, refresco de vistas) |
 
 Cada macro reinicia CPU, memoria o cachés; no ejecutarlas durante una simulación que se quiera conservar. Evidencia inicial de P03: [P03_VERIFICATION.md](../docs/P03_VERIFICATION.md).
 
 Each macro resets CPU, memory or caches; do not run them during a simulation you want to keep.
+
+`scripts/Test-Workbook.ps1` además comprueba que `programs/arith/*.asm` coincide con las fuentes del libro (`LcaArith.bas`) / also checks that `programs/arith/*.asm` match the workbook source.

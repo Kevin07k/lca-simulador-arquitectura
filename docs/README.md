@@ -28,8 +28,9 @@ Index of task guides. Each guide is bilingual unless noted.
 | **P12 maquina completa (vista de defensa)** | [P12_CPU_CYCLE.md](P12_CPU_CYCLE.md) | `VerificarCicloP12` | **col. 1, filas 28–95** |
 | P13 teclado + cola FIFO | [P13_KEYBOARD.md](P13_KEYBOARD.md) | `VerificarTecladoP13` | col. 3, filas 1–36 |
 | P14 LCD 8x1 + video | [P14_LCD.md](P14_LCD.md) | `VerificarLcdP14` | col. 3, filas 38–73 |
+| **P15 demos aritméticos (datos en tránsito)** | [P15_ARITHMETIC_DEMO.md](P15_ARITHMETIC_DEMO.md) | `VerificarDemoAritmeticaP15` | col. 2, filas 151–238 |
 
-`VerificarTodo` (Alt+F8) ejecuta P04–P14 y la prueba de interfaz `VerificarInterfazUI`, muestra un resumen y lo guarda en la hoja **Logs**; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
-`VerificarTodo` runs P04–P14 plus the `VerificarInterfazUI` interface test, shows one summary and stores it on the **Logs** sheet; `scripts/Test-Workbook.ps1` does the same headless.
+`VerificarTodo` (Alt+F8) ejecuta P04–P15 y la prueba de interfaz `VerificarInterfazUI`, muestra un resumen y lo guarda en la hoja **Logs**; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
+`VerificarTodo` runs P04–P15 plus the `VerificarInterfazUI` interface test, shows one summary and stores it on the **Logs** sheet; `scripts/Test-Workbook.ps1` does the same headless.
 
 Capturas / screenshots: [`img/`](img/).

@@ -169,9 +169,9 @@ End Sub
 Private Sub NavBar(ByVal ws As Worksheet)
     Dim labels As Variant, macros As Variant, i As Long, x As Double, w As Double, top As Double, n As Long
     labels = Array("PORTADA", "VISTA GENERAL", "CPU", "DIAGRAMA", "BUSES", "PAGINAS", "SWAP", "CACHES", "CACHE+PAG", _
-                   "EDITOR", "TECLADO", "LCD", "LOGS")
+                   "EDITOR", "TECLADO", "LCD", "DEMOS P15", "LOGS")
     macros = Array("LcaIrPortada", "LcaVistaGeneral", "LcaIrCpu", "LcaIrDiagrama", "LcaIrBuses", "LcaIrPaginas", "LcaIrSwap", _
-                   "LcaIrCaches", "LcaIrCachePaginacion", "LcaIrEditor", "LcaIrTeclado", "LcaIrLcd", "LcaIrLogs")
+                   "LcaIrCaches", "LcaIrCachePaginacion", "LcaIrEditor", "LcaIrTeclado", "LcaIrLcd", "LcaIrAritmetica", "LcaIrLogs")
     n = UBound(labels) + 1
     x = CL(ws, ROW_BASE + 5, 2).Left
     w = (CL(ws, ROW_BASE + 5, 20).Left - x) / n
@@ -436,10 +436,9 @@ failed:
 End Sub
 
 Public Sub MaquinaVelocidad()
+    FlowCycleSpeed
     EnsureSpeed
-    mSpeed = (mSpeed + 3) Mod 4      ' 2 normal -> 1 slow -> 0 off -> 3 fast -> 2
-    mSpeedSet = True
-    mMessage = "Animacion: " & SpeedText() & "."
+    mMessage = "Animacion: " & SpeedText() & " (rige tambien en los demas bloques)."
     MaquinaRefrescar
 End Sub
 
@@ -470,6 +469,9 @@ Private Sub AnimateLastStep(ByVal ws As Worksheet)
     kind = ExecLastKind()
     If Len(kind) = 0 Then Exit Sub
     Application.ScreenUpdating = True
+    mX0 = CL(ws, ROW_BASE + DIAGRAM_ROW, 2).Left          ' geometry is module state: rebuild it (lost on reopen)
+    mY0 = CL(ws, ROW_BASE + DIAGRAM_ROW, 2).Top
+    mSX = (CL(ws, ROW_BASE + DIAGRAM_ROW, 20).Left - mX0) / DESIGN_W
     s = CachePathLast()
     fills = CacheRamFills() - mFills0
     faults = PagerFaultCount() - mFaults0
@@ -1149,10 +1151,8 @@ End Sub
 
 ' Module state is lost when the workbook is reopened: the default animation speed is NORMAL.
 Private Sub EnsureSpeed()
-    If Not mSpeedSet Then
-        mSpeed = 2
-        mSpeedSet = True
-    End If
+    mSpeed = FlowSpeed()          ' one shared speed for the machine and every animated block
+    mSpeedSet = True
 End Sub
 
 ' Block row where the listing starts: first row at least LIST_GAP points below the diagram origin.

@@ -140,17 +140,17 @@ Public Sub CacheDemoNext()
     On Error GoTo failed
     If Not mDemoStarted Then CacheDemoReset
     Select Case mDemoStep
-        Case 0: CacheRead &H40, LCA_CACHE_FETCH
-        Case 1: CacheRead &H41, LCA_CACHE_FETCH
-        Case 2: CacheRead &H42, LCA_CACHE_FETCH
-        Case 3: CacheRead &H43, LCA_CACHE_FETCH
-        Case 4: CacheRead &H6D, LCA_CACHE_DATA
-        Case 5: CacheRead &H6C, LCA_CACHE_DATA
-        Case 6: CacheWrite &H6D, &H55
-        Case 7: CacheRead &H6D, LCA_CACHE_DATA
-        Case 8: CacheWrite &H70, &H77
-        Case 9: CacheRead &H48, LCA_CACHE_FETCH
-        Case 10: CacheRead &H40, LCA_CACHE_FETCH
+        Case 0: AccesoLeer &H40, LCA_CACHE_FETCH
+        Case 1: AccesoLeer &H41, LCA_CACHE_FETCH
+        Case 2: AccesoLeer &H42, LCA_CACHE_FETCH
+        Case 3: AccesoLeer &H43, LCA_CACHE_FETCH
+        Case 4: AccesoLeer &H6D, LCA_CACHE_DATA
+        Case 5: AccesoLeer &H6C, LCA_CACHE_DATA
+        Case 6: AccesoEscribir &H6D, &H55
+        Case 7: AccesoLeer &H6D, LCA_CACHE_DATA
+        Case 8: AccesoEscribir &H70, &H77
+        Case 9: AccesoLeer &H48, LCA_CACHE_FETCH
+        Case 10: AccesoLeer &H40, LCA_CACHE_FETCH
         Case Else
             mDemoStatus = "Fin / Done. RESET para repetir / to repeat."
             CachePanelActualizar
@@ -163,6 +163,61 @@ Public Sub CacheDemoNext()
 failed:
     mDemoStatus = "ERROR: " & Err.Description
     CachePanelActualizar
+End Sub
+
+' --- Animated accesses: the engine runs first, then its real path is replayed as moving data ---------
+
+Private Sub AccesoLeer(ByVal pa As Long, ByVal kind As Long)
+    Dim l1 As Long, m1 As Long, h2 As Long, m2 As Long, v As Byte
+    If kind = LCA_CACHE_FETCH Then l1 = LCA_CACHE_L1I Else l1 = LCA_CACHE_L1D
+    m1 = CacheMisses(l1)
+    h2 = CacheHits(LCA_CACHE_L2)
+    m2 = CacheMisses(LCA_CACHE_L2)
+    v = CacheRead(pa, kind)
+    AnimarAcceso pa, l1, m1, h2, m2, v, False
+End Sub
+
+Private Sub AccesoEscribir(ByVal pa As Long, ByVal value As Long)
+    Dim m1 As Long, h2 As Long, m2 As Long
+    m1 = CacheMisses(LCA_CACHE_L1D)
+    h2 = CacheHits(LCA_CACHE_L2)
+    m2 = CacheMisses(LCA_CACHE_L2)
+    Call CacheWrite(pa, value)
+    AnimarAcceso pa, LCA_CACHE_L1D, m1, h2, m2, value, True
+End Sub
+
+' Read: CPU asks its L1 line; on a miss the request goes to L2 and, on an L2 miss, RAM fills L2 and then L1;
+' the byte returns to the CPU. Write: CPU -> L1 -> write-through to L2 and RAM.
+Private Sub AnimarAcceso(ByVal pa As Long, ByVal l1 As Long, ByVal m1 As Long, ByVal h2 As Long, _
+                         ByVal m2 As Long, ByVal value As Long, ByVal isWrite As Boolean)
+    Dim ws As Worksheet, lineNo As Long, row1 As Long, row2 As Long, l1Miss As Boolean, l2Miss As Boolean
+    Dim cpu As Range, line1 As Range, line2 As Range, ram As Range, orange As Long, hx As String
+    If Not FlowOn() Then Exit Sub
+    Set ws = CacheSheet(False)
+    If ws Is Nothing Then Exit Sub
+    lineNo = pa \ LCA_CACHE_LINE_BYTES
+    row1 = 17 + IIf(l1 = LCA_CACHE_L1D, 2, 0) + (lineNo Mod 2)
+    row2 = 21 + (lineNo Mod 8)
+    l1Miss = CacheMisses(l1) > m1
+    l2Miss = CacheMisses(LCA_CACHE_L2) > m2
+    orange = RGB(251, 146, 60)
+    hx = Right$("00" & Hex$(value), 2) & "h"
+    Set cpu = ws.Range(RA("B2:D3"))
+    Set line1 = ws.Range(CL(ws, ROW_BASE + row1, 2), CL(ws, ROW_BASE + row1, 10))
+    Set line2 = ws.Range(CL(ws, ROW_BASE + row2, 2), CL(ws, ROW_BASE + row2, 10))
+    Set ram = ws.Range(CL(ws, ROW_BASE + row2, 12), CL(ws, ROW_BASE + row2, 18))
+    Application.ScreenUpdating = True
+    FlowSend ws, Right$("00" & Hex$(pa), 2) & "h", FlowPacketColor(), cpu, line1
+    If isWrite Then
+        FlowSend ws, hx, FlowPacketColor(), line1, line2, ram
+    Else
+        If l1Miss Then
+            FlowSend ws, "miss", orange, line1, line2
+            If l2Miss Then FlowSend ws, "RAM", orange, ram, line2
+            FlowSend ws, "4 B", FlowPacketColor(), line2, line1
+        End If
+        FlowSend ws, hx, FlowPacketColor(), line1, cpu
+    End If
 End Sub
 
 Private Function CacheSheet(ByVal create As Boolean) As Worksheet
