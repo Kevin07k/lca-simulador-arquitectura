@@ -24,11 +24,21 @@ $WorkbookPath = (Resolve-Path $WorkbookPath).Path
 # Work on a temporary copy so the tests (which rebuild report sheets) never touch the original.
 $tmp = Join-Path ([IO.Path]::GetTempPath()) ("lca-test-" + [guid]::NewGuid().ToString('N') + '.xlsm')
 Copy-Item $WorkbookPath $tmp
-$excel = $null; $wb = $null; $result = $null
+$excel = $null; $wb = $null; $result = $null; $driftReport = ""
 try {
     $excel = Start-LcaExcel
     $wb = $excel.Workbooks.Open($tmp)
     $result = [string]$excel.Run("'$($wb.Name)'!LcaVerificarTodoTexto")
+    # programs/arith/*.asm are documentation copies of LcaArith.bas: they must not drift from the workbook source.
+    $count = [int]$excel.Run("'$($wb.Name)'!ArithCountValue")
+    for ($i = 0; $i -lt $count; $i++) {
+        $name = [string]$excel.Run("'$($wb.Name)'!ArithFile", $i)
+        $source = ([string]$excel.Run("'$($wb.Name)'!ArithAsmText", $i)).Trim()
+        $path = Join-Path $root (Join-Path 'programs\arith' $name)
+        if (-not (Test-Path $path)) { $driftReport += "MISSING programs\arith\$name`n"; continue }
+        $file = ((Get-Content $path -Raw) -replace "`r`n", "`n").Trim()
+        if ($file -ne $source) { $driftReport += "DRIFT   programs\arith\$name differs from LcaArith.bas`n" }
+    }
 }
 finally {
     if ($wb)    { $wb.Close($false) }
@@ -37,4 +47,6 @@ finally {
 }
 Write-Host "Workbook: $WorkbookPath"
 Write-Host $result
-if ($result -notlike 'ALL PASS*') { exit 1 }
+if ($driftReport.Length -gt 0) { Write-Host $driftReport; Write-Host "FAIL  programs\arith differs from the workbook source" }
+else { Write-Host "PASS  programs\arith\*.asm match LcaArith.bas" }
+if ($result -notlike 'ALL PASS*' -or $driftReport.Length -gt 0) { exit 1 }
