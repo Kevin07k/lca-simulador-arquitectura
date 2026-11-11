@@ -150,7 +150,7 @@ Public Function LcaSincronizar(Optional ByVal skipMachine As Boolean = False) As
     views = Array("MaquinaRefrescar", "PanelActualizar", "BusPanelActualizar", "BusDetalleActualizar", _
                   "MmuPanelRefresh", "MmuDetalleActualizar", "PagerPanelRefresh", "MemoriaDetalleActualizar", _
                   "CachePanelActualizar", "CachePathPanelRefresh", "TecladoPanelActualizar", "LcdPanelActualizar", _
-                  "ArithPanelRefrescar", "EcoPanelRefrescar", "MemPanelRefrescar", "LogsActualizar")
+                  "ArithPanelRefrescar", "EcoPanelRefrescar", "MemPanelRefrescar", "MicroPanelRefrescar", "LogsActualizar")
     For i = 0 To UBound(views)
         If Not (skipMachine And i = 0) Then
             On Error Resume Next

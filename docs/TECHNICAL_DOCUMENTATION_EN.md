@@ -157,6 +157,8 @@ Control word of every operation (`1` active, `0` inactive):
 
 Two drivers at the same time raise `BUS_CONTENTION` before anything is written. On the dashboard, the bus block ([P05/P06](P05_BUS_CONTROL.md)) shows every cycle in the format `microstep | bus | VA PA | driver -> receiver | data | R W C I E L KBD LCD | drivers`.
 
+**Full control word per micro-step ([P05b](P05B_MICROWORD.md)).** Besides the cycle record, the control unit emits 25 signals per clock pulse: Enable `En_PC En_MDR En_IR En_AX En_BX En_CX En_DX En_ALU En_MEM En_KBD`; Load `Ld_PC Ld_MAR Ld_MDR Ld_IR Ld_AX Ld_BX Ld_CX Ld_DX Ld_A Ld_FLG Ld_LCD`; Control `Mem_R Mem_W IO Inc_PC`. Every instruction is a sequence T1…Tn (fetch: `En_PC,Ld_MAR` → `Mem_R,En_MEM,Ld_MDR` → `En_MDR,Ld_IR` → decode; execute; `PC+4`). In each micro-step **one** tri-state buffer conducts and the other nine are in High-Z; the sheet's **MICRO-PALABRA** block lights them and `VerificarMicropalabraP05B` checks it on every program.
+
 ## 6. Policies
 
 - **Translation.** Region and permissions are validated → the PTE is looked up → if `P=0` a `PAGE_FAULT` is recorded and served → the address is translated → cache → RAM. After the fault **the same** micro-operation is retried once; an effect that was already committed is never repeated.
@@ -275,7 +277,7 @@ Final counters (derived by hand and checked by `VerificarMemoriaP17`): **30** in
 
 ## 9. Verification and module map
 
-`VerificarTodo` runs the 17 suites (P04–P18 plus the interface test) and `scripts/Test-Workbook.ps1` repeats the same headless and checks that `programs/*.asm` match the workbook code. Per-suite detail in [tests/README.md](../tests/README.md).
+`VerificarTodo` runs the 17 suites (P04–P18, P05b plus the interface test) and `scripts/Test-Workbook.ps1` repeats the same headless and checks that `programs/*.asm` match the workbook code. Per-suite detail in [tests/README.md](../tests/README.md).
 
 | Layer | Modules (`src/vba/`) | Guide |
 | --- | --- | --- |

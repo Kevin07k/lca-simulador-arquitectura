@@ -12,6 +12,7 @@ Option Explicit
 '   P04 diagram   170-211    P15 arithmetic demos 151-238 (column 2, below P10)
 '                            P16 echo keyboard->LCD 148-202 (column 3, below the buses)
 '                            P17 memory demo 150-217 (column 4, below the P09 caches)
+'                            P05b control word 205-252 (column 3, below the P16 echo)
 ' Long traces live on the separate "Logs" sheet (LcaLogs).
 Public Const LCA_SHEET As String = "LCA"
 Public Const LCA_BLOCK_COLS As Long = 20
@@ -50,10 +51,13 @@ Public Const LCA_COL_ARITH As Long = 20
 Public Const LCA_BASE_ECHO As Long = 147         ' below the P05/P06 bus detail (rows 109-146)
 Public Const LCA_COL_ECHO As Long = 40
 
+Public Const LCA_BASE_MICRO As Long = 204         ' P05b control word, below the P16 echo (rows 148-202)
+Public Const LCA_COL_MICRO As Long = 40
+
 Public Const LCA_BASE_MEM As Long = 149           ' below the P09 caches (rows 106-148)
 Public Const LCA_COL_MEM As Long = 60
 
-Private Const GRID_LAST_ROW As Long = 245
+Private Const GRID_LAST_ROW As Long = 253
 Private Const GRID_LAST_COL As Long = 80
 Private Const BG As Long = 2758415          ' RGB(15, 23, 42)
 
@@ -109,6 +113,7 @@ Public Sub ConstruirLca()
         ConstruirPanelMaquina
         ConstruirPanelAritmetica
         ConstruirPanelEco
+        ConstruirPanelMicro
         ConstruirPanelMemoria
     Next pass
     LcaPulirBandas ws
@@ -184,7 +189,7 @@ Public Sub LcaPulirBandas(ByVal ws As Worksheet)
                    Array(LCA_BASE_PAGER, LCA_COL_PAGER), Array(LCA_BASE_CACHE, LCA_COL_CACHE), _
                    Array(LCA_BASE_CACHE_PATH, LCA_COL_CACHE_PATH), Array(LCA_BASE_EDITOR, LCA_COL_EDITOR), _
                    Array(LCA_BASE_KEYBOARD, LCA_COL_KEYBOARD), Array(LCA_BASE_LCD, LCA_COL_LCD), _
-                   Array(LCA_BASE_ARITH, LCA_COL_ARITH), Array(LCA_BASE_ECHO, LCA_COL_ECHO), Array(LCA_BASE_MEM, LCA_COL_MEM))
+                   Array(LCA_BASE_ARITH, LCA_COL_ARITH), Array(LCA_BASE_ECHO, LCA_COL_ECHO), Array(LCA_BASE_MEM, LCA_COL_MEM), Array(LCA_BASE_MICRO, LCA_COL_MICRO))
     For i = ws.Shapes.Count To 1 Step -1
         If Left$(ws.Shapes(i).Name, 5) = "NAVM_" Then ws.Shapes(i).Delete
     Next i
@@ -403,6 +408,11 @@ End Sub
 Public Sub LcaIrMemoria()
     LcaGoto LcaSheet(True), LCA_BASE_MEM, LCA_COL_MEM
     MemPanelRefrescar
+End Sub
+
+Public Sub LcaIrMicro()
+    LcaGoto LcaSheet(True), LCA_BASE_MICRO, LCA_COL_MICRO
+    MicroPanelRefrescar
 End Sub
 
 Public Sub LcaIrLcd()

@@ -47,6 +47,7 @@ Public Sub ExecClearState()
     mLastFault = False
     mLastDataVA = -1
     mTraceCount = 0
+    MicroClear
     For i = 0 To TRACE_MAX - 1
         mTrace(i) = vbNullString
     Next i
@@ -57,7 +58,7 @@ End Sub
 Public Function ExecStep() As Boolean
     Dim pc As Long, op As Long, r As Long, x As Long, h As Long, va As Long, value As Long
     Dim faultsBefore As Long, cpu As LcaCpuState, text As String, effect As String
-    Dim errNo As Long, errText As String
+    Dim errNo As Long, errText As String, a0 As Long, b0 As Long
     If mStatus = EXEC_HALTED Or mStatus = EXEC_ERROR Then Exit Function
     If Not LoaderLoaded() Then Err.Raise LCA_ERR_EXEC, "LcaExecutor", "NO_PROGRAM_LOADED"
     On Error GoTo failed
@@ -78,6 +79,8 @@ Public Function ExecStep() As Boolean
     Decode op, r, x, h
     text = AsmDisassemble(op, r, x, h)
     va = 256 * h + x
+    If r <= 3 Then a0 = CpuReadRegister(r)                  ' operands before the ALU/MOV changes them (P05b micro-word)
+    If (op = &H11 Or (op >= &H20 And op <= &H22)) And x <= 3 Then b0 = CpuReadRegister(x)
 
     ' EXECUTE + STORE
     Select Case op
@@ -139,6 +142,7 @@ Public Function ExecStep() As Boolean
                 mLastKind = "WAIT"
                 mStatus = EXEC_WAIT
                 mLastText = AsmHex3(pc) & "  " & text & "  ->  IN_EMPTY: espera una tecla (PC no avanza)"
+                MicroRecord pc, op, r, x, h, False, True, a0, b0
                 AddTrace "#" & CStr(mSteps + 1) & "  " & mLastText
                 Exit Function
             End If
@@ -149,6 +153,7 @@ Public Function ExecStep() As Boolean
             AdvancePC pc
     End Select
 
+    MicroRecord pc, op, r, x, h, mLastTaken, False, a0, b0      ' P05b: full control word of every micro-step
     mLastFault = PagerFaultCount() > faultsBefore
     mSteps = mSteps + 1
     If mStatus <> EXEC_HALTED Then mStatus = EXEC_READY

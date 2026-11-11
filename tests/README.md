@@ -6,7 +6,7 @@ The tests are workbook macros (`src/vba/Lca*Tests.bas`). Each one resets the sta
 
 ## Ejecutar todo / Run everything
 
-- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P18 y la prueba de interfaz); el reporte también queda en la hoja **Logs** y en la portada.
+- En Excel: `Alt+F8` → `VerificarTodo`. Un solo mensaje con una línea por suite (P04–P18, P05b y la prueba de interfaz); el reporte también queda en la hoja **Logs** y en la portada.
 - Sin abrir Excel en pantalla / headless (Windows + Excel de escritorio):
 
 ```powershell
@@ -22,6 +22,7 @@ powershell -ExecutionPolicy Bypass -File scripts\Test-Workbook.ps1
 | --- | --- | --- |
 | `VerificarCpuAlu` | P04 | PASS — 197120 casos, 1379895 comprobaciones |
 | `VerificarBusesP05` | P05 | PASS — 38 |
+| `VerificarMicropalabraP05B` | P05b | PASS — 354 (vector de 25 señales, secuencia exacta de cada instrucción, un solo Enable por micro-paso en todos los demos, banda del panel) |
 | `VerificarRamP06` | P06 | PASS — 38 |
 | `VerificarMmuP07` | P07 | PASS — 86 |
 | `VerificarPagerP08` | P08 | PASS — 32 |

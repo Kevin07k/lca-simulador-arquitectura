@@ -34,11 +34,11 @@ Public Function LcaLastReport() As String
     LcaLastReport = mLastReport
 End Function
 
-' Runs every engine regression (P04..P18) without dialogs and returns one line per suite.
+' Runs every engine regression (P04..P18, P05b) without dialogs and returns one line per suite.
 ' First line is "ALL PASS" or "SOME FAIL". Used by VerificarTodo and scripts/Test-Workbook.ps1.
 Public Function LcaVerificarTodoTexto() As String
     Dim suites As Variant, i As Long, out As String, allOk As Boolean
-    suites = Array("VerificarCpuAlu", "VerificarBusesP05", "VerificarRamP06", "VerificarMmuP07", _
+    suites = Array("VerificarCpuAlu", "VerificarBusesP05", "VerificarMicropalabraP05B", "VerificarRamP06", "VerificarMmuP07", _
                    "VerificarPagerP08", "VerificarCachesP09", "VerificarCachePaginacionP10", _
                    "VerificarEnsambladorP11", "VerificarCicloP12", "VerificarTecladoP13", "VerificarLcdP14", _
                    "VerificarDemoAritmeticaP15", "VerificarEcoP16", "VerificarMemoriaP17", "VerificarControlesP18", "VerificarInterfazUI")
