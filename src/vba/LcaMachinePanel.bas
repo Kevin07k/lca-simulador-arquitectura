@@ -169,9 +169,9 @@ End Sub
 Private Sub NavBar(ByVal ws As Worksheet)
     Dim labels As Variant, macros As Variant, i As Long, x As Double, w As Double, top As Double, n As Long
     labels = Array("PORTADA", "VISTA GENERAL", "CPU", "DIAGRAMA", "BUSES", "PAGINAS", "SWAP", "CACHES", "CACHE+PAG", _
-                   "EDITOR", "TECLADO", "LCD", "DEMOS P15", "LOGS")
+                   "EDITOR", "TECLADO", "LCD", "DEMOS P15", "ECO P16", "LOGS")
     macros = Array("LcaIrPortada", "LcaVistaGeneral", "LcaIrCpu", "LcaIrDiagrama", "LcaIrBuses", "LcaIrPaginas", "LcaIrSwap", _
-                   "LcaIrCaches", "LcaIrCachePaginacion", "LcaIrEditor", "LcaIrTeclado", "LcaIrLcd", "LcaIrAritmetica", "LcaIrLogs")
+                   "LcaIrCaches", "LcaIrCachePaginacion", "LcaIrEditor", "LcaIrTeclado", "LcaIrLcd", "LcaIrAritmetica", "LcaIrEco", "LcaIrLogs")
     n = UBound(labels) + 1
     x = CL(ws, ROW_BASE + 5, 2).Left
     w = (CL(ws, ROW_BASE + 5, 20).Left - x) / n
