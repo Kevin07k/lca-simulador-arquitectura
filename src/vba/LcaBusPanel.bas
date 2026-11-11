@@ -82,6 +82,7 @@ Public Sub BusPanelActualizar()
         If n > i Then CL(ws, ROW_BASE + 20 + i, 2).Value = BusTraceLine(n - 1 - i)
     Next i
     ws.Range(RA("B31")).Value = mDemoStatus
+    BusDetalleActualizar
 End Sub
 
 Public Sub BusDemoReset()

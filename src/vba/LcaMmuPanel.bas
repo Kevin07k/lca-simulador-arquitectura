@@ -63,9 +63,9 @@ Public Sub ConstruirPanelPaginas()
     ws.Range(RA("J18")).Value = "FALLO RECUPERABLE / PAGE FAULT"
     ws.Range(RA("J19:S20")).Merge
     ws.Range(RA("J19:S20")).Interior.Color = RGB(30, 41, 59)
-    ws.Range(RA("J22:S26")).Merge
-    ws.Range(RA("J22:S26")).WrapText = True
-    ws.Range(RA("J22")).Value = "VPN 15 es E/S reservada. PAGE_FAULT no asigna un marco: P08 cargara la pagina y reintentara. " & _
+    ws.Range(RA("J29:S32")).Merge
+    ws.Range(RA("J29:S32")).WrapText = True
+    ws.Range(RA("J29")).Value = "VPN 15 es E/S reservada. PAGE_FAULT no asigna un marco: P08 cargara la pagina y reintentara. " & _
                            "FETCH y ST usan la RAM P06 y los buses P05; P12 ejecutara el opcode."
     MmuDemoSetup
     LcaGoto ws, ROW_BASE, COL_BASE
@@ -196,6 +196,7 @@ Public Sub MmuPanelRefresh()
     Else
         ws.Range(RA("J19")).Value = "Ninguno / None"
     End If
+    MmuDetalleActualizar
 End Sub
 
 Private Function CpuIrValue() As Long

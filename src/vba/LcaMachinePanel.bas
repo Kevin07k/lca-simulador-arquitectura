@@ -1184,4 +1184,5 @@ Private Sub AfterAction()
     On Error Resume Next
     LogsActualizar
     MemoriaDetalleActualizar
+    BusDetalleActualizar
 End Sub

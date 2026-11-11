@@ -74,7 +74,22 @@ Observed `ALL PASS`: P04 (197120 cases, 1379895 assertions), P05 38, P06 38, P07
 - **E** — `INVALID_OPCODE`, `INVALID_REGISTER`, `INVALID_ENCODING`, `PROTECTION`, `INVALID_BRANCH_TARGET` and `PC_OUT_OF_CODE`, each without committing and with PC kept.
 - **F** — the global reset clears the LCD and the keyboard queue.
 
-The workbook now has only two sheets: `Inicio` and `LCA`.
+The workbook has two sheets: **`LCA`** (cover + dashboard) and **`Logs`** (full traces and the last `VerificarTodo`). The old `Inicio` sheet became the cover block of LCA (logo, team, navigation tiles, installation status) and `P04 Tests` was removed.
+
+## Graphical detail views
+
+Each detail block now shows its part of the machine graphically. Long traces moved to **Logs**.
+
+| Block | Module | What it draws |
+| --- | --- | --- |
+| P04 CPU | `LcaCpuDetail` | the 8 bits of AX–DX as coloured lamps with weights 128…1, a live column chart of the registers, ZF/CF/SF explained |
+| P05/P06 buses | `LcaBusDetail` | CPU, caches, RAM, keyboard and LCD on tri-state buffers: driver green, receiver amber, the byte on a bubble, 8 signal lamps per bus, red on contention |
+| P07 pages | `LcaMmuDetail` | the VA of the input split bit by bit (VPN \| offset), the PTE it selects and the PA (PFN \| same offset), or the page fault / protection reason |
+| P08 swap | `LcaMemoryDetail` | the CLOCK algorithm as a clock (7 frames, R/D bits, hand on the next candidate) and a map of the 256 RAM bytes coloured by code/data/free/keyboard/LCD/reserved |
+| P09 caches | `LcaCachePanel` | hit/miss chart per level |
+| P12 machine | `LcaMachinePanel` | six live indicators and a hit/miss chart instead of the trace |
+
+`VerificarInterfazUI` (`LcaUiTests`, 39 assertions) checks the grid arithmetic (`LcaShift`), that only `LCA` and `Logs` exist, that every block element is present and that all views refresh without errors after a full run. It is part of `VerificarTodo`.
 
 ![Machine band after RUN](img/P12_machine.png)
 

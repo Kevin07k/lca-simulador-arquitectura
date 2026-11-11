@@ -19,7 +19,7 @@
 2. Abrir el editor con `Alt+F11` y seleccionar **VBAProject (LCA.xlsm)**.
 3. En **Depurar → Compilar VBAProject**, comprobar que no hay errores.
 4. Volver a Excel con `Alt+F11`; `Alt+F8` → `VerificarInstalacion` → Ejecutar.
-5. Esperado: `Inicio!B13` muestra `VBA OK - P03`. La macro solo comprueba la instalación; no ejecuta CPU, memoria ni E/S.
+5. Esperado: la línea de estado de la portada (hoja **LCA**) muestra `VBA OK - P03`. (Antes de P12 se escribía en `Inicio!B13`; la hoja Inicio se unió a la portada de LCA.) La macro solo comprueba la instalación; no ejecuta CPU, memoria ni E/S.
 
 ### Importar y sincronizar
 
@@ -33,7 +33,7 @@
 
 ### Reconstruir desde la fuente
 
-Si no se dispone del libro, crear un libro vacío en Excel, dejar una hoja con nombre **Inicio** e importar `LcaInicio.bas` siguiendo los pasos anteriores. Guardar como `.xlsm` y ejecutar la macro: funciona con esa hoja vacía. Para recuperar además la portada diseñada, partir del `workbook/LCA.xlsm` versionado y sincronizar sus módulos. El diseño del libro se conserva en el binario; el comportamiento VBA se conserva en la fuente.
+Si no se dispone del libro, lo más simple es `scripts/Build-Workbook.ps1 -BuildPanels`: crea un libro nuevo, importa todos los módulos y arma el tablero. A mano: crear un libro vacío en Excel e importar `LcaInicio.bas` siguiendo los pasos anteriores. Guardar como `.xlsm` y ejecutar la macro: funciona con esa hoja vacía. Para recuperar además la portada diseñada, partir del `workbook/LCA.xlsm` versionado y sincronizar sus módulos. El diseño del libro se conserva en el binario; el comportamiento VBA se conserva en la fuente.
 
 ### Revisión cruzada
 
@@ -51,10 +51,10 @@ Also import `LcaCpu.bas`, `LcaAlu.bas`, `LcaCpuTests.bas` and `LcaPanel.bas`. `M
 
 **P03 workbook integrator: Kevin (@Kevin07k). Reviewer: Javier (@Javiertorricos).** Only one integrator edits the binary at a time; record handovers in the PR.
 
-Open `workbook/LCA.xlsm` in desktop Excel. In the VBA editor (`Alt+F11`), select its project and compile. Run `VerificarInstalacion` via `Alt+F8`: `Inicio!B13` must become `VBA OK - P03`. This only verifies bootstrap installation.
+Open `workbook/LCA.xlsm` in desktop Excel. In the VBA editor (`Alt+F11`), select its project and compile. Run `VerificarInstalacion` via `Alt+F8`: the status line of the cover (LCA sheet) must show `VBA OK - P03` (it was `Inicio!B13` before P12). This only verifies bootstrap installation.
 
 To synchronize, work in a saved copy, remove the old standard module after preserving any changes, then use **File → Import File** (`Ctrl+M`) for `src/vba/LcaInicio.bas`. Import `.bas`, `.cls`, `.frm` as needed and keep `.frx` companions beside `.frm`. Document modules (`ThisWorkbook` and sheets) require code in the matching document component, not a new imported class. P03 has no document-module code.
 
 Compile, run and save as a genuine macro-enabled workbook. Export modules (`Ctrl+E`) to a temporary folder and compare them with `src/vba`, including name attributes. P03 source is ASCII. Review differences and commit matching source and workbook together. Never merge `.xlsm` as text. No programmatic VBA-project trust setting is required for manual import.
 
-To rebuild behavior from source, create an empty Excel workbook with a sheet named `Inicio`, import `LcaInicio.bas`, save as `.xlsm` and run the macro. Use the versioned workbook as the template to retain its cover design. Javier must independently import, compile, run and compare the export, and both teammates must approve the identity before closing #3.
+To rebuild from source, run `scripts/Build-Workbook.ps1 -BuildPanels` (new workbook, every module, the whole dashboard); manually, create an empty workbook, import `LcaInicio.bas`, save as `.xlsm` and run the macro. Use the versioned workbook as the template to retain its cover design. Javier must independently import, compile, run and compare the export, and both teammates must approve the identity before closing #3.

@@ -2,8 +2,8 @@
 $script:LcaModules = @(
     'LcaInicio', 'LcaCpu', 'LcaAlu', 'LcaBus', 'LcaControl',
     'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaMmu', 'LcaMmuPath', 'LcaSwap', 'LcaPager', 'LcaCachePath', 'LcaAssembler', 'LcaLoader', 'LcaKeyboard', 'LcaLcd', 'LcaExecutor', 'LcaLogs', 'LcaLayout',
-    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel', 'LcaCachePathPanel', 'LcaEditorPanel', 'LcaKeyboardPanel', 'LcaLcdPanel', 'LcaMachinePanel', 'LcaCoverPanel', 'LcaCpuDetail', 'LcaMemoryDetail',
-    'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaMmuTests', 'LcaPagerTests', 'LcaCacheTests', 'LcaCachePathTests', 'LcaAssemblerTests', 'LcaKeyboardTests', 'LcaLcdTests', 'LcaExecutorTests'
+    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel', 'LcaCachePathPanel', 'LcaEditorPanel', 'LcaKeyboardPanel', 'LcaLcdPanel', 'LcaMachinePanel', 'LcaCoverPanel', 'LcaCpuDetail', 'LcaMemoryDetail', 'LcaBusDetail', 'LcaMmuDetail',
+    'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaMmuTests', 'LcaPagerTests', 'LcaCacheTests', 'LcaCachePathTests', 'LcaAssemblerTests', 'LcaKeyboardTests', 'LcaLcdTests', 'LcaExecutorTests', 'LcaUiTests'
 )
 
 function Get-RepoRoot { (Resolve-Path (Join-Path $PSScriptRoot '..')).Path }

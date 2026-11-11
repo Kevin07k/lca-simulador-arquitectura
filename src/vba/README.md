@@ -18,6 +18,7 @@ Standard modules exported from `workbook/LCA.xlsm` (ASCII, CRLF). **Engine** mod
 | P12 | `LcaExecutor` | `LcaMachinePanel` | `LcaExecutorTests` → `VerificarCicloP12` | [P12](../../docs/P12_CPU_CYCLE.md) |
 | P13 | `LcaKeyboard` | `LcaKeyboardPanel` | `LcaKeyboardTests` → `VerificarTecladoP13` | [P13](../../docs/P13_KEYBOARD.md) |
 | P14 | `LcaLcd` | `LcaLcdPanel` | `LcaLcdTests` → `VerificarLcdP14` | [P14](../../docs/P14_LCD.md) |
+| Vistas / views | `LcaCoverPanel` (portada), `LcaLogs` (hoja Logs) | `LcaCpuDetail`, `LcaBusDetail`, `LcaMmuDetail`, `LcaMemoryDetail` | `LcaUiTests` → `VerificarInterfazUI` | [P12](../../docs/P12_CPU_CYCLE.md) |
 | Hoja / sheet | `LcaLayout` (`ConstruirLca`, `LcaRows`, navegación `LcaIr*`) | | | |
 
 ## Recorrido de memoria / Memory path

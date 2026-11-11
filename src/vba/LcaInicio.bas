@@ -40,7 +40,8 @@ Public Function LcaVerificarTodoTexto() As String
     Dim suites As Variant, i As Long, out As String, allOk As Boolean
     suites = Array("VerificarCpuAlu", "VerificarBusesP05", "VerificarRamP06", "VerificarMmuP07", _
                    "VerificarPagerP08", "VerificarCachesP09", "VerificarCachePaginacionP10", _
-                   "VerificarEnsambladorP11", "VerificarCicloP12", "VerificarTecladoP13", "VerificarLcdP14")
+                   "VerificarEnsambladorP11", "VerificarCicloP12", "VerificarTecladoP13", "VerificarLcdP14", _
+                   "VerificarInterfazUI")
     allOk = True
     mSilent = True
     For i = LBound(suites) To UBound(suites)

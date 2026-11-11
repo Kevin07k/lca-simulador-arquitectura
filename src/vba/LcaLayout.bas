@@ -86,7 +86,9 @@ Public Sub ConstruirLca()
         ConstruirPanelCpu
         ConstruirCpuDetalle
         ConstruirPanelBuses
+        ConstruirBusDetalle
         ConstruirPanelPaginas
+        ConstruirMmuDetalle
         ConstruirPanelSwap
         ConstruirMemoriaDetalle
         ConstruirPanelCaches
