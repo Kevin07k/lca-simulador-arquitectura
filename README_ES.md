@@ -32,7 +32,8 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P18 | Controles de la hoja (CARGAR, PASO, EJECUTAR, PAUSA, RESET) y paneles sincronizados | En revisión |
 | P19 | Documentación técnica en español | Integrado |
 | P20 | Documentación técnica en inglés | En revisión |
-| P21–P22 | Regresión y ensayo de la defensa, entrega | Pendiente |
+| P21 | Regresión y ensayo de la defensa | En revisión |
+| P22 | Entrega y verificación de la entrega | Pendiente |
 
 ## Inicio rápido
 
@@ -72,7 +73,6 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- P21 regresión y ensayo de la defensa.
 - P22 entrega y verificación de la entrega.
 
 Este README se actualizará conforme avance el desarrollo.

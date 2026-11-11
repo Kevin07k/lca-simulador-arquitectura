@@ -35,6 +35,7 @@ Index of task guides. Each guide is bilingual unless noted.
 | **P18 controles + sincronización** | [P18_CONTROLS.md](P18_CONTROLS.md) | `VerificarControlesP18` | barra de la máquina, col. 1, filas 28–40 |
 | **P19 documentación técnica en español** | [DOCUMENTACION_TECNICA_ES.md](DOCUMENTACION_TECNICA_ES.md) | `VerificarTodo` | — |
 | **P20 English technical documentation** | [TECHNICAL_DOCUMENTATION_EN.md](TECHNICAL_DOCUMENTATION_EN.md) | `VerificarTodo` | — |
+| **P21 regresión y ensayo de la defensa** | [P21_REGRESSION_DEFENSE.md](P21_REGRESSION_DEFENSE.md) | `VerificarTodo` (16 suites) | — |
 
 `VerificarTodo` (Alt+F8) ejecuta P04–P18, P05b y la prueba de interfaz `VerificarInterfazUI`, muestra un resumen y lo guarda en la hoja **Logs**; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
 `VerificarTodo` runs P04–P18, P05b plus the `VerificarInterfazUI` interface test, shows one summary and stores it on the **Logs** sheet; `scripts/Test-Workbook.ps1` does the same headless.
