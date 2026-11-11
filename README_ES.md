@@ -30,7 +30,17 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P16 | Programa de eco teclado → LCD | En revisión |
 | P17 | Demo de fallos de página y caché | Integrado |
 | P18 | Controles de la hoja (CARGAR, PASO, EJECUTAR, PAUSA, RESET) y paneles sincronizados | En revisión |
-| P19–P22 | Documentación, entrega | Pendiente |
+| P19 | Documentación técnica en español | En revisión |
+| P20–P22 | Documentación en inglés, regresión, entrega | Pendiente |
+
+## Inicio rápido
+
+1. Requisitos: Windows y Microsoft Excel de escritorio (se probó con Excel 16).
+2. Abrir [`workbook/LCA.xlsm`](workbook/LCA.xlsm) y pulsar **Habilitar contenido**. Si Windows lo bloquea: clic derecho en el archivo → Propiedades → **Desbloquear**.
+3. En la portada pulsar **VERIFICAR TODO**: debe aparecer `ALL PASS`.
+4. En la barra de la máquina elegir un programa de la lista, **CARGAR**, y usar **PASO** / **EJECUTAR** / **PAUSA** / **RESET**.
+
+La [documentación técnica en español](docs/DOCUMENTACION_TECNICA_ES.md) explica la puesta en marcha y los permisos, la arquitectura (con diagramas Mermaid), la memoria, los opcodes y sus longitudes, la palabra de control, las políticas, el recorrido de operación paso a paso y tres trazas de demostración.
 
 ## Equipo
 
@@ -61,7 +71,7 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- P19/P20 documentación técnica; P21 regresión y ensayo de la defensa.
+- P20 documentación técnica en inglés; P21 regresión y ensayo de la defensa.
 - P22 entrega y verificación de la entrega.
 
 Este README se actualizará conforme avance el desarrollo.
