@@ -97,7 +97,7 @@ failed:
 End Sub
 
 Public Sub TecladoEscribir()
-    Dim ws As Worksheet, text As String, accepted As Long
+    Dim ws As Worksheet, text As String, accepted As Long, tail0 As Long
     On Error GoTo failed
     EnsureKeyboard
     Set ws = KeyboardSheet(False)
@@ -106,7 +106,9 @@ Public Sub TecladoEscribir()
     If Len(text) = 0 Then
         mStatus = "Escriba al menos un caracter / type at least one character."
     Else
+        tail0 = KeyboardTail()
         accepted = KeyboardPushText(text)
+        AnimarTeclas ws, text, tail0, accepted
         mStatus = CStr(accepted) & " de / of " & CStr(Len(text)) & " teclas encoladas / keys queued"
         If accepted < Len(text) Then mStatus = mStatus & "; KBD_FULL rechazo / rejected " & CStr(Len(text) - accepted)
     End If
@@ -118,11 +120,13 @@ failed:
 End Sub
 
 Public Sub TecladoInAX()
-    Dim cpu As LcaCpuState
+    Dim cpu As LcaCpuState, head0 As Long
     On Error GoTo failed
     EnsureKeyboard
+    head0 = KeyboardHead()
     If KeyboardIn(LcaAX) Then
         cpu = CpuSnapshot()
+        AnimarIn KeyboardSheet(False), head0, cpu.AX
         mStatus = "IN AX: AX = " & Right$("00" & Hex$(cpu.AX), 2) & "h. El byte se consumio una sola vez."
     Else
         mStatus = "IN_EMPTY: espera. PC, AX y head no cambian; TECLEAR y vuelva a pulsar IN AX (reanudar)."
@@ -198,6 +202,28 @@ End Sub
 
 Private Sub EnsureKeyboard()
     If Not KeyboardReady() Then KeyboardReset
+End Sub
+
+' Each accepted key flies from the text box into its queue slot (E0h + slot).
+Private Sub AnimarTeclas(ByVal ws As Worksheet, ByVal text As String, ByVal tail0 As Long, ByVal accepted As Long)
+    Dim i As Long, n As Long
+    If ws Is Nothing Then Exit Sub
+    If Not FlowOn() Then Exit Sub
+    n = accepted
+    If n > 8 Then n = 8
+    Application.ScreenUpdating = True
+    For i = 0 To n - 1
+        FlowSend ws, Mid$(text, i + 1, 1), FlowPacketColor(), ws.Range(RA("C9:H9")), CL(ws, ROW_BASE + 13, 3 + ((tail0 + i) Mod 8))
+    Next i
+End Sub
+
+' IN: the byte leaves the head slot, crosses the bus (En_KBD) and lands in AX (shown in the status line).
+Private Sub AnimarIn(ByVal ws As Worksheet, ByVal head0 As Long, ByVal value As Long)
+    If ws Is Nothing Then Exit Sub
+    If Not FlowOn() Then Exit Sub
+    Application.ScreenUpdating = True
+    FlowSend ws, Right$("00" & Hex$(value), 2) & "h", FlowPacketColor(), CL(ws, ROW_BASE + 13, 3 + head0), _
+             ws.Range(RA("B20:R21")), ws.Range(RA("B35:R36"))
 End Sub
 
 Private Function KeyboardSheet(ByVal create As Boolean) As Worksheet
