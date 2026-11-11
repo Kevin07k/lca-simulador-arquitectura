@@ -1,0 +1,8 @@
+~$*
+*.tmp
+.authoring/
+outputs/
+
+
+# Build output
+workbook/LCA.build.xlsm
