@@ -28,7 +28,8 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P14 | 8x1 LCD and video buffer | Integrated |
 | P15 | Arithmetic demos with animated data transport | Integrated |
 | P16 | Keyboard-to-LCD echo program | In review |
-| P17–P22 | Programs, documentation, delivery | Pending |
+| P17 | Page fault and cache demo | In review |
+| P18–P22 | Integration, documentation, delivery | Pending |
 
 ## Team
 
@@ -59,7 +60,6 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- P17 page-fault / cache demo, reusing the P15 data-transport animation.
 - P18 final worksheet controls; P19/P20 technical documentation; P21 regression and defense rehearsal.
 - P22 release and submission check.
 

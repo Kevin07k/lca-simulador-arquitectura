@@ -20,7 +20,7 @@ El libro se abre en la **portada** (arriba a la izquierda): 10 tarjetas, una por
 | **Portada** (filas 1–26) | P11 editor ASM (1–98) | P13 teclado (1–36) | P07 tabla de páginas + traducción bit a bit (1–33) |
 | **P12 máquina animada** (28–95) | P10 caché + paginación (100–146) | P14 LCD 8x1 (38–73) | P08 swap + reloj CLOCK + mapa de la RAM (35–104) |
 | P04 CPU + bits + gráfica (97–168) | **P15 demos aritméticos: datos en tránsito** (151–238) | P05/P06 buses + diagrama tri-estado (75–146) | P09 cachés + gráfica hit/miss (106–148) |
-| P04 diagrama del CPU (170–211) | | **P16 eco teclado → LCD** (148–202) | |
+| P04 diagrama del CPU (170–211) | | **P16 eco teclado → LCD** (148–202) | **P17 memoria: faults + caché** (150–217) |
 
 Guías: [P04](../docs/P04_INTERFACE.md), [P05](../docs/P05_BUS_CONTROL.md), [P06](../docs/P06_RAM.md), [P07](../docs/P07_MMU.md), [P08](../docs/P08_PAGE_FAULT_SWAP.md), [P09](../docs/P09_CACHE.md), [P10](../docs/P10_CACHE_PAGING.md), [P11](../docs/P11_ASSEMBLER_LOADER.md), [P12](../docs/P12_CPU_CYCLE.md), [P13](../docs/P13_KEYBOARD.md), [P14](../docs/P14_LCD.md), [P15](../docs/P15_ARITHMETIC_DEMO.md), [P16](../docs/P16_ECHO_DEMO.md).
 
