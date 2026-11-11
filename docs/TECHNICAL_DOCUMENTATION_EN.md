@@ -275,7 +275,7 @@ Final counters (derived by hand and checked by `VerificarMemoriaP17`): **30** in
 
 ## 9. Verification and module map
 
-`VerificarTodo` runs the 17 suites (P04–P18 plus the interface test) and `scripts/Test-Workbook.ps1` repeats the same headless and checks that `programs/*.asm` match the workbook code. Per-suite detail in [tests/README.md](../tests/README.md).
+`VerificarTodo` runs the 16 suites (P04–P18 plus the interface test) and `scripts/Test-Workbook.ps1` repeats the same headless and checks that `programs/*.asm` match the workbook code. Per-suite detail in [tests/README.md](../tests/README.md).
 
 | Layer | Modules (`src/vba/`) | Guide |
 | --- | --- | --- |

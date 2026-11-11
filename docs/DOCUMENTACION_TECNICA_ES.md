@@ -266,7 +266,7 @@ Contadores finales (deducidos a mano y comprobados por `VerificarMemoriaP17`): *
 
 ## 9. Verificación y mapa de módulos
 
-`VerificarTodo` ejecuta las 17 suites (P04–P18 más la prueba de interfaz) y `scripts/Test-Workbook.ps1` repite lo mismo sin interfaz y comprueba que `programs/*.asm` coincidan con el código del libro. Detalle por suite en [tests/README.md](../tests/README.md).
+`VerificarTodo` ejecuta las 16 suites (P04–P18 más la prueba de interfaz) y `scripts/Test-Workbook.ps1` repite lo mismo sin interfaz y comprueba que `programs/*.asm` coincidan con el código del libro. Detalle por suite en [tests/README.md](../tests/README.md).
 
 | Capa | Módulos (`src/vba/`) | Guía |
 | --- | --- | --- |

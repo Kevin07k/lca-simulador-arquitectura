@@ -71,7 +71,7 @@ powershell -ExecutionPolicy Bypass -File scripts\Build-Workbook.ps1 -BuildPanels
 powershell -ExecutionPolicy Bypass -File scripts\Test-Workbook.ps1 -WorkbookPath workbook\LCA.xlsm
 ```
 
-Observed `ALL PASS` on 17 suites, including **P18 with 78 assertions** and UI with 49. The other suites gave: P04 (197120 cases), P05 38, P06 38, P07 86, P08 32, P09 77, P10 58, P11 280, P12 45, P13 94, P14 52, P15 153, P16 67, P17 97. The three `programs/` sources match the workbook.
+Observed `ALL PASS` on 16 suites, including **P18 with 78 assertions** and UI with 49. The other suites gave: P04 (197120 cases), P05 38, P06 38, P07 86, P08 32, P09 77, P10 58, P11 280, P12 45, P13 94, P14 52, P15 153, P16 67, P17 97. The three `programs/` sources match the workbook.
 
 | Section | Checks |
 | --- | --- |
@@ -141,7 +141,7 @@ Las vistas son:
 
 ## Verificación (observada)
 
-2026-11-11, Excel 16 de escritorio, libro reconstruido desde la fuente: `ALL PASS` en 17 suites, **P18 con 78 comprobaciones** y UI con 49.
+2026-11-11, Excel 16 de escritorio, libro reconstruido desde la fuente: `ALL PASS` en 16 suites, **P18 con 78 comprobaciones** y UI con 49.
 
 Pasos de reproducción, todos coherentes (tabla en inglés):
 1. Cargar `SUMA (P15)`.
