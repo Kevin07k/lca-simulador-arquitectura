@@ -32,7 +32,8 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P18 | Worksheet controls (LOAD, STEP, RUN, PAUSE, RESET) and synchronized panels | In review |
 | P19 | Spanish technical documentation | Integrated |
 | P20 | English technical documentation | In review |
-| P21–P22 | Regression and defense rehearsal, delivery | Pending |
+| P21 | Regression and defense rehearsal | In review |
+| P22 | Release and submission | Pending |
 
 ## Quick start
 
@@ -72,7 +73,7 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- P21 regression and defense rehearsal.
+- P22 release and submission check.
 - P22 release and submission check.
 
 This README will be updated as development progresses.
