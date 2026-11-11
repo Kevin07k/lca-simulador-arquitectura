@@ -34,13 +34,14 @@ Public Sub VerificarInterfazUI()
     markers = Array("P00_tile0", "P12_btn_MaquinaPaso", "P04_LcaIrDiagrama", "P04D_name0", "D_Chip", "P05_BusDemoReset", _
                     "P05D_bus_ext", "P07_MmuPanelReset", "P07D_pte", "P08_PagerDemoReset", "P08D_hub", _
                     "P09_CacheDemoReset", "P09_chart", "P10_CachePathDemoReset", "P11_EditorEnsamblar", _
-                    "P13_TecladoReset", "P14_LcdPanelReset", "P12_chart", "P04D_chart", "LOGO_LCA", "P15_btn_ArithPaso", "P15_chart", "P15_tank3")
+                    "P13_TecladoReset", "P14_LcdPanelReset", "P12_chart", "P04D_chart", "LOGO_LCA", "P15_btn_ArithPaso", "P15_chart", "P15_tank3", "P16_btn_EcoPaso", "P16_btn_EcoDemoOcho")
     For i = 0 To UBound(markers)
         Check HasShape(ws, CStr(markers(i))), "B: block element " & CStr(markers(i)) & " present"
     Next i
     blocks = Array(Array(LCA_BASE_COVER, LCA_COL_COVER), Array(LCA_BASE_MACHINE, LCA_COL_MACHINE), _
                    Array(LCA_BASE_EDITOR, LCA_COL_EDITOR), Array(LCA_BASE_KEYBOARD, LCA_COL_KEYBOARD), _
-                   Array(LCA_BASE_MMU, LCA_COL_MMU), Array(LCA_BASE_CACHE, LCA_COL_CACHE), Array(LCA_BASE_ARITH, LCA_COL_ARITH))
+                   Array(LCA_BASE_MMU, LCA_COL_MMU), Array(LCA_BASE_CACHE, LCA_COL_CACHE), Array(LCA_BASE_ARITH, LCA_COL_ARITH), _
+                   Array(LCA_BASE_ECHO, LCA_COL_ECHO))
     For i = 0 To UBound(blocks)
         Check ws.Cells(CLng(blocks(i)(0)) + 1, CLng(blocks(i)(1)) + 1).Interior.Color = RGB(15, 23, 42), _
               "B: dark background at the origin of block " & CStr(i)
@@ -64,6 +65,8 @@ Public Sub VerificarInterfazUI()
     LogsActualizar
     failure = failure + Err.Number: Err.Clear
     ArithPanelRefrescar
+    failure = failure + Err.Number: Err.Clear
+    EcoPanelRefrescar
     failure = failure + Err.Number: Err.Clear
     On Error GoTo failed
     Check failure = 0, "C: machine, CPU, memory, bus, MMU views and Logs refresh without errors"

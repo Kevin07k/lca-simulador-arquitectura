@@ -39,6 +39,15 @@ try {
         $file = ((Get-Content $path -Raw) -replace "`r`n", "`n").Trim()
         if ($file -ne $source) { $driftReport += "DRIFT   programs\arith\$name differs from LcaArith.bas`n" }
     }
+    # programs/echo/eco.asm is the documentation copy of LcaEcho.bas (P16).
+    $name = [string]$excel.Run("'$($wb.Name)'!EchoFile")
+    $source = ([string]$excel.Run("'$($wb.Name)'!EchoAsmText")).Trim()
+    $path = Join-Path $root (Join-Path 'programs\echo' $name)
+    if (-not (Test-Path $path)) { $driftReport += "MISSING programs\echo\$name`n" }
+    else {
+        $file = ((Get-Content $path -Raw) -replace "`r`n", "`n").Trim()
+        if ($file -ne $source) { $driftReport += "DRIFT   programs\echo\$name differs from LcaEcho.bas`n" }
+    }
 }
 finally {
     if ($wb)    { $wb.Close($false) }
@@ -47,6 +56,6 @@ finally {
 }
 Write-Host "Workbook: $WorkbookPath"
 Write-Host $result
-if ($driftReport.Length -gt 0) { Write-Host $driftReport; Write-Host "FAIL  programs\arith differs from the workbook source" }
-else { Write-Host "PASS  programs\arith\*.asm match LcaArith.bas" }
+if ($driftReport.Length -gt 0) { Write-Host $driftReport; Write-Host "FAIL  programs\ differ from the workbook source" }
+else { Write-Host "PASS  programs\arith\*.asm match LcaArith.bas; programs\echo\eco.asm matches LcaEcho.bas" }
 if ($result -notlike 'ALL PASS*' -or $driftReport.Length -gt 0) { exit 1 }
