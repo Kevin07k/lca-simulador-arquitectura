@@ -281,4 +281,4 @@ Contadores finales (deducidos a mano y comprobados por `VerificarMemoriaP17`): *
 | Demostraciones | `LcaArith`, `LcaEcho`, `LcaMemDemo` | [P15](P15_ARITHMETIC_DEMO.md), [P16](P16_ECHO_DEMO.md), [P17](P17_MEMORY_DEMO.md) |
 | Interfaz | `LcaLayout`, `LcaFlow`, `LcaControls`, `Lca*Panel` | [P04](P04_INTERFACE.md), [P18](P18_CONTROLS.md) |
 
-[Contrato de diseño original (P02)](ARQUITECTURA_ES.md) · [English version of the design contract](ARCHITECTURE.md)
+[Contrato de diseño original (P02)](ARQUITECTURA_ES.md) · [English version of the design contract](ARCHITECTURE.md) · [English technical documentation](TECHNICAL_DOCUMENTATION_EN.md)
