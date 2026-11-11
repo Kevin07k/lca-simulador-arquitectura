@@ -229,11 +229,9 @@ Public Function LcdPanelCoherente() As Boolean
     Next i
 End Function
 
+' P18: this block, the CPU, the buses, the machine and every other view show the new state.
 Private Sub RefreshAll()
-    LcdPanelActualizar
-    PanelActualizar             ' CPU band shows AX
-    BusPanelActualizar          ' bus band shows the OUT cycle
-    TecladoPanelActualizar      ' ECO consumes the keyboard queue
+    Call LcaSincronizar
 End Sub
 
 Private Sub EnsureLcd()

@@ -14,6 +14,8 @@ Private Const DIAGRAM_ROW As Long = 12
 Private Const DESIGN_W As Double = 1380
 Private Const LIST_GAP As Double = 700      ' listing starts this many points below the diagram origin
 Private Const LIST_ROWS As Long = 16
+Private Const SELECTOR_ADDR As String = "B7:D8"   ' program catalogue (P18)
+Private Const STATUS_ADDR As String = "Q7:S8"
 
 Private Const BG As Long = 2758415          ' RGB(15, 23, 42)
 Private Const CARD As Long = 3877150        ' RGB(30, 41, 59)
@@ -50,6 +52,7 @@ Private mSpeed As Long          ' 0 = no animation, 1 slow, 2 normal, 3 fast
 Private mSpeedSet As Boolean
 Private mFills0 As Long
 Private mFaults0 As Long
+Private mPaused As Boolean        ' RUN stopped by PAUSA (P18)
 
 ' --- Build ---------------------------------------------------------------------------------------
 
@@ -78,6 +81,15 @@ Public Sub ConstruirPanelMaquina()
         .Font.Bold = True
         .Font.Color = ACCENT
     End With
+    ' Team identity (P18).
+    ws.Range(RA("M2:S2")).Merge
+    With ws.Range(RA("M2"))
+        .Value = LCA_TEAM_TEXT
+        .HorizontalAlignment = xlRight
+        .Font.Size = 11
+        .Font.Bold = True
+        .Font.Color = LAMP_ON
+    End With
     ws.Range(RA("B3:S3")).Merge
     With ws.Range(RA("B3"))
         .Value = "P12  FETCH > DECODE > EXECUTE > STORE  |  PASO anima cada instruccion: el punto rosa es el dato viajando. " & _
@@ -86,16 +98,31 @@ Public Sub ConstruirPanelMaquina()
     End With
     NavBar ws
 
-    ' Controls
-    Btn ws, "B7:C8", "CARGAR EDITOR", "MaquinaCargarEditor", HEAD
-    Btn ws, "D7:E8", "EJEMPLO SUMA", "MaquinaEjemplo", HEAD
-    Btn ws, "F7:G8", "DEMO ECO", "MaquinaEco", HEAD
-    Btn ws, "H7:I8", "PASO / STEP", "MaquinaPaso", BUTTON
-    Btn ws, "J7:K8", "EJECUTAR / RUN", "MaquinaEjecutar", OK_GREEN
-    Btn ws, "L7:M8", "RESET", "MaquinaReset", EDGE
-    Btn ws, "N7:O8", "VELOCIDAD", "MaquinaVelocidad", CARD
-    ws.Range(RA("P7:S8")).Merge
-    With ws.Range(RA("P7"))
+    ' Controls (P18): LOAD from the program catalogue, STEP, RUN, PAUSE, RESET, speed.
+    ws.Range(RA(SELECTOR_ADDR)).Merge
+    With ws.Range(RA(SELECTOR_ADDR))
+        .Interior.Color = RGB(230, 240, 250)
+        .Font.Color = BG
+        .Font.Bold = True
+        .Font.Size = 10
+        .HorizontalAlignment = xlCenter
+        .WrapText = True
+        .Locked = False
+        .Validation.Delete
+        .Validation.Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Formula1:=LcaProgramaLista()
+        .Validation.InCellDropdown = True
+        .Validation.InputTitle = "PROGRAMA"
+        .Validation.InputMessage = "Elige un programa y pulsa CARGAR."
+        .Value = LcaProgramaNombre(1)
+    End With
+    Btn ws, "E7:F8", "CARGAR / LOAD", "MaquinaCargarPrograma", HEAD
+    Btn ws, "G7:H8", "PASO / STEP", "MaquinaPaso", BUTTON
+    Btn ws, "I7:J8", "EJECUTAR / RUN", "MaquinaEjecutar", OK_GREEN
+    Btn ws, "K7:L8", "PAUSA / PAUSE", "MaquinaPausa", WARN
+    Btn ws, "M7:N8", "RESET", "MaquinaReset", EDGE
+    Btn ws, "O7:P8", "VELOCIDAD", "MaquinaVelocidad", CARD
+    ws.Range(RA(STATUS_ADDR)).Merge
+    With ws.Range(RA(STATUS_ADDR))
         .HorizontalAlignment = xlCenter
         .Font.Size = 15
         .Font.Bold = True
@@ -334,12 +361,70 @@ Public Sub MaquinaCargarEditor()
     MaquinaRefrescar
 End Sub
 
+' LOAD (P18): loads the program chosen in the catalogue selector through its own block.
+Public Sub MaquinaCargarPrograma()
+    Dim ws As Worksheet, i As Long, name As String
+    On Error GoTo failed
+    Set ws = MachineSheet(False)
+    If ws Is Nothing Then Exit Sub
+    name = CStr(ws.Range(RA(SELECTOR_ADDR)).Cells(1, 1).Value)
+    i = LcaProgramaIndice(name)
+    If i < 0 Then
+        mMessage = "Elige un programa de la lista y pulsa CARGAR."
+    ElseIf LcaCargarPrograma(i) Then
+        mMessage = name & " cargado: " & CStr(LoaderInstructionCount()) & " instrucciones; maquina reiniciada. Pulsa PASO o EJECUTAR."
+    ElseIf i = 0 Then
+        mMessage = "El programa del editor tiene " & CStr(AsmErrorCount()) & " error(es): revisalos en EDITOR."
+    Else
+        mMessage = "No se pudo cargar " & name & "."
+    End If
+    mPaused = False
+    MaquinaRefrescar
+    AfterAction
+    Exit Sub
+failed:
+    mMessage = "ERROR: " & Err.Description
+    MaquinaRefrescar
+End Sub
+
+' Name of the catalogue entry shown in the selector, and a way to choose one (tests, demos).
+Public Function MaquinaProgramaElegido() As String
+    Dim ws As Worksheet
+    Set ws = MachineSheet(False)
+    If ws Is Nothing Then Exit Function
+    MaquinaProgramaElegido = CStr(ws.Range(RA(SELECTOR_ADDR)).Cells(1, 1).Value)
+End Function
+
+Public Sub MaquinaElegirPrograma(ByVal i As Long)
+    Dim ws As Worksheet
+    Set ws = MachineSheet(False)
+    If ws Is Nothing Then Exit Sub
+    ws.Range(RA(SELECTOR_ADDR)).Cells(1, 1).Value = LcaProgramaNombre(i)
+End Sub
+
+' PAUSE (P18): the RUN in progress stops after the current instruction (Esc does the same).
+Public Sub MaquinaPausa()
+    LcaPausar
+    If ExecStatus() <> EXEC_HALTED Then mMessage = "PAUSA pedida: la ejecucion se detiene al terminar la instruccion en curso."
+    MaquinaRefrescar
+End Sub
+
+' Status text of the machine bar (tests).
+Public Function MaquinaEstadoTexto() As String
+    Dim ws As Worksheet
+    Set ws = MachineSheet(False)
+    If ws Is Nothing Then Exit Function
+    MaquinaEstadoTexto = CStr(ws.Range(RA("Q7")).Value)
+End Function
+
 Public Sub MaquinaPaso()
     EnsureSpeed
     Dim ws As Worksheet
     On Error GoTo failed
     If Not LoaderLoaded() Then MaquinaEjemplo
     Set ws = MachineSheet(False)
+    LcaPausaLimpiar
+    mPaused = False
     BeginStepCapture
     Call ExecStep
     mMessage = vbNullString
@@ -352,40 +437,71 @@ failed:
     MaquinaRefrescar
 End Sub
 
-' With animation: every instruction is drawn (fast). Without: the engine runs to the end at once.
+' RUN until HLT, an IN wait, an error, PAUSA (button or Esc) or the step limit. With animation every
+' instruction is drawn; without it the engine runs at once (PAUSA is still checked between instructions).
 Public Sub MaquinaEjecutar()
     EnsureSpeed
-    Dim ws As Worksheet, n As Long, keepSpeed As Long
+    Dim ws As Worksheet, n As Long, keepSpeed As Long, animate As Boolean, limit As Long
     On Error GoTo failed
     If Not LoaderLoaded() Then MaquinaEjemplo
     Set ws = MachineSheet(False)
-    If mSpeed = 0 Or ws Is Nothing Then
-        n = ExecRun(500)
-    Else
-        keepSpeed = mSpeed
-        If mSpeed < 3 Then mSpeed = mSpeed + 1
-        Do While n < 300
-            BeginStepCapture
-            If Not ExecStep() Then Exit Do
-            n = n + 1
+    mPaused = False
+    LcaPausaOlvidarClic
+    animate = (mSpeed > 0 And Not ws Is Nothing)
+    keepSpeed = mSpeed
+    limit = IIf(animate, 300, 500)
+    If animate And mSpeed < 3 Then mSpeed = mSpeed + 1
+    Application.EnableCancelKey = xlErrorHandler
+    Do While n < limit
+        If LcaPausaPedida(n) Then
+            mPaused = True
+            Exit Do
+        End If
+        BeginStepCapture
+        If Not ExecStep() Then Exit Do
+        n = n + 1
+        If animate Then
             MaquinaRefrescar
             AnimateLastStep ws
-            If ExecStatus() = EXEC_HALTED Then Exit Do
-        Loop
-        mSpeed = keepSpeed
+        End If
+        If ExecStatus() = EXEC_HALTED Then Exit Do
+    Loop
+    Application.EnableCancelKey = xlInterrupt
+    mSpeed = keepSpeed
+    If n >= limit And ExecStatus() = EXEC_READY And Not mPaused Then Call ExecRun(0)    ' LIMIT: RUN again to continue
+    LcaPausaLimpiar
+    If mPaused Then
+        mMessage = "EN PAUSA tras " & CStr(n) & " instrucciones: PASO avanza una, EJECUTAR continua."
+    Else
+        mMessage = CStr(n) & " instrucciones ejecutadas."
     End If
-    mMessage = CStr(n) & " instrucciones ejecutadas."
-    AfterAction
     MaquinaRefrescar
+    AfterAction
     Exit Sub
 failed:
-    mMessage = "ERROR: " & Err.Description
+    Application.EnableCancelKey = xlInterrupt
+    mSpeed = keepSpeed
+    LcaPausaLimpiar
+    If Err.Number = 18 Then
+        mPaused = True
+        mMessage = "EN PAUSA (Esc) tras " & CStr(n) & " instrucciones: PASO avanza una, EJECUTAR continua."
+    Else
+        mMessage = "ERROR: " & Err.Description
+    End If
     MaquinaRefrescar
+    AfterAction
 End Sub
+
+Public Function MaquinaEnPausa() As Boolean
+    MaquinaEnPausa = mPaused
+End Function
+
 
 Public Sub MaquinaReset()
     On Error GoTo failed
     If Not LoaderLoaded() Then MaquinaEjemplo
+    LcaPausaLimpiar
+    mPaused = False
     ExecReset
     mMessage = "Reset: CPU, buses, RAM, caches, tabla de paginas, teclado y LCD reiniciados; PC = 000h."
     AfterAction
@@ -641,14 +757,19 @@ Private Sub RefreshStatus(ByVal ws As Worksheet)
         Case EXEC_WAIT: label = "ESPERANDO TECLA (IN)": fill = WARN
         Case EXEC_ERROR: label = "ERROR: " & ExecErrorText(): fill = BAD
         Case EXEC_LIMIT: label = "PAUSA (limite de pasos)": fill = WARN
-        Case Else: label = "LISTO  |  paso " & CStr(ExecSteps()): fill = HEAD
+        Case Else
+            If mPaused Then
+                label = "EN PAUSA  |  paso " & CStr(ExecSteps()): fill = WARN
+            Else
+                label = "LISTO  |  paso " & CStr(ExecSteps()): fill = HEAD
+            End If
     End Select
-    ws.Range(RA("P7")).Value = label
-    ws.Range(RA("P7:S8")).Interior.Color = fill
+    ws.Range(RA("Q7")).Value = label
+    ws.Range(RA(STATUS_ADDR)).Interior.Color = fill
     ws.Range(RA("F10")).Value = ExecLastText() & IIf(Len(mMessage) > 0, "     |  " & mMessage, "")
     SetBox ws, "btn_MaquinaVelocidad", "VELOCIDAD" & vbCr & SpeedText()
     SetBox ws, "speed", "Animacion " & SpeedText() & "   |   VELOCIDAD cambia: normal > lenta > sin animacion > rapida" & vbCr & _
-           "EJECUTAR anima cada instruccion hasta HLT o una espera de IN (max 300).", CARD
+           "EJECUTAR anima cada instruccion hasta HLT, una espera de IN o PAUSA (boton o Esc), max 300.", CARD
 End Sub
 
 Private Sub RefreshCpu(ByVal ws As Worksheet)
@@ -1179,10 +1300,8 @@ Private Function CL(ByVal ws As Worksheet, ByVal r As Long, ByVal c As Long) As 
     Set CL = ws.Cells(r, c + COL_BASE)
 End Function
 
-' Heavier views (Logs sheet, RAM map, CLOCK) are refreshed once per user action, not per animation frame.
+' Every other view of the shared machine follows each user action (P18 sync); heavier views (Logs, RAM map,
+' CLOCK) are refreshed once per action, not per animation frame.
 Private Sub AfterAction()
-    On Error Resume Next
-    LogsActualizar
-    MemoriaDetalleActualizar
-    BusDetalleActualizar
+    Call LcaSincronizar(True)
 End Sub
