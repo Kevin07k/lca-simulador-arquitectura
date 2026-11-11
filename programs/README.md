@@ -18,6 +18,14 @@ La fuente de verdad es `src/vba/LcaArith.bas`: `scripts/Test-Workbook.ps1` compr
 
 The source of truth is `src/vba/LcaArith.bas`; `scripts/Test-Workbook.ps1` checks that these files match.
 
+## `echo/` — P16, eco teclado → LCD / keyboard-to-LCD echo
+
+[`eco.asm`](echo/eco.asm): `IN AX` toma la tecla más antigua de la cola (E0–E7h) y `OUT AX` la escribe en la celda del cursor del LCD (E8–EFh). La tecla `.` termina el programa: no se muestra, `[100h]` = caracteres mostrados y `HLT`. Con la cola vacía la CPU espera en `IN` (WAIT_IN) y continúa al teclear más. Se carga con el bloque **P16** de la hoja LCA.
+
+[`eco.asm`](echo/eco.asm): `IN AX` takes the oldest key from the queue and `OUT AX` writes it to the LCD cell under the cursor. The `.` key ends the program: it is not shown, `[100h]` holds the number of characters shown, and the CPU halts. An empty queue makes the CPU wait on `IN`; it continues when more keys are typed.
+
+La fuente de verdad es `src/vba/LcaEcho.bas` (comprobado por `scripts/Test-Workbook.ps1`). Comportamiento y ejercicio con ocho caracteres: [P16_ECHO_DEMO.md](../docs/P16_ECHO_DEMO.md).
+
 ## Pendiente / Pending
 
-P16 (eco teclado → LCD) y P17 (fallos de página y caché).
+P17 (fallos de página y caché).
