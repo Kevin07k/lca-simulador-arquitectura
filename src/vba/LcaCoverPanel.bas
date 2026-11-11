@@ -85,7 +85,7 @@ Public Sub ConstruirPortada()
         .IndentLevel = 1
     End With
     SmallButton ws, "K" & CStr(STATUS_ROW) & ":M" & CStr(STATUS_ROW), "VERIFICAR INSTALACION", "VerificarInstalacion"
-    SmallButton ws, "N" & CStr(STATUS_ROW) & ":P" & CStr(STATUS_ROW), "VERIFICAR TODO (P04-P15)", "VerificarTodo"
+    SmallButton ws, "N" & CStr(STATUS_ROW) & ":P" & CStr(STATUS_ROW), "VERIFICAR TODO (P04-P16)", "VerificarTodo"
     SmallButton ws, "Q" & CStr(STATUS_ROW) & ":S" & CStr(STATUS_ROW), "PROBAR DEMOS P15", "VerificarDemoAritmeticaP15"
 End Sub
 

@@ -26,8 +26,9 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P12 | Ciclo CPU completo e ISA, vista de máquina para la defensa | Integrado |
 | P13 | Teclado y cola FIFO de ocho bytes | Integrado |
 | P14 | LCD 8x1 y buffer de video | Integrado |
-| P15 | Demos aritméticos con transporte de datos animado | En revisión |
-| P16–P22 | Programas, documentación, entrega | Pendiente |
+| P15 | Demos aritméticos con transporte de datos animado | Integrado |
+| P16 | Programa de eco teclado → LCD | En revisión |
+| P17–P22 | Programas, documentación, entrega | Pendiente |
 
 ## Equipo
 
@@ -58,7 +59,7 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- P16 eco teclado → LCD y P17 demo de fallos de página y caché, reutilizando la animación de transporte de datos de P15.
+- P17 demo de fallos de página y caché, reutilizando la animación de transporte de datos de P15.
 - P18 controles finales de la hoja; P19/P20 documentación técnica; P21 regresión y ensayo de la defensa.
 - P22 entrega y verificación de la entrega.
 

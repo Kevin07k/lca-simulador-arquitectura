@@ -19,6 +19,7 @@ Standard modules exported from `workbook/LCA.xlsm` (ASCII, CRLF). **Engine** mod
 | P13 | `LcaKeyboard` | `LcaKeyboardPanel` | `LcaKeyboardTests` → `VerificarTecladoP13` | [P13](../../docs/P13_KEYBOARD.md) |
 | P14 | `LcaLcd` | `LcaLcdPanel` | `LcaLcdTests` → `VerificarLcdP14` | [P14](../../docs/P14_LCD.md) |
 | P15 | `LcaArith` (catálogo y validación), `LcaFlow` (animación de datos compartida) | `LcaArithPanel` | `LcaArithTests` → `VerificarDemoAritmeticaP15` | [P15](../../docs/P15_ARITHMETIC_DEMO.md) |
+| P16 | `LcaEcho` (programa de eco y orden de caracteres) | `LcaEchoPanel` | `LcaEchoTests` → `VerificarEcoP16` | [P16](../../docs/P16_ECHO_DEMO.md) |
 | Vistas / views | `LcaCoverPanel` (portada), `LcaLogs` (hoja Logs) | `LcaCpuDetail`, `LcaBusDetail`, `LcaMmuDetail`, `LcaMemoryDetail` | `LcaUiTests` → `VerificarInterfazUI` | [P12](../../docs/P12_CPU_CYCLE.md) |
 | Hoja / sheet | `LcaLayout` (`ConstruirLca`, `LcaRows`, navegación `LcaIr*`) | | | |
 

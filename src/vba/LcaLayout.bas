@@ -10,6 +10,7 @@ Option Explicit
 '   P12 machine    28-95     P10 cache+pag 100-146    P14 LCD      38-73     P08 swap+CLOCK+map   35-104
 '   P04 CPU+detail 97-168                             P05/P06 buses 75-108   P09 caches+chart    106-148
 '   P04 diagram   170-211    P15 arithmetic demos 151-238 (column 2, below P10)
+'                            P16 echo keyboard->LCD 148-202 (column 3, below the buses)
 ' Long traces live on the separate "Logs" sheet (LcaLogs).
 Public Const LCA_SHEET As String = "LCA"
 Public Const LCA_BLOCK_COLS As Long = 20
@@ -44,6 +45,9 @@ Public Const LCA_COL_CACHE As Long = 60
 
 Public Const LCA_BASE_ARITH As Long = 150
 Public Const LCA_COL_ARITH As Long = 20
+
+Public Const LCA_BASE_ECHO As Long = 147         ' below the P05/P06 bus detail (rows 109-146)
+Public Const LCA_COL_ECHO As Long = 40
 
 Private Const GRID_LAST_ROW As Long = 245
 Private Const GRID_LAST_COL As Long = 80
@@ -100,6 +104,7 @@ Public Sub ConstruirLca()
         ConstruirPanelLcd
         ConstruirPanelMaquina
         ConstruirPanelAritmetica
+        ConstruirPanelEco
     Next pass
     LcaPulirBandas ws
     ConstruirLogs
@@ -174,7 +179,7 @@ Public Sub LcaPulirBandas(ByVal ws As Worksheet)
                    Array(LCA_BASE_PAGER, LCA_COL_PAGER), Array(LCA_BASE_CACHE, LCA_COL_CACHE), _
                    Array(LCA_BASE_CACHE_PATH, LCA_COL_CACHE_PATH), Array(LCA_BASE_EDITOR, LCA_COL_EDITOR), _
                    Array(LCA_BASE_KEYBOARD, LCA_COL_KEYBOARD), Array(LCA_BASE_LCD, LCA_COL_LCD), _
-                   Array(LCA_BASE_ARITH, LCA_COL_ARITH))
+                   Array(LCA_BASE_ARITH, LCA_COL_ARITH), Array(LCA_BASE_ECHO, LCA_COL_ECHO))
     For i = ws.Shapes.Count To 1 Step -1
         If Left$(ws.Shapes(i).Name, 5) = "NAVM_" Then ws.Shapes(i).Delete
     Next i
@@ -383,6 +388,11 @@ End Sub
 Public Sub LcaIrAritmetica()
     LcaGoto LcaSheet(True), LCA_BASE_ARITH, LCA_COL_ARITH
     ArithPanelRefrescar
+End Sub
+
+Public Sub LcaIrEco()
+    LcaGoto LcaSheet(True), LCA_BASE_ECHO, LCA_COL_ECHO
+    EcoPanelRefrescar
 End Sub
 
 Public Sub LcaIrLcd()

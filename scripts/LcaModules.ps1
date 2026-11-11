@@ -1,9 +1,9 @@
 # Shared list: import order of the LCA VBA modules (src/vba). Add new modules here.
 $script:LcaModules = @(
     'LcaInicio', 'LcaCpu', 'LcaAlu', 'LcaBus', 'LcaControl',
-    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaMmu', 'LcaMmuPath', 'LcaSwap', 'LcaPager', 'LcaCachePath', 'LcaAssembler', 'LcaLoader', 'LcaKeyboard', 'LcaLcd', 'LcaExecutor', 'LcaLogs', 'LcaFlow', 'LcaArith', 'LcaLayout',
-    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel', 'LcaCachePathPanel', 'LcaEditorPanel', 'LcaKeyboardPanel', 'LcaLcdPanel', 'LcaMachinePanel', 'LcaCoverPanel', 'LcaCpuDetail', 'LcaMemoryDetail', 'LcaBusDetail', 'LcaMmuDetail', 'LcaArithPanel',
-    'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaMmuTests', 'LcaPagerTests', 'LcaCacheTests', 'LcaCachePathTests', 'LcaAssemblerTests', 'LcaKeyboardTests', 'LcaLcdTests', 'LcaExecutorTests', 'LcaArithTests', 'LcaUiTests'
+    'LcaRam', 'LcaMemoryPath', 'LcaCache', 'LcaMmu', 'LcaMmuPath', 'LcaSwap', 'LcaPager', 'LcaCachePath', 'LcaAssembler', 'LcaLoader', 'LcaKeyboard', 'LcaLcd', 'LcaExecutor', 'LcaLogs', 'LcaFlow', 'LcaArith', 'LcaEcho', 'LcaLayout',
+    'LcaPanel', 'LcaDiagrama', 'LcaBusPanel', 'LcaMmuPanel', 'LcaPagerPanel', 'LcaCachePanel', 'LcaCachePathPanel', 'LcaEditorPanel', 'LcaKeyboardPanel', 'LcaLcdPanel', 'LcaMachinePanel', 'LcaCoverPanel', 'LcaCpuDetail', 'LcaMemoryDetail', 'LcaBusDetail', 'LcaMmuDetail', 'LcaArithPanel', 'LcaEchoPanel',
+    'LcaCpuTests', 'LcaBusTests', 'LcaRamTests', 'LcaMmuTests', 'LcaPagerTests', 'LcaCacheTests', 'LcaCachePathTests', 'LcaAssemblerTests', 'LcaKeyboardTests', 'LcaLcdTests', 'LcaExecutorTests', 'LcaArithTests', 'LcaEchoTests', 'LcaUiTests'
 )
 
 function Get-RepoRoot { (Resolve-Path (Join-Path $PSScriptRoot '..')).Path }
