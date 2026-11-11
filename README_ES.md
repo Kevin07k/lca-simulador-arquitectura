@@ -23,10 +23,11 @@ Construido en **Microsoft Excel con VBA**. El [libro](workbook/LCA.xlsm) muestra
 | P09 | Cachés L1I, L1D y L2 | Integrado |
 | P10 | Caché integrada con paginación | Integrado |
 | P11 | Editor ASM, ensamblador y cargador | Integrado |
-| P12 | Ciclo CPU completo e ISA, vista de máquina para la defensa | En revisión |
+| P12 | Ciclo CPU completo e ISA, vista de máquina para la defensa | Integrado |
 | P13 | Teclado y cola FIFO de ocho bytes | Integrado |
 | P14 | LCD 8x1 y buffer de video | Integrado |
-| P15–P22 | Programas, documentación, entrega | Pendiente |
+| P15 | Demos aritméticos con transporte de datos animado | En revisión |
+| P16–P22 | Programas, documentación, entrega | Pendiente |
 
 ## Equipo
 
@@ -57,8 +58,8 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 
 ## Próximos pasos
 
-- P12 ciclo completo del CPU: ejecutar los programas cargados por P11 con el recorrido de memoria con caché de P10.
-- P13/P14 E/S de teclado y LCD, fuera de la paginación y las cachés.
-- Programas de demostración, documentación final y entrega en ambos idiomas.
+- P16 eco teclado → LCD y P17 demo de fallos de página y caché, reutilizando la animación de transporte de datos de P15.
+- P18 controles finales de la hoja; P19/P20 documentación técnica; P21 regresión y ensayo de la defensa.
+- P22 entrega y verificación de la entrega.
 
 Este README se actualizará conforme avance el desarrollo.
