@@ -155,6 +155,8 @@ Palabra de control de cada operación (`1` activa, `0` inactiva):
 
 Dos emisores al mismo tiempo producen `BUS_CONTENTION` antes de escribir. En el tablero, el bloque de buses ([P05/P06](P05_BUS_CONTROL.md)) muestra cada ciclo con el formato `microetapa | bus | VA PA | emisor -> receptor | dato | R W C I E L KBD LCD | drivers`.
 
+**Micro-palabra completa por micro-paso ([P05b](P05B_MICROWORD.md)).** Además del registro de ciclo, la unidad de control emite 25 señales por pulso de reloj: Enable `En_PC En_MDR En_IR En_AX En_BX En_CX En_DX En_ALU En_MEM En_KBD`; Load `Ld_PC Ld_MAR Ld_MDR Ld_IR Ld_AX Ld_BX Ld_CX Ld_DX Ld_A Ld_FLG Ld_LCD`; Control `Mem_R Mem_W IO Inc_PC`. Cada instrucción es una secuencia T1…Tn (búsqueda: `En_PC,Ld_MAR` → `Mem_R,En_MEM,Ld_MDR` → `En_MDR,Ld_IR` → decodificar; ejecución; `PC+4`). En cada micro-paso conduce **un solo** buffer tri-estado y los otros nueve están en High-Z; el bloque **MICRO-PALABRA** de la hoja los ilumina y VerificarMicropalabraP05B lo comprueba en todos los programas.
+
 ## 6. Políticas
 
 - **Traducción.** Se valida región y permisos → se consulta la PTE → si `P=0` se registra `PAGE_FAULT` y se atiende → se traduce → caché → RAM. Tras la falta se reintenta **la misma** microoperación una sola vez; un efecto ya comprometido nunca se repite.
@@ -266,7 +268,7 @@ Contadores finales (deducidos a mano y comprobados por `VerificarMemoriaP17`): *
 
 ## 9. Verificación y mapa de módulos
 
-`VerificarTodo` ejecuta las 16 suites (P04–P18 más la prueba de interfaz) y `scripts/Test-Workbook.ps1` repite lo mismo sin interfaz y comprueba que `programs/*.asm` coincidan con el código del libro. Detalle por suite en [tests/README.md](../tests/README.md).
+`VerificarTodo` ejecuta las 17 suites (P04–P18, P05b más la prueba de interfaz) y `scripts/Test-Workbook.ps1` repite lo mismo sin interfaz y comprueba que `programs/*.asm` coincidan con el código del libro. Detalle por suite en [tests/README.md](../tests/README.md).
 
 | Capa | Módulos (`src/vba/`) | Guía |
 | --- | --- | --- |

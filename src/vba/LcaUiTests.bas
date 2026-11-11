@@ -34,7 +34,7 @@ Public Sub VerificarInterfazUI()
     markers = Array("P00_tile0", "P12_btn_MaquinaPaso", "P04_LcaIrDiagrama", "P04D_name0", "D_Chip", "P05_BusDemoReset", _
                     "P05D_bus_ext", "P07_MmuPanelReset", "P07D_pte", "P08_PagerDemoReset", "P08D_hub", _
                     "P09_CacheDemoReset", "P09_chart", "P10_CachePathDemoReset", "P11_EditorEnsamblar", _
-                    "P13_TecladoReset", "P14_LcdPanelReset", "P12_chart", "P04D_chart", "LOGO_LCA", "P15_btn_ArithPaso", "P15_chart", "P15_tank3", "P16_btn_EcoPaso", "P16_btn_EcoDemoOcho", "P17_btn_MemPaso", "P17_fr6")
+                    "P13_TecladoReset", "P14_LcdPanelReset", "P12_chart", "P04D_chart", "LOGO_LCA", "P15_btn_ArithPaso", "P15_chart", "P15_tank3", "P16_btn_EcoPaso", "P16_btn_EcoDemoOcho", "P05B_MicroSiguiente", "P17_btn_MemPaso", "P17_fr6")
     For i = 0 To UBound(markers)
         Check HasShape(ws, CStr(markers(i))), "B: block element " & CStr(markers(i)) & " present"
     Next i

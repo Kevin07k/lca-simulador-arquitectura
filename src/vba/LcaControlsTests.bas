@@ -53,7 +53,7 @@ Public Sub VerificarControlesP18()
     MaquinaElegirPrograma 1
     MaquinaCargarPrograma
     Check MaquinaProgramaElegido() = LcaProgramaNombre(1) And LcaProgramaActual() = 1 And ExecSteps() = 0, "C: CARGAR loads the chosen program"
-    Check LcaUltimaSincronizacionErrores() = 0 And LcaVistasSincronizadas() = 16, "C: 16 views refreshed without errors"
+    Check LcaUltimaSincronizacionErrores() = 0 And LcaVistasSincronizadas() = 17, "C: 17 views refreshed without errors"
     Check LcaVistasCoherentes(), "C: every view shows the reset machine"
     MaquinaPaso
     Check ExecSteps() = 1 And LcaVistasCoherentes(), "C: PASO runs one instruction and every view follows"

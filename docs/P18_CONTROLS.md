@@ -26,7 +26,7 @@ The old **CARGAR EDITOR**, **EJEMPLO SUMA** and **DEMO ECO** buttons are now ent
 
 ## Synchronisation
 
-`LcaSincronizar` (module `LcaControls`) refreshes the 16 views of the shared machine after every user action:
+`LcaSincronizar` (module `LcaControls`) refreshes the 17 views of the shared machine after every user action:
 
 - **CPU and machine:** machine, P04 CPU (registers, diagram, bits).
 - **Buses:** P05/P06 buses and their detail.
@@ -77,7 +77,7 @@ Observed `ALL PASS` on 16 suites, including **P18 with 78 assertions** and UI wi
 | --- | --- |
 | A | Nine catalogue entries with list-safe names (≤ 255 characters in total). Each one loads, leaves PC = 000h and is exactly its source. ECO and MEMORIA go through their own loaders, and a new load replaces the previous program. |
 | B | The bar has CARGAR, PASO, EJECUTAR, PAUSA, RESET and VELOCIDAD, the team identity, a list selector and navigation. |
-| C | CARGAR from the selector, then 16 views refreshed with no errors. PASO and EJECUTAR (SUMA to HLT, 20 instructions) keep every view coherent. |
+| C | CARGAR from the selector, then 17 views refreshed with no errors. PASO and EJECUTAR (SUMA to HLT, 20 instructions) keep every view coherent. |
 | D | RESET; PAUSA after 7 instructions (READY, `EN PAUSA`, coherent); PASO; EJECUTAR continues to the same HLT state. An old click is ignored, and PAUSA also stops the animated RUN. |
 | E | ECO from the bar: it waits, keys are typed, LCD = `LCA`, and the P14/P16 blocks and Logs agree. |
 | F | MEMORIA from the bar: 30 instructions, counters as documented, and the P07 table, P17 block and Logs agree. |
@@ -119,7 +119,7 @@ Los botones **CARGAR EDITOR**, **EJEMPLO SUMA** y **DEMO ECO** pasaron a ser opc
 
 ## Sincronización
 
-`LcaSincronizar` refresca las 16 vistas de la máquina compartida después de cada acción, sea desde la barra de la máquina, desde los demos P15–P17 o desde los bloques de teclado y LCD.
+`LcaSincronizar` refresca las 17 vistas de la máquina compartida después de cada acción, sea desde la barra de la máquina, desde los demos P15–P17 o desde los bloques de teclado y LCD.
 
 Las vistas son:
 - máquina y CPU;

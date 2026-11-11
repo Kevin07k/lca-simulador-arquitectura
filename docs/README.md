@@ -19,6 +19,7 @@ Index of task guides. Each guide is bilingual unless noted.
 | P03 libro VBA | [P03_VERIFICATION.md](P03_VERIFICATION.md) | `VerificarInstalacion` | portada (col. 1, filas 1–26) |
 | P04 CPU / ALU | [P04_CPU_ALU.md](P04_CPU_ALU.md), [P04_INTERFACE.md](P04_INTERFACE.md), [P04_DIAGRAM.md](P04_DIAGRAM.md) | `VerificarCpuAlu` | col. 1, filas 97–211 |
 | P05 buses | [P05_BUS_CONTROL.md](P05_BUS_CONTROL.md) | `VerificarBusesP05` | col. 3, filas 75–146 |
+| **P05b micro-palabra de control (25 señales por micro-paso)** | [P05B_MICROWORD.md](P05B_MICROWORD.md) | `VerificarMicropalabraP05B` | col. 3, filas 205–252 |
 | P06 RAM | [P06_RAM.md](P06_RAM.md) | `VerificarRamP06` | col. 3, filas 75–146 |
 | P07 tabla de páginas | [P07_MMU.md](P07_MMU.md) | `VerificarMmuP07` | col. 4, filas 1–33 |
 | P08 page fault + swap | [P08_PAGE_FAULT_SWAP.md](P08_PAGE_FAULT_SWAP.md) | `VerificarPagerP08` | col. 4, filas 35–104 |
@@ -35,7 +36,7 @@ Index of task guides. Each guide is bilingual unless noted.
 | **P19 documentación técnica en español** | [DOCUMENTACION_TECNICA_ES.md](DOCUMENTACION_TECNICA_ES.md) | `VerificarTodo` | — |
 | **P20 English technical documentation** | [TECHNICAL_DOCUMENTATION_EN.md](TECHNICAL_DOCUMENTATION_EN.md) | `VerificarTodo` | — |
 
-`VerificarTodo` (Alt+F8) ejecuta P04–P18 y la prueba de interfaz `VerificarInterfazUI`, muestra un resumen y lo guarda en la hoja **Logs**; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
-`VerificarTodo` runs P04–P18 plus the `VerificarInterfazUI` interface test, shows one summary and stores it on the **Logs** sheet; `scripts/Test-Workbook.ps1` does the same headless.
+`VerificarTodo` (Alt+F8) ejecuta P04–P18, P05b y la prueba de interfaz `VerificarInterfazUI`, muestra un resumen y lo guarda en la hoja **Logs**; `scripts/Test-Workbook.ps1` hace lo mismo sin abrir Excel en pantalla.
+`VerificarTodo` runs P04–P18, P05b plus the `VerificarInterfazUI` interface test, shows one summary and stores it on the **Logs** sheet; `scripts/Test-Workbook.ps1` does the same headless.
 
 Capturas / screenshots: [`img/`](img/).
