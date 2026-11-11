@@ -48,6 +48,15 @@ try {
         $file = ((Get-Content $path -Raw) -replace "`r`n", "`n").Trim()
         if ($file -ne $source) { $driftReport += "DRIFT   programs\echo\$name differs from LcaEcho.bas`n" }
     }
+    # programs/memoria/memoria.asm is the documentation copy of LcaMemDemo.bas (P17).
+    $name = [string]$excel.Run("'$($wb.Name)'!MemDemoFile")
+    $source = ([string]$excel.Run("'$($wb.Name)'!MemDemoAsmText")).Trim()
+    $path = Join-Path $root (Join-Path 'programs\memoria' $name)
+    if (-not (Test-Path $path)) { $driftReport += "MISSING programs\memoria\$name`n" }
+    else {
+        $file = ((Get-Content $path -Raw) -replace "`r`n", "`n").Trim()
+        if ($file -ne $source) { $driftReport += "DRIFT   programs\memoria\$name differs from LcaMemDemo.bas`n" }
+    }
 }
 finally {
     if ($wb)    { $wb.Close($false) }
@@ -57,5 +66,5 @@ finally {
 Write-Host "Workbook: $WorkbookPath"
 Write-Host $result
 if ($driftReport.Length -gt 0) { Write-Host $driftReport; Write-Host "FAIL  programs\ differ from the workbook source" }
-else { Write-Host "PASS  programs\arith\*.asm match LcaArith.bas; programs\echo\eco.asm matches LcaEcho.bas" }
+else { Write-Host "PASS  programs\arith\*.asm match LcaArith.bas; programs\echo\eco.asm matches LcaEcho.bas; programs\memoria\memoria.asm matches LcaMemDemo.bas" }
 if ($result -notlike 'ALL PASS*' -or $driftReport.Length -gt 0) { exit 1 }
