@@ -30,8 +30,18 @@ Built in **Microsoft Excel with VBA**. The [workbook](workbook/LCA.xlsm) shows e
 | P16 | Keyboard-to-LCD echo program | In review |
 | P17 | Page fault and cache demo | Integrated |
 | P18 | Worksheet controls (LOAD, STEP, RUN, PAUSE, RESET) and synchronized panels | In review |
-| P19 | Spanish technical documentation | In review |
-| P20–P22 | English documentation, regression, delivery | Pending |
+| P19 | Spanish technical documentation | Integrated |
+| P20 | English technical documentation | In review |
+| P21–P22 | Regression and defense rehearsal, delivery | Pending |
+
+## Quick start
+
+1. Requirements: Windows and desktop Microsoft Excel (tested with Excel 16).
+2. Open [`workbook/LCA.xlsm`](workbook/LCA.xlsm) and click **Enable Content**. If Windows blocks it: right-click the file → Properties → **Unblock**.
+3. On the cover click **VERIFICAR TODO** (run all checks): `ALL PASS` must appear.
+4. On the machine bar pick a program from the list, click **CARGAR** (LOAD), then use **PASO** (STEP) / **EJECUTAR** (RUN) / **PAUSA** (PAUSE) / **RESET**. The workbook interface is in Spanish.
+
+The [English technical documentation](docs/TECHNICAL_DOCUMENTATION_EN.md) covers setup and permissions, the architecture (with Mermaid diagrams), memory, opcodes and their lengths, the control word, policies, a step-by-step operating guide with demo instructions, three demonstration traces, troubleshooting and the modules by owner. The Spanish version is [here](docs/DOCUMENTACION_TECNICA_ES.md).
 
 ## Team
 
@@ -62,7 +72,7 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 
 ## Next steps
 
-- P20 English technical documentation; P21 regression and defense rehearsal.
+- P21 regression and defense rehearsal.
 - P22 release and submission check.
 
 This README will be updated as development progresses.
