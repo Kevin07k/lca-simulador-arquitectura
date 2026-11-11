@@ -74,6 +74,5 @@ Los módulos VBA se exportan como archivos de texto para revisarlos en Git y el 
 ## Próximos pasos
 
 - P22 entrega y verificación de la entrega.
-- P22 entrega y verificación de la entrega.
 
 Este README se actualizará conforme avance el desarrollo.

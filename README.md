@@ -74,6 +74,5 @@ Export VBA modules as text files for Git reviews and keep the workbook synchroni
 ## Next steps
 
 - P22 release and submission check.
-- P22 release and submission check.
 
 This README will be updated as development progresses.
